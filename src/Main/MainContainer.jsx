@@ -206,46 +206,6 @@ function MainContainer() {
 
   return (
     <>
-      <button
-        style={{
-          position: 'absolute',
-          top: '10px',
-          zIndex: '1000',
-        }}
-        onClick={() => handleClick("garage-buy")}
-      >FORZA ROMA</button>
-
-      <button
-        style={{
-          position: 'absolute',
-          top: '10px',
-          zIndex: '1000',
-          left: '200px',
-        }}
-        onClick={() => handleClick("garage-manage")}
-      >FORZA ROMA 2</button>
-
-      <button
-        style={{
-          position: 'absolute',
-          top: '10px',
-          zIndex: '1000',
-          left: '400px',
-        }}
-        onClick={() => handleClick("list")}
-      >FORZA ROMA 3</button>
-
-
-      <button
-        style={{
-          position: 'absolute',
-          top: '10px',
-          zIndex: '1000',
-          left: '600px',
-        }}
-        onClick={() => handleClick("property-buy")}
-      >FORZA ROMA 4</button>
-
       {
         screen === "garage-buy" || screen === "list" || screen === "manage" ?
           <div className={CSS.container}>
