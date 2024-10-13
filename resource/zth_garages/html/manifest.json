@@ -1,6 +1,6 @@
 {
-  "short_name": "zth_garages",
-  "name": "UI for the FiveM script zth_garages",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [],
   "start_url": ".",
   "display": "standalone",
