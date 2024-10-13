@@ -1,7 +1,5 @@
-local debug = false
-
 function Debug(msg)
-    if debug then
+    if ZTH.Config.Debug then
         print("^1[ZTH_GARAGES] ^0" .. msg)
     end
 end
