@@ -1,6 +1,14 @@
 function Debug(msg)
     if ZTH.Config.Debug then
         print("^1[ZTH_GARAGES] ^0" .. msg)
+
+        -- check if log.txt exists, if not create it
+        if not LoadResourceFile(GetCurrentResourceName(), "log.txt") then
+            SaveResourceFile(GetCurrentResourceName(), "log.txt", "", -1)
+        end
+        -- append to log file
+        local logFile = LoadResourceFile(GetCurrentResourceName(), "log.txt")
+        SaveResourceFile(GetCurrentResourceName(), "log.txt", logFile .. "[" .. os.date("%Y-%m-%d %H:%M:%S") .. "] " .. msg .. "\n", -1)
     end
 end
 

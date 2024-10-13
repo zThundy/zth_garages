@@ -12,32 +12,23 @@ function ZTH.MySQL.ExecQuery(msg, fn, query, parameters)
 end
 
 
-
-
-
-
-
-
-
-
 function ZTH.Functions.Init()
     local initTable = {
+        "ALTER TABLE `player_vehicles` ADD `garage_id` VARCHAR(255) NOT NULL DEFAULT '' AFTER `status`;",
+        -- -1 if the parking has unlimited spots
+        "ALTER TABLE `player_vehicles` ADD `parking_spot` VARCHAR(255) NOT NULL DEFAULT '' AFTER `garage_id`;",
+        "ALTER TABLE `player_vehicles` ADD `parking_date` DATETIME NOT NULL AFTER `parking_spot`;",
+        "ALTER TABLE `player_vehicles` ADD `parking_until` DATETIME NOT NULL AFTER `parking_date`;",
+
         [[
-            CREATE TABLE IF NOT EXISTS `zth_garages` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `name` varchar(255) NOT NULL,
-                `label` varchar(255) NOT NULL,
-                `coords` text NOT NULL,
-                `garage_type` varchar(255) NOT NULL,
-                `garage_state` varchar(255) NOT NULL,
-                `garage_price` int(11) NOT NULL,
-                `garage_owner` varchar(255) NOT NULL,
-                `garage_plate` varchar(255) NOT NULL,
-                `garage_vehicle` text NOT NULL,
-                PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+            CREATE TABLE IF NOT EXISTS `garages` (
+                `user_id` VARCHAR(255) NOT NULL,
+                `garage_id` VARCHAR(255) NOT NULL,
+                `balance` INT(11) NOT NULL DEFAULT '0',
+                `total_earnings` INT(11) NOT NULL DEFAULT '0',
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         ]]
     }
     
-    ZTH.MySQL.ExecQuery("create table if not exists", MySQL.transaction.await, initTable)
+    ZTH.MySQL.ExecQuery("create table if not exists and alter", MySQL.transaction.await, initTable)
 end

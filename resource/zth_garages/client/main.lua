@@ -4,7 +4,3 @@ garageServerT = tunnel.getInterface("zth_garages", "zth_garages_t", "zth_garages
 ZTH = {}
 ZTH.Garages = {}
 
-function getGarageFunction(garageName)
-    
-end
-
