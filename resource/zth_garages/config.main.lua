@@ -1,6 +1,8 @@
 ZTH = {}
 ZTH.Config = {}
 
+ZTH.Config.Debug = true
+
 local frameworkAutoFind = function()
     if GetResourceState('es_extended') ~= 'missing' then
         return "ESX"
