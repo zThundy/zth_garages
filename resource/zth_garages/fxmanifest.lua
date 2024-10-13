@@ -3,13 +3,13 @@ game "gta5"
 lua54 "yes"
 
 author "zThundy__"
-description "zth_garages"
+description "Resource to manage all kinds of garages"
 version "1.0.0"
 
 ui_page "html/index.html"
 files {
     "html/*.*",
-    "html/**/*.*"
+    "html/**/*.*",
     
     "lib/Luaoop.lua",
     "lib/TunnelV2.lua",
@@ -19,6 +19,7 @@ files {
 
 client_scripts {
     "client/main.lua",
+    "client/utils.lua",
 }
 
 server_scripts {
