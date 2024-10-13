@@ -1,0 +1,196 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+
+  .vehicleRow {
+    display: flex;
+    flex-direction: row;
+    flex: 0 auto;
+    color: white;
+    margin: .5rem;
+    width: 100%;
+    border-radius: 1rem;
+    background-color: rgba(80, 80, 80, .6);
+    transition: background-color 0.1s;
+
+    .leftAlign {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-self: center;
+      padding: .5rem 1rem;
+      width: 100%;
+
+      .carName {
+        font-size: 1.4rem;
+        font-weight: bold;
+      }
+
+      .plate {
+        font-size: 1.1rem;
+      }
+    }
+
+    .rightAlign {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: right;
+
+      .infoButton {
+        margin: .8rem 1rem .8rem 0;
+        width: 4rem;
+        height: 4rem;
+        border-radius: 50%;
+        background-color: var(--mui-palette-secondary-main);
+
+        svg {
+          font-size: 2.2rem;
+          color: white;
+        }
+      }
+
+      .infoButton:hover {
+        background-color: var(--mui-palette-secondary-light);
+      }
+
+      .takeButton {
+        margin: .8rem 1rem .8rem 0;
+        width: 4rem;
+        height: 4rem;
+        border-radius: 50%;
+        background-color: var(--mui-palette-primary-main);
+
+        img {
+          width: 2.2rem;
+          height: 2.2rem;
+          color: white;
+        }
+      }
+
+      .takeButton:hover {
+        background-color: var(--mui-palette-primary-light);
+      }
+
+
+      .levels {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        margin: 0 .4rem 0 .2rem;
+        position: relative;
+
+        .fuelLevel {
+          border-radius: 50%;
+          margin: .2rem;
+          width: 3rem;
+          height: 3rem;
+          background-color: var(--mui-palette-secondary-main);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+
+          .fuelLevelBar {
+            background-color: rgba(0, 160, 0, 0.7);
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            transform: translateY(0%);
+            transition: transform 0.5s;
+            /* mask: linear-gradient(transparent 0%, black); */
+          }
+
+          svg {
+            font-size: 1.5rem;
+            color: white;
+            z-index: 2;
+            position: absolute;
+          }
+        }
+
+        .engineLevel {
+          border-radius: 50%;
+          margin: .2rem;
+          width: 3rem;
+          height: 3rem;
+          background-color: var(--mui-palette-secondary-main);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+
+          .engineLevelBar {
+            background-color: rgba(255, 255, 80, 0.5);
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            transform: translateY(0%);
+            transition: transform 0.5s;
+            /* mask: linear-gradient(transparent 0%, black); */
+          }
+
+          img {
+            width: 1.5rem;
+            height: 1.5rem;
+            color: white;
+            z-index: 2;
+            position: absolute;
+          }
+        }
+
+        .bodyLevel {
+          border-radius: 50%;
+          margin: .2rem;
+          width: 3rem;
+          height: 3rem;
+          background-color: var(--mui-palette-secondary-main);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+
+          .bodyLevelBar {
+            background-color: rgba(60, 60, 255, 0.6);
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            transform: translateY(0%);
+            transition: transform 0.5s;
+            /* mask: linear-gradient(transparent 0%, black); */
+          }
+
+          svg {
+            font-size: 1.5rem;
+            color: white;
+            z-index: 2;
+            position: absolute;
+          }
+        }
+      }
+    }
+  }
+
+  .vehicleRow:hover {
+    background-color: rgba(80, 80, 80, .9);
+  }
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 0 1rem 1rem 0;
+  background: rgba(200, 200, 200, 0.5);
+}
+
+.container::-webkit-scrollbar-thumb {
+  border-radius: 0 1rem 1rem 0;
+  background: var(--mui-palette-primary-main);
+}
