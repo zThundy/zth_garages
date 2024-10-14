@@ -17,21 +17,25 @@ files {
     "lib/Tools.lua",
 }
 
-client_scripts {
-    "client/main.lua",
-    "client/utils.lua",
-}
-
-server_scripts {
-    "@oxmysql/lib/MySQL.lua",
-    "server/main.lua",
-}
-
 shared_scripts {
 	"config.main.lua",
     "config.garages.lua",
 
 	"lib/utils.lua",
+}
+
+client_scripts {
+    "client/functions.lua",
+
+    "client/main.lua",
+    "client/utils.lua",
+    "client/nui.lua",
+}
+
+server_scripts {
+    "@oxmysql/lib/MySQL.lua",
+    "server/functions.lua",
+    "server/main.lua",
 }
 
 dependencies {

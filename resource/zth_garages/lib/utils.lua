@@ -1,14 +1,24 @@
+
+local modules = {}
+-- side detection
+SERVER = IsDuplicityVersion()
+CLIENT = not SERVER
+
 function Debug(msg)
     if ZTH.Config.Debug then
         print("^1[ZTH_GARAGES] ^0" .. msg)
 
-        -- check if log.txt exists, if not create it
-        if not LoadResourceFile(GetCurrentResourceName(), "log.txt") then
-            SaveResourceFile(GetCurrentResourceName(), "log.txt", "", -1)
+        if SERVER then
+            -- check if log.txt exists, if not create it
+            if not LoadResourceFile(GetCurrentResourceName(), "log.txt") then
+                SaveResourceFile(GetCurrentResourceName(), "log.txt", "", -1)
+            end
+            -- append to log file
+            local logFile = LoadResourceFile(GetCurrentResourceName(), "log.txt")
+            -- remove ^0 ^1 etc
+            msg = msg:gsub("%^(%d)", "")
+            SaveResourceFile(GetCurrentResourceName(), "log.txt", logFile .. "[" .. os.date("%Y-%m-%d %H:%M:%S") .. "] " .. msg .. "\n", -1)
         end
-        -- append to log file
-        local logFile = LoadResourceFile(GetCurrentResourceName(), "log.txt")
-        SaveResourceFile(GetCurrentResourceName(), "log.txt", logFile .. "[" .. os.date("%Y-%m-%d %H:%M:%S") .. "] " .. msg .. "\n", -1)
     end
 end
 
@@ -20,11 +30,6 @@ function Conditional(statement, ifTrue, ifFalse)
     end
 end
 
--- side detection
-SERVER = IsDuplicityVersion()
-CLIENT = not SERVER
-
-local modules = {}
 function module(rsc, path) -- load a LUA resource file as module
     if path == nil then -- shortcut for vrp, can omit the resource parameter
         path = rsc

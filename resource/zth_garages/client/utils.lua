@@ -20,7 +20,7 @@ end
 
 function CreateMarker(_type, data)
     local GlobalConfig = ZTH.Config.Markers[_type]
-    if not GlobalConfig then return Debug("CreateMarker: GlobalConfig is required") end
+    if not GlobalConfig then return Debug("CreateMarker: GlobalConfig is required for marker " .. _type) end
 
     if not data.scale then data.scale = GlobalConfig.scale end
     if not data.msg then data.msg = GlobalConfig.msg end
@@ -30,9 +30,12 @@ function CreateMarker(_type, data)
     if not data.show3D then data.show3D = GlobalConfig.show3D end
     if not data.type then data.type = GlobalConfig.type end
     if not data.color then data.color = GlobalConfig.color end
-
-    if not data.pos then return Debug("CreateMarker: data.pos is required") end
-    if not data.action then return Debug("CreateMarker: data.action is required") end
+    if not data.name then data.name = _type end
+    
+    if not data.pos then return Debug("CreateMarker: data.pos is required for marker " .. _type) end
+    if not data.action then return Debug("CreateMarker: data.action is required for marker " .. _type) end
+    
+    if data.type == 1 then data.pos = vec3(data.pos.x, data.pos.y, data.pos.z - 1.0) end
 
     TriggerEvent('gridsystem:registerMarker', data)
 end
