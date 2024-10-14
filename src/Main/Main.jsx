@@ -4,6 +4,8 @@ import MainContainer from "./MainContainer"
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 
+import { api } from "../index";
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -30,9 +32,7 @@ function Main() {
   const keyHandler = (e) => {
     if ('Escape'.includes(e.code)) {
       setVisible(false)
-      fetch(`https://${GetParentResourceName()}/hide`, {
-        method: 'post'
-      })
+      api.post('close', {})
     }
   }
 
