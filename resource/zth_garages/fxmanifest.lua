@@ -1,21 +1,27 @@
 fx_version "cerulean"
-game "gta5"
+games { "gta5", "rdr3" }
 lua54 "yes"
 
 author "zThundy__"
 description "Resource to manage all kinds of garages"
 version "1.0.0"
 
-ui_page "html/index.html"
 files {
-    "html/*.*",
-    "html/**/*.*",
+    "html/*",
+    "html/config/*.json",
+    "html/static/js/*",
+    "html/static/css/*",
+    "html/svg/*",
+
+    "html/index.html",
     
     "lib/Luaoop.lua",
     "lib/TunnelV2.lua",
     "lib/IDManager.lua",
     "lib/Tools.lua",
 }
+
+ui_page "html/index.html"
 
 shared_scripts {
 	"config.main.lua",
