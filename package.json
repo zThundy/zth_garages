@@ -16,8 +16,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "build": "npm run build-internal && npm run fix",
+    "fix": "node post-release.js",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build-internal": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
