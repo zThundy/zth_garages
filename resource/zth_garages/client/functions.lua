@@ -37,8 +37,8 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
         local garageData = self.Functions.GetGarageData(self, id)
 
         self.NUI.Open({ screen = "garage-manage", data = garageData })
-        Citizen.Wait(5000)
-        self.NUI.Close()
+        -- Citizen.Wait(5000)
+        -- self.NUI.Close()
     end
 end
 

@@ -17,10 +17,10 @@ const theme = createTheme({
   cssVariables: true
 });
 
-function Main() {
+function Main({ parkingData, screen, title, setScreen, setTitle }) {
   return (
     <ThemeProvider theme={theme}>
-      <MainContainer />
+      <MainContainer parkingData={parkingData} screen={screen} title={title} setScreen={setScreen} setTitle={setTitle} />
       <div
         style={{
           position: 'absolute',

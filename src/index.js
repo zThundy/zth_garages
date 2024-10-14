@@ -6,6 +6,7 @@ import './index.css';
 import Main from './Main/Main';
 
 import config from './lib/config';
+import { T } from './lib/language';
 import API from "./lib/api";
 const api = new API(config.resName);
 export { api };
@@ -13,13 +14,35 @@ export { api };
 // const root = ReactDOM.createRoot(document.getElementById('root'));
 
 const RootComponent = () => {
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(false);
+  const [parkingData, setParkingData] = useState({});
+  const [screen, setScreen] = useState('list');
+  const [title, setTitle] = useState(T("UNKNOWN"));
+
+  const HandleScreen = (action) => {
+    switch (action) {
+      case "garage-buy":
+        setScreen("garage-buy")
+        setTitle(T("BUY_SPOT"))
+        break;
+      case "property-buy":
+        setScreen("property-buy")
+        break;
+      case "garage-manage":
+        setScreen("garage-manage")
+        break;
+      default:
+        setScreen("list")
+        break;
+    }
+  }
 
   const handleNuiCallback = (event) => {
     console.log('Received NUI message:', event.data.action);
     switch (event.data.action) {
       case 'open':
         setVisible(true);
+        HandleScreen(event.data.data.screen);
         break;
       default:
         console.log('Unknown action', event.data.action);
@@ -49,7 +72,7 @@ const RootComponent = () => {
   
   return (
     <React.StrictMode>
-      {visible && <Main />}
+      {visible && <Main parkingData={parkingData} screen={screen} title={title} setScreen={setScreen} setTitle={setTitle} />}
     </React.StrictMode>
   )
 }
