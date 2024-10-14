@@ -13,9 +13,10 @@ export { api };
 // const root = ReactDOM.createRoot(document.getElementById('root'));
 
 const RootComponent = () => {
-  const [visible, setVisible] = useState(true)
+  const [visible, setVisible] = useState(false)
 
   const handleNuiCallback = (event) => {
+    console.log('Received NUI message:', event.data.action);
     switch (event.data.action) {
       case 'open':
         setVisible(true);
@@ -43,13 +44,12 @@ const RootComponent = () => {
     }
   }, [visible])
   
-  // window.addEventListener('message', handleNuiCallback)
-  // window.addEventListener('keydown', keyHandler)
+  window.addEventListener('message', handleNuiCallback)
+  window.addEventListener('keydown', keyHandler)
   
   return (
     <React.StrictMode>
-      {/* {visible && <Main />} */}
-      <Main />
+      {visible && <Main />}
     </React.StrictMode>
   )
 }

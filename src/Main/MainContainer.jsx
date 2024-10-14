@@ -11,7 +11,7 @@ import { useState } from 'react';
 
 function MainContainer() {
   const [parkingData, setParkingData] = useState({})
-  const [screen, setScreen] = useState('garage-buy')
+  const [screen, setScreen] = useState('list')
   const [title, setTitle] = useState(T("UNKNOWN"))
 
   const handleClick = (action) => {

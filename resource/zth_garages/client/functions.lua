@@ -34,10 +34,28 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
         self.Functions.DepositVehicle(self, id, spotid)
     else
         Debug("MarkerAction: " .. _type .. " " .. id)
-        self.NUI.Open({ type = _type, id = id })
+        local garageData = self.Functions.GetGarageData(self, id)
+
+        self.NUI.Open({ screen = "garage-manage", data = garageData })
         Citizen.Wait(5000)
         self.NUI.Close()
     end
+end
+
+function ZTH.Functions.GetGarageData(self, id)
+    local garageData = self.Config.Garages[id]["Settings"]
+
+    return {
+        name = garageData.displayName,
+        spots = #self.Config.Garages[id]["ParkingSpots"],
+        occupied = self.Tunnel.Interface.GetGarageData(id).occupiedSpots,
+        price = garageData.pricePerDay,
+        managementPrice = garageData.managementPrice,
+        sellPrice = garageData.sellPrice,
+        totEarning = self.Tunnel.Interface.GetGarageData(id).totalEarnings,
+        balance = self.Tunnel.Interface.GetGarageData(id).balance,
+        spotsData = self.Tunnel.Interface.GetGarageData(id).parkedVehicles,
+    }
 end
 
 function ZTH.Functions.DepositVehicle(self, id, spotid)

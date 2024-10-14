@@ -46,6 +46,22 @@ function ZTH.Functions.Init()
     }
 
     ZTH.MySQL.ExecQuery("Create table if not exists and alter", MySQL.transaction.await, initTable)
+
+    -- insert all the garages from config.garages.lua in the garages table
+    for garage, data in pairs(ZTH.Config.Garages) do
+        -- check if the garage is already in the database
+        local result = ZTH.MySQL.ExecQuery("Init - Check if garage exists", MySQL.Sync.fetchScalar, "SELECT COUNT(*) FROM `garages` WHERE `user_id` = @user_id AND `garage_id` = @garage_id", {
+            ['@user_id'] = "0",
+            ['@garage_id'] = garage
+        })
+
+        if result == 0 then
+            ZTH.MySQL.ExecQuery("Init - Insert garage", MySQL.Sync.execute, "INSERT INTO `garages` (`user_id`, `garage_id`) VALUES (@user_id, @garage_id)", {
+                ['@user_id'] = "0",
+                ['@garage_id'] = garage
+            })
+        end
+    end
 end
 
 ZTH.Tunnel.Interface.CanDeposit = function(garage, spot, plate)
@@ -108,4 +124,61 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
             ['@citizenid'] = citizenId
         })
     end
+end
+
+ZTH.Tunnel.Interface.GetGarageData = function(id)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenId = Player.PlayerData.citizenid
+
+    -- get all server data from the garage table
+    local result = ZTH.MySQL.ExecQuery("GetGarageData", MySQL.Sync.fetchAll, "SELECT * FROM `garages` WHERE `user_id` = @user_id AND `garage_id` = @garage_id", {
+        ['@user_id'] = citizenId,
+        ['@garage_id'] = id
+    })
+
+    -- get all parked vehicles from the player_vehicles table and join the result with the players table using the license column
+    local parkedVehicles = ZTH.MySQL.ExecQuery("GetGarageData - GetParkedVehicles", MySQL.Sync.fetchAll, [[
+        SELECT
+            pv.`id`,
+            pv.`plate`,
+            pv.`model`,
+            pv.`garage`,
+            pv.`parking_spot`,
+            pv.`parking_date`,
+            p.`charinfo`
+        FROM
+            `player_vehicles` pv
+        LEFT JOIN
+            `players` p
+        ON
+            pv.`citizenid` = p.`citizenid`
+        WHERE
+            pv.`citizenid` = @citizenid AND pv.`garage` = @garage_id
+    ]], {
+        ['@citizenid'] = citizenId,
+        ['@garage_id'] = id
+    })
+
+    local _parkedVehicles = {}
+    for k, v in pairs(parkedVehicles) do
+        local displayName = json.decode(v.charinfo).firstname .. " " .. json.decode(v.charinfo).lastname
+        _parkedVehicles.push({
+            id: v.parking_spot,
+            plate: v.plate,
+            model: v.model,
+            garage: v.garage,
+            name: displayName,
+            fromDate: v.parking_date
+            -- add 14 days to the parking date
+            toDate: v.parking_date + 14 * 24 * 60 * 60 * 1000
+        })
+    end
+
+    return {
+        balance = result[1].balance,
+        totalEarnings = result[1].total_earnings,
+        parkedVehicles = _parkedVehicles,
+        occupiedSlots = #parkedVehicles
+    }
 end
