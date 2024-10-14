@@ -1,30 +1,20 @@
 
 import CSS from './VehicleList.module.css';
 
+import { useState } from 'react';
+
 import { Button, Tooltip } from '@mui/material';
 import { DriveEta, LocalGasStation } from '@mui/icons-material';
 
 import { T } from '../lib/language';
 
-const testCarData = [];
-for (let i = 0; i < 50; i++) {
-  testCarData.push({
-    id: i,
-    name: `Car ${i + 1}`,
-    // make a plate number for each car with a random number
-    plate: `ABC-${Math.floor(Math.random() * 1000)}`,
-    // random number between 0 and 100 for fuel, engine, and body levels
-    fuelLevel: Math.floor(Math.random() * 100),
-    engineLevel: Math.floor(Math.random() * 100),
-    bodyLevel: Math.floor(Math.random() * 100),
-  })
-}
-
 function VehicleList() {
+  const [carData, setCarData] = useState([]);
+
   return (
     <div className={CSS.container}>
       {
-        testCarData.map((car) => {
+        carData.map((car) => {
           return (
             <div key={car.id} className={CSS.vehicleRow}>
               <div className={CSS.leftAlign}>
@@ -58,7 +48,7 @@ function VehicleList() {
                         className={CSS.engineLevelBar}
                         style={{ transform: `translateY(${100 - car.engineLevel}%)` }}
                       ></div>
-                      <img src="/svg/engine.svg" alt="engine" />
+                      <img src="/html/svg/engine.svg" alt="engine" />
                     </div>
                   </Tooltip>
                   <Tooltip
@@ -88,7 +78,7 @@ function VehicleList() {
                     disableFocusRipple
                     disableTouchRipple
                   >
-                    <img src="/svg/wheel.svg" alt="wheel" />
+                    <img src="/html/svg/wheel.svg" alt="wheel" />
                   </Button>
                 </Tooltip>
               </div>

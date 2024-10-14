@@ -2,14 +2,14 @@
 
 class API {
   constructor(res) {
-    this.baseUrl = `https://${res}/`;
+    this.baseUrl = `https://${res}/html`;
     this.events = {};
+  }
 
-    window.addEventListener("message", (event) => {
-      console.log(JSON.stringify(event.data, null, 2));
-      if (event.origin !== this.baseUrl) return;
-      if (this.events[event.data.event]) this.events[event.data.event](event.data);
-    });
+  callEvent(event, data) {
+    if (this.events[event]) {
+      this.events[event](data);
+    }
   }
 
   async get(url) {

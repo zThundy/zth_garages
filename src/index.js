@@ -20,6 +20,11 @@ const RootComponent = () => {
       case 'open':
         setVisible(true);
         break;
+      default:
+        console.log('Unknown action', event.data.action);
+        console.log('Data:', JSON.stringify(event.data));
+        api.callEvent(event.data.action, event.data);
+        break;
     }
   }
 

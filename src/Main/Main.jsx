@@ -2,9 +2,8 @@
 import MainContainer from "./MainContainer"
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useEffect, useState } from "react";
-
-import { api } from "../index";
+// import { useEffect, useState } from "react";
+// import { api } from "../index";
 
 const theme = createTheme({
   palette: {

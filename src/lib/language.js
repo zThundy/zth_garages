@@ -1,7 +1,7 @@
 import config from './config';
 
 async function getLanguage() {
-    return await fetch("/config/language.json")
+    return await fetch("/html/config/language.json")
         .then(response => response.json())
         .then(data => {
             return data[config.language];
