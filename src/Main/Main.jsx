@@ -19,34 +19,6 @@ const theme = createTheme({
 });
 
 function Main() {
-  const [visible, setVisible] = useState(false)
-
-  const handleNuiCallback = (event) => {
-    switch (event.data.action) {
-      case 'open':
-        setVisible(true);
-        break;
-    }
-  }
-
-  const keyHandler = (e) => {
-    if ('Escape'.includes(e.code)) {
-      setVisible(false)
-      api.post('close', {})
-    }
-  }
-
-  useEffect(() => {
-    if (visible) {
-      document.body.style.display = 'flex'
-    } else {
-      document.body.style.display = 'none'
-    }
-  }, [visible])
-
-  window.addEventListener('message', handleNuiCallback)
-  window.addEventListener('keydown', keyHandler)
-
   return (
     <ThemeProvider theme={theme}>
       <MainContainer />
