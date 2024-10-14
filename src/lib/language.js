@@ -1,11 +1,19 @@
 import config from './config';
 
 async function getLanguage() {
-    return await fetch("/html/config/language.json")
-        .then(response => response.json())
-        .then(data => {
-            return data[config.language];
-        });
+    if (process.env.NODE_ENV === "development") {
+        return await fetch("/config/language.json")
+            .then(response => response.json())
+            .then(data => {
+                return data[config.language];
+            });
+    } else {
+        return await fetch("/html/config/language.json")
+            .then(response => response.json())
+            .then(data => {
+                return data[config.language];
+            });
+    }
 }
 
 const lang = await getLanguage();

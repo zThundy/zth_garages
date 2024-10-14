@@ -1,5 +1,5 @@
 
-import CSS from './SmallList.module.css';
+import "./SmallList.css";
 
 import ManageListTable from './ManageListTable';
 import VehicleList from './VehicleList';
@@ -44,10 +44,10 @@ function ManageList({ screen, setScreen, title, setTitle, parkingData }) {
   return (
     <>
       
-      <div className={CSS.listContainer}>
-        <div className={CSS.titleContainer}>
-          <div className={CSS.title}>{title}</div>
-          <div className={CSS.extraButtons}>
+      <div className={["SmallList_listContainer"]}>
+        <div className={["SmallList_titleContainer"]}>
+          <div className={["SmallList_title"]}>{title}</div>
+          <div className={["SmallList_extraButtons"]}>
             {screen === "list" && showManage ?
               <Tooltip
                 title={T("MANAGE")}
@@ -108,7 +108,7 @@ function ManageList({ screen, setScreen, title, setTitle, parkingData }) {
           </div>
         </div>
 
-        <div className={CSS.divider}></div>
+        <div className={["SmallList_divider"]}></div>
 
         {screen === "manage" ? <ManageListTable /> : null}
         {screen === "list" ? <VehicleList /> : null}
