@@ -12,26 +12,26 @@ function VehicleList() {
   const [carData, setCarData] = useState([]);
 
   return (
-    <div className={["VehicleList_container"]}>
+    <div className={"VehicleList_container"}>
       {
         carData.map((car) => {
           return (
-            <div key={car.id} className={["VehicleList_vehicleRow"]}>
-              <div className={["VehicleList_leftAlign"]}>
-                <span className={["VehicleList_carName"]}>{car.name}</span>
-                <span className={["VehicleList_plate"]}>{T("PLATE")}: <i>{car.plate}</i></span>
+            <div key={car.id} className={"VehicleList_vehicleRow"}>
+              <div className={"VehicleList_leftAlign"}>
+                <span className={"VehicleList_carName"}>{car.name}</span>
+                <span className={"VehicleList_plate"}>{T("PLATE")}: <i>{car.plate}</i></span>
               </div>
-              <div className={["VehicleList_rightAlign"]}>
-                <div className={["VehicleList_levels"]}>
+              <div className={"VehicleList_rightAlign"}>
+                <div className={"VehicleList_levels"}>
                   <Tooltip
                     title={T("FUEL_LEVEL", car.fuelLevel)}
                     style={{ cursor: "pointer" }}
                     placement="top"
                     arrow
                   >
-                    <div className={["VehicleList_fuelLevel"]}>
+                    <div className={"VehicleList_fuelLevel"}>
                       <div
-                        className={["VehicleList_fuelLevelBar"]}
+                        className={"VehicleList_fuelLevelBar"}
                         style={{ transform: `translateY(${100 - car.fuelLevel}%)` }}
                       ></div>
                       <LocalGasStation />
@@ -43,9 +43,9 @@ function VehicleList() {
                     placement="top"
                     arrow
                   >
-                    <div className={["VehicleList_engineLevel"]}>
+                    <div className={"VehicleList_engineLevel"}>
                       <div
-                        className={["VehicleList_engineLevelBar"]}
+                        className={"VehicleList_engineLevelBar"}
                         style={{ transform: `translateY(${100 - car.engineLevel}%)` }}
                       ></div>
                       <img src="/html/svg/engine.svg" alt="engine" />
@@ -57,9 +57,9 @@ function VehicleList() {
                     placement="top"
                     arrow
                   >
-                    <div className={["VehicleList_bodyLevel"]}>
+                    <div className={"VehicleList_bodyLevel"}>
                       <div
-                        className={["VehicleList_bodyLevelBar"]}
+                        className={"VehicleList_bodyLevelBar"}
                         style={{ transform: `translateY(${100 - car.bodyLevel}%)` }}
                       ></div>
                       <DriveEta />
@@ -72,7 +72,7 @@ function VehicleList() {
                   arrow
                 >
                   <Button
-                    className={["VehicleList_takeButton"]}
+                    className={"VehicleList_takeButton"}
                     variant="text"
                     disableRipple
                     disableFocusRipple

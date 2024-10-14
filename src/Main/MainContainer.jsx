@@ -10,8 +10,8 @@ import { T } from '../lib/language';
 import { useState } from 'react';
 
 function MainContainer() {
-  const [parkingData, setParkingData] = useState([])
-  const [screen, setScreen] = useState('list')
+  const [parkingData, setParkingData] = useState({})
+  const [screen, setScreen] = useState('garage-buy')
   const [title, setTitle] = useState(T("UNKNOWN"))
 
   const handleClick = (action) => {
@@ -36,12 +36,8 @@ function MainContainer() {
     <>
       {
         screen === "garage-buy" || screen === "list" || screen === "manage" ?
-          <div className={
-            ["MainContainer_container"]
-          }>
-            <div className={
-              ["MainContainer_app"]
-            }>
+          <div className={"MainContainer_container"}>
+            <div className={"MainContainer_app"}>
               <SmallList
                 screen={screen}
                 setScreen={setScreen}
@@ -56,12 +52,8 @@ function MainContainer() {
 
       {
         screen === "garage-manage" ?
-          <div className={
-            ["MainContainer_containerFull"]
-          }>
-            <div className={
-              ["MainContainer_fullscreen"]
-            }>
+          <div className={"MainContainer_containerFull"}>
+            <div className={"MainContainer_fullscreen"}>
               <ManageParkingScreen
                 parkingData={parkingData}
               />
@@ -72,12 +64,8 @@ function MainContainer() {
 
       {
         screen === "property-buy" ?
-          <div className={
-            ["MainContainer_fullscreen"]
-          }>
-            <div className={
-              ["MainContainer_buyCurrent"]
-            }>
+          <div className={"MainContainer_containerFull"}>
+            <div className={"MainContainer_buyCurrent"}>
               <BuyParkingScreen
                 parkingData={parkingData}
               />

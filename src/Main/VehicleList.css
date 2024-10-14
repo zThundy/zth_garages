@@ -40,7 +40,6 @@
   font-size: 1.1rem;
 }
 
-
 .VehicleList_rightAlign {
   width: 100%;
   display: flex;
@@ -66,11 +65,11 @@
 }
 
 .VehicleList_takeButton {
-  margin: .8rem 1rem .8rem 0;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  background-color: var(--mui-palette-primary-main);
+  margin: .8rem 1rem .8rem 0 !important;
+  width: 4rem !important;
+  height: 4rem !important;
+  border-radius: 50% !important;
+  background-color: var(--mui-palette-primary-main) !important;
 }
 
 .VehicleList_takeButton img {
@@ -80,7 +79,7 @@
 }
 
 .VehicleList_takeButton:hover {
-  background-color: var(--mui-palette-primary-light);
+  background-color: var(--mui-palette-primary-light) !important;
 }
 
 
@@ -116,7 +115,7 @@
   /* mask: linear-gradient(transparent 0%, black); */
 }
 
-.VehicleList_fuelLevelBar svg {
+.VehicleList_fuelLevel svg {
   font-size: 1.5rem;
   color: white;
   z-index: 2;
@@ -146,7 +145,7 @@
   /* mask: linear-gradient(transparent 0%, black); */
 }
 
-.VehicleList_engineLevelBar img {
+.VehicleList_engineLevel img {
   width: 1.5rem;
   height: 1.5rem;
   color: white;
@@ -177,7 +176,7 @@
   /* mask: linear-gradient(transparent 0%, black); */
 }
 
-.VehicleList_bodyLevelBar svg {
+.VehicleList_bodyLevel svg {
   font-size: 1.5rem;
   color: white;
   z-index: 2;

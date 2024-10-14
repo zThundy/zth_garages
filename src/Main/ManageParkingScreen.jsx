@@ -1,5 +1,5 @@
 
-import CSS from './ManageParkingScreen.module.css';
+import './ManageParkingScreen.css';
 
 import { useState } from 'react';
 
@@ -32,13 +32,13 @@ function ManageParkingScreen({ parkingData }) {
       <Modal
         open={modalOpen}
         onClose={() => manageModal(false)}
-        className={CSS.modalContainer}
+        className={"ManageParkingScreen_modalContainer"}
       >
         <div
-          className={CSS.modalBG}
+          className={"ManageParkingScreen_modalBG"}
         >
           <h2>{T(modalType)}</h2>
-          <span className={CSS.modalDescription}>{T(modalType + "_DESCRIPTION")}</span>
+          <span className={"ManageParkingScreen_modalDescription"}>{T(modalType + "_DESCRIPTION")}</span>
 
           <TextField
             label={T("AMOUNT")}
@@ -65,10 +65,11 @@ function ManageParkingScreen({ parkingData }) {
         </div>
       </Modal>
 
-      <div className={CSS.container}>
-        <div className={CSS.header}>
-          <div className={CSS.parkingName}>
-            <span>{T("PARKING")} </span><div>{parkingData.name}</div>
+      <div className={"ManageParkingScreen_container"}>
+        <div className={"ManageParkingScreen_header"}>
+          <div className={"ManageParkingScreen_parkingName"}>
+            <span>{T("PARKING")}</span>
+            <div>{parkingData.name}</div>
           </div>
 
           <Tooltip
@@ -86,17 +87,17 @@ function ManageParkingScreen({ parkingData }) {
           </Tooltip>
         </div>
 
-        {/* <div className={CSS.divider}><span></span></div> */}
+        {/* <div className={"ManageParkingScreen_divider"}><span></span></div> */}
 
-        <div className={CSS.content}>
-          <div className={CSS.listContainer}>
-            <div className={CSS.listHeader}>
+        <div className={"ManageParkingScreen_content"}>
+          <div className={"ManageParkingScreen_listContainer"}>
+            <div className={"ManageParkingScreen_listHeader"}>
               <span>{T("BALANCE")}:</span>
               <i>${pad(parkingData.totEarning)}</i>
 
-              <div className={CSS.divider}><span></span></div>
+              <div className={"ManageParkingScreen_divider"}><span></span></div>
 
-              <div className={CSS.buttonsContainer}>
+              <div className={"ManageParkingScreen_buttonsContainer"}>
                 <Button
                   variant="contained"
                   color="primary"
@@ -122,15 +123,18 @@ function ManageParkingScreen({ parkingData }) {
               </div>
             </div>
 
-            <div className={CSS.list}>
-              <table className={CSS.slot}>
-                <tr>
-                  <th>{T("ID")}</th>
-                  <th>{T("NAME")}</th>
-                  <th>{T("PLATE")}</th>
-                  <th>{T("FROM_DATE")}</th>
-                  <th>{T("TO_DATE")}</th>
-                </tr>
+            <div className={"ManageParkingScreen_list"}>
+              <table className={"ManageParkingScreen_slot"}>
+                <thead>
+                  <tr>
+                    <th>{T("ID")}</th>
+                    <th>{T("NAME")}</th>
+                    <th>{T("PLATE")}</th>
+                    <th>{T("FROM_DATE")}</th>
+                    <th>{T("TO_DATE")}</th>
+                  </tr>
+                </thead>
+                <tbody>
                 {
                   parkingData.spotsData.map((slot, index) => {
                     return (
@@ -146,26 +150,27 @@ function ManageParkingScreen({ parkingData }) {
                     )
                   })
                 }
+                </tbody>
               </table>
             </div>
           </div>
-          <div className={CSS.rightColumn}>
-            <div className={CSS.rightContainer}>
+          <div className={"ManageParkingScreen_rightColumn"}>
+            <div className={"ManageParkingScreen_rightContainer"}>
               <span>{T("TOTAL_EARN")}:</span>
               <i>${pad(parkingData.totEarning)}</i>
-              <MonetizationOn className={CSS.icon} />
+              <MonetizationOn className={"ManageParkingScreen_icon"} />
             </div>
-            <div className={CSS.rightContainer}>
+            <div className={"ManageParkingScreen_rightContainer"}>
               <span>{T("PARKING_AVAILABLE")}:</span>
               <i>{parkingData.spots}</i>
-              <LocalParking className={CSS.icon} />
+              <LocalParking className={"ManageParkingScreen_icon"} />
             </div>
-            <div className={CSS.rightContainer}>
+            <div className={"ManageParkingScreen_rightContainer"}>
               <span>{T("PARKING_OCCUPIED")}:</span>
               <i>{parkingData.occupied.length}</i>
-              <DirectionsCar className={CSS.icon} />
+              <DirectionsCar className={"ManageParkingScreen_icon"} />
             </div>
-            <div className={CSS.rightContainer}>
+            <div className={"ManageParkingScreen_rightContainer"}>
               <span
                 style={{
                   marginBottom: "1rem",

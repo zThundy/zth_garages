@@ -1,5 +1,5 @@
 
-import CSS from './BuyParkingScreen.module.css'
+import './BuyParkingScreen.css'
 
 import { Button } from '@mui/material';
 
@@ -13,13 +13,13 @@ function BuyParkingScreen({ parkingData }) {
     for (let i in config.buyMenu) {
       if (i.includes("paragraph"))
         html.push(
-          <span>
+          <span key={i}>
             {config.buyMenu[i]}
           </span>
         )
       if (i.includes("list")) {
         html.push(
-          <ul>
+          <ul key={i}>
             <li>{config.buyMenu[i]}</li>
           </ul>
         )
@@ -29,29 +29,29 @@ function BuyParkingScreen({ parkingData }) {
   }
 
   return (
-    <div className={CSS.container}>
-      <div className={CSS.infoContainer}>
-        <div className={CSS.label}>
+    <div className={"BuyParkingScreen_container"}>
+      <div className={"BuyParkingScreen_infoContainer"}>
+        <div className={"BuyParkingScreen_label"}>
           {T("NAME")}: <b>{parkingData.name}</b>
         </div>
-        <div className={CSS.label}>
+        <div className={"BuyParkingScreen_label"}>
           {T("SPOTS")}: <b>{parkingData.spots}</b>
         </div>
-        <div className={CSS.label}>
+        <div className={"BuyParkingScreen_label"}>
           {T("PRICE")}: <b>${pad(parkingData.managementPrice)}</b>
         </div>
       </div>
 
-      <div className={CSS.divider}><span></span></div>
+      <div className={"BuyParkingScreen_divider"}><span></span></div>
 
-      <div className={CSS.textContainer}>
+      <div className={"BuyParkingScreen_textContainer"}>
         {computeText()}
       </div>
 
       <Button
         variant="contained"
         color="primary"
-        className={CSS.buyButton}
+        className={"BuyParkingScreen_buyButton"}
       >{T("BUY_FOR", pad(parkingData.managementPrice))}</Button>
     </div>
   )

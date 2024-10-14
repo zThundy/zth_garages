@@ -1,6 +1,6 @@
 
 import { Button } from '@mui/material';
-import CSS from './BuySpotList.module.css';
+import './BuySpotList.css';
 
 import { useState } from 'react';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
@@ -29,35 +29,35 @@ function BuySpotList({ parkingData }) {
   }
 
   return (
-    <div className={CSS.container}>
-      <div className={CSS.infoContainer}>
-        <div className={CSS.info}>
-          <div className={CSS.parkingName}>{pData.name}</div>
-          <div className={CSS.spots}>
-            <div className={CSS.spotsTotal}>
-              <span className={CSS.label}>{T("TOTAL")}:</span>
-              <span className={CSS.red}>{pData.spots}</span>
+    <div className={"BuySpotList_container"}>
+      <div className={"BuySpotList_infoContainer"}>
+        <div className={"BuySpotList_info"}>
+          <div className={"BuySpotList_parkingName"}>{pData.name}</div>
+          <div className={"BuySpotList_spots"}>
+            <div className={"BuySpotList_spotsTotal"}>
+              <span className={"BuySpotList_spotsTotal_label"}>{T("TOTAL")}:</span>
+              <span className={"BuySpotList_spotsTotal_red"}>{pData.spots}</span>
             </div>
-            <div className={CSS.spotsOccupied}>
-              <span className={CSS.label}>{T("TAKEN")}:</span>
-              <span className={CSS.red}>{parseInt(pData.spots) >= 100 ? parkingData.occupied.length.toString().padStart(3, "0") : parkingData.occupied.length}</span>
+            <div className={"BuySpotList_spotsOccupied"}>
+              <span className={"BuySpotList_spotsOccupied_label"}>{T("TAKEN")}:</span>
+              <span className={"BuySpotList_spotsOccupied_red"}>{parseInt(pData.spots) >= 100 ? parkingData.occupied.length.toString().padStart(3, "0") : parkingData.occupied.length}</span>
             </div>
           </div>
         </div>
-        <div className={CSS.price}>
-          <div className={CSS.pricePeriod}>{T("PRICE_PER_DAY")}:</div>
-          <div className={CSS.priceValue}>${pad(pData.price)}</div>
+        <div className={"BuySpotList_price"}>
+          <div className={"BuySpotList_pricePeriod"}>{T("PRICE_PER_DAY")}:</div>
+          <div className={"BuySpotList_priceValue"}>${pad(pData.price)}</div>
         </div>
       </div>
 
-      <div className={CSS.divider}><span></span></div>
+      <div className={"BuySpotList_divider"}><span></span></div>
 
-      <div className={CSS.buyContainer}>
-        <div className={CSS.buyButtons}>
+      <div className={"BuySpotList_buyContainer"}>
+        <div className={"BuySpotList_buyButtons"}>
           <Button
             variant="contained"
             color="primary"
-            className={CSS.buyButton}
+            className={"BuySpotList_buyButton"}
             onMouseEnter={() => showPrice(1)}
             onMouseLeave={() => showPrice(0)}
           >
@@ -66,7 +66,7 @@ function BuySpotList({ parkingData }) {
           <Button
             variant="contained"
             color="primary"
-            className={CSS.buyButton}
+            className={"BuySpotList_buyButton"}
             onMouseEnter={() => showPrice(3)}
             onMouseLeave={() => showPrice(0)}
           >
@@ -75,7 +75,7 @@ function BuySpotList({ parkingData }) {
           <Button
             variant="contained"
             color="primary"
-            className={CSS.buyButton}
+            className={"BuySpotList_buyButton"}
             onMouseEnter={() => showPrice(5)}
             onMouseLeave={() => showPrice(0)}
           >
@@ -84,7 +84,7 @@ function BuySpotList({ parkingData }) {
           <Button
             variant="contained"
             color="primary"
-            className={CSS.buyButton}
+            className={"BuySpotList_buyButton"}
             onMouseEnter={() => showPrice(7)}
             onMouseLeave={() => showPrice(0)}
           >
@@ -93,7 +93,7 @@ function BuySpotList({ parkingData }) {
           <Button
             variant="contained"
             color="primary"
-            className={CSS.buyButton}
+            className={"BuySpotList_buyButton"}
             onMouseEnter={() => showPrice(14)}
             onMouseLeave={() => showPrice(0)}
           >
@@ -102,7 +102,7 @@ function BuySpotList({ parkingData }) {
           <Button
             variant="contained"
             color="primary"
-            className={CSS.buyButton}
+            className={"BuySpotList_buyButton"}
             onMouseEnter={() => showPrice(21)}
             onMouseLeave={() => showPrice(0)}
           >
@@ -111,7 +111,7 @@ function BuySpotList({ parkingData }) {
           <Button
             variant="contained"
             color="primary"
-            className={CSS.buyButton}
+            className={"BuySpotList_buyButton"}
             onMouseEnter={() => showPrice(300)}
             onMouseLeave={() => showPrice(0)}
           >
@@ -120,13 +120,13 @@ function BuySpotList({ parkingData }) {
         </div>
       </div>
 
-      <div className={CSS.divider}><span></span></div>
+      <div className={"BuySpotList_divider"}><span></span></div>
 
-      <div className={CSS.scrollSpots}>
+      <div className={"BuySpotList_scrollSpots"}>
         <Button
           variant="contained"
           color="primary"
-          className={CSS.leftArrow}
+          className={"BuySpotList_leftArrow"}
           onClick={leftArrowClick}
           disableElevation
           disableRipple
@@ -135,7 +135,7 @@ function BuySpotList({ parkingData }) {
           <ArrowBack />
         </Button>
 
-        <div className={CSS.spotsList}>
+        <div className={"BuySpotList_spotsList"}>
           {showingPrice === 0 ? <>{currentSpot} / {pData.spots}</> : null}
           {showingPrice !== 0 && showingPrice !== -1 ? <>{T("BUY_FOR", pad(showingPrice))}</> : null}
           {showingPrice === -1 ? <>{T("NOT_AVAILABLE")}</> : null}
@@ -144,7 +144,7 @@ function BuySpotList({ parkingData }) {
         <Button
           variant="contained"
           color="primary"
-          className={CSS.rightArrow}
+          className={"BuySpotList_rightArrow"}
           onClick={rightArrowClick}
           disableElevation
           disableRipple
