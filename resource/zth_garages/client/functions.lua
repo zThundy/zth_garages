@@ -34,6 +34,9 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
         self.Functions.DepositVehicle(self, id, spotid)
     else
         Debug("MarkerAction: " .. _type .. " " .. id)
+        self.NUI.Open({ type = _type, id = id })
+        Citizen.Wait(5000)
+        self.NUI.Close()
     end
 end
 

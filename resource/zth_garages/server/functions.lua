@@ -102,8 +102,9 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
             ['@body'] = data.body,
             ["@fuel"] = data.fuel,
             ["@engine"] = data.engine,
-            ['@plate'] = data.plate,
             ["@status"] = data.status,
+            ["@mods"] = data.mods,
+            ['@plate'] = data.plate,
             ['@citizenid'] = citizenId
         })
     end
