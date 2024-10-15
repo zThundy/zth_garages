@@ -39,19 +39,6 @@ ZTH.Config.Markers = {
     }
 }
 
--- you can configure global settings for blips here
-ZTH.Config.Blips = {
-    ["garage_1"] = {
-        pos = vec3(0.0, 0.0, 0.0),
-        sprite = 357,
-        color = 1,
-        display = 4,
-        scale = 1.0,
-        name = "Garage",
-        shortRange = true,
-    }
-}
-
 ZTH.Config.Garages = {
     ["garage_1"] = {
         Settings = {
@@ -59,18 +46,16 @@ ZTH.Config.Garages = {
             displayName = "Garage 1",
             managementPrice = 1000000,
             sellPrice = 5000,
+            blip = {
+                pos = vec3(275.47, -345.14, 45.17),
+                sprite = 357,
+                color = 1,
+                display = 4,
+                scale = 1.0,
+                name = "Garage Privato",
+                shortRange = false,
+            }
         },
-        -- You can override the global settings for this garage's blip here
-        -- Blip = {
-        --     pos = vec3(0.0, 0.0, 0.0),
-        --     sprite = 357,
-        --     color = 1,
-        --     scale = 1.0,
-        --     name = "Garage",
-        --     shortRange = true,
-        -- }
-        -- For the marker, you can override the global settings like this, or you can just remove everything,
-        -- leaving only the action and the position
         Manage = {
             pos = vec3(275.47, -345.14, 45.17),
             scale = vec3(1.0, 1.0, 1.0),
@@ -79,35 +64,55 @@ ZTH.Config.Garages = {
             type = 1,
             color = { r = 255, g = 0, b = 0 },
         },
-        TakeVehicle = {
-            pos = vec3(276.41, -342.34, 44.92),
-        },
-        Deposit = {
-            pos = vec3(272.41, -336.83, 44.92),
-            msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
-            type = 1,
-            color = { r = 0, g = 200, b = 0 },
-            scale = vec3(2.0, 2.0, 2.0),
-        },
         ParkingSpots = {
             {
                 pos = vec3(265.88, -332.03, 44.92),
                 heading = 0.0,
                 vehicle = nil,
-                enabled = 1,
+                enabled = nil,
             },
             {
                 pos = vec3(267.65, -328.95, 44.92),
                 heading = 0.0,
                 vehicle = nil,
-                enabled = 2,
+                enabled = nil,
             },
             {
                 pos = vec3(268.8, -326.0, 44.92),
                 heading = 0.0,
                 vehicle = nil,
-                enabled = 3,
+                enabled = nil,
             },
         }
-    }
+    },
+    ["garage_2"] = {
+        Settings = {
+            pricePerDay = 200,
+            displayName = "Garage 2",
+            managementPrice = 1000000,
+            sellPrice = 5000,
+            blip = {
+                pos = vec3(289.15, -342.04, 44.92),
+                sprite = 357,
+                color = 1,
+                display = 4,
+                scale = 1.0,
+                name = "Garage Pubblico",
+                shortRange = false,
+            }
+        },
+        TakeVehicle = {
+            pos = vec3(292.86, -352.15, 44.99),
+        },
+        SpawnVehicle = {
+            pos = vec3(284.15, -352.86, 44.41),
+            heading = 158.43,
+        },
+        Deposit = {
+            pos = vec3(289.15, -342.04, 44.92),
+            scale = vec3(3.0, 3.0, 1.0),
+            msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
+            type = 1,
+        },
+    },
 }

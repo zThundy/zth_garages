@@ -1,9 +1,3 @@
-ZTH.Tunnel = {}
-
-ZTH.Tunnel = module("zth_garages", "lib/TunnelV2")
-ZTH.Tunnel.Interface = {}
-ZTH.Tunnel.bindInterface("zth_garages", "zth_garages_t", ZTH.Tunnel.Interface)
-
 ZTH.Functions = {}
 ZTH.MySQL = {}
 
@@ -38,6 +32,7 @@ function ZTH.Functions.Init()
                 `price` INT(11) NOT NULL DEFAULT '0',
                 `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `until` DATETIME NOT NULL,
+                `player_name` VARCHAR(255) NOT NULL,
                 FOREIGN KEY (`user_id`) REFERENCES `players` (`citizenid`) ON DELETE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         ]]
@@ -59,128 +54,16 @@ function ZTH.Functions.Init()
             })
         end
     end
+
+    ZTH.Cache = {}
+    ZTH.Cache.Garages = {}
+
+    ZTH.Functions.FullUpdateCache(ZTH)
 end
 
-ZTH.Tunnel.Interface.CanDeposit = function(garage, spot, plate)
-    local Player = ZTH.Core.Functions.GetPlayer(source)
-    if not Player then return end
-    local citizenId = Player.PlayerData.citizenid
-
-    local result = ZTH.MySQL.ExecQuery("CanDeposit - OwnsParkingSpot", MySQL.Sync.fetchScalar, "SELECT COUNT(*) FROM `garages_spots` WHERE `user_id` = @user_id AND `garage_id` = @garage_id AND `spot_id` = @spot_id AND `until` > CURRENT_TIMESTAMP", {
-        ['@user_id'] = citizenId,
-        ['@garage_id'] = garage,
-        ['@spot_id'] = spot
-    })
-
-    if result == 0 then return false end
-    
-    result = ZTH.MySQL.ExecQuery("CanDeposit - OwnsCar", MySQL.Sync.fetchScalar, "SELECT COUNT(*) FROM `player_vehicles` WHERE `plate` = @plate AND `citizenid` = @citizenid", {
-        ['@plate'] = plate,
-        ['@citizenid'] = citizenId
-    })
-
-    return result > 0
-end
-
-ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
-    local Player = ZTH.Core.Functions.GetPlayer(source)
-    if not Player then return end
-    local citizenId = Player.PlayerData.citizenid
-
-    -- check if vehicle exists on the database, plate and citizenid
-    local result = ZTH.MySQL.ExecQuery("DepositVehicle", MySQL.Sync.fetchScalar, "SELECT COUNT(*) FROM `player_vehicles` WHERE `plate` = @plate AND `citizenid` = @citizenid", {
-        ['@plate'] = data.plate,
-        ['@citizenid'] = citizenId
-    })
-
-    -- if vehicle exists, update the vehicle
-    if result > 0 then
-        ZTH.MySQL.ExecQuery("UpdateVehicle", MySQL.Sync.execute, [[
-                UPDATE `player_vehicles`
-                SET
-                    `garage` = @garage,
-                    `parking_spot` = @spot_id,
-                    `parking_date` = CURRENT_TIMESTAMP
-                    `body` = @body,
-                    `fuel` = @fuel,
-                    `engine` = @engine,
-                    `status` = @status,
-                    `mods` = @mods,
-                    `state` = 1
-                WHERE
-                    `plate` = @plate AND `citizenid` = @citizenid
-            ]], {
-            ['@garage'] = garage,
-            ['@spot_id'] = spot,
-            ['@body'] = data.body,
-            ["@fuel"] = data.fuel,
-            ["@engine"] = data.engine,
-            ["@status"] = data.status,
-            ["@mods"] = data.mods,
-            ['@plate'] = data.plate,
-            ['@citizenid'] = citizenId
-        })
-    end
-end
-
-ZTH.Tunnel.Interface.GetGarageData = function(id)
-    local Player = ZTH.Core.Functions.GetPlayer(source)
-    if not Player then return end
-    local citizenId = Player.PlayerData.citizenid
-
-    -- get all server data from the garage table
-    local result = ZTH.MySQL.ExecQuery("GetGarageData", MySQL.Sync.fetchAll, "SELECT * FROM `garages` WHERE `user_id` = @user_id AND `garage_id` = @garage_id", {
-        ['@user_id'] = citizenId,
-        ['@garage_id'] = id
-    })
-
-    print(json.encode(result))
-
-    -- get all parked vehicles from the player_vehicles table and join the result with the players table using the license column and join the result with the garage_spots table using the garage_id column
-    local parkedVehicles = ZTH.MySQL.ExecQuery("GetGarageData - GetParkedVehicles", MySQL.Sync.fetchAll, [[
-        SELECT pv.*, p.*, gs.*
-        FROM player_vehicles pv
-        JOIN players p ON pv.license = p.license
-        JOIN garages_spots gs ON pv.garage = gs.garage_id
-        WHERE pv.citizenid = @citizenid AND pv.garage = @garage_id
-    ]], {
-        ['@citizenid'] = citizenId,
-        ['@garage_id'] = id
-    })
-
-    -- print(json.encode(parkedVehicles, {indent = true}))
-
-    local _parkedVehicles = {}
-    for k, v in pairs(parkedVehicles) do
-        local displayName = json.decode(v.charinfo).firstname .. " " .. json.decode(v.charinfo).lastname
-        table.insert(_parkedVehicles, {
-            id = v.parking_spot,
-            plate = v.plate,
-            model = v.vehicle,
-            garage = v.garage,
-            name = displayName,
-            fromDate = v.parking_date,
-            toDate = v["until"]
-        })
-    end
-
-    return {
-        balance = result[1].balance,
-        totalEarnings = result[1].total_earnings,
-        parkedVehicles = _parkedVehicles,
-        occupiedSlots = #parkedVehicles
-    }
-end
-
-ZTH.Tunnel.Interface.IsOwnerOfGarage = function(id)
-    local Player = ZTH.Core.Functions.GetPlayer(source)
-    if not Player then return end
-    local citizenId = Player.PlayerData.citizenid
-
-    local result = ZTH.MySQL.ExecQuery("IsOwnerOfGarage", MySQL.Sync.fetchScalar, "SELECT COUNT(*) FROM `garages` WHERE `user_id` = @user_id AND `garage_id` = @garage_id", {
-        ['@user_id'] = citizenId,
-        ['@garage_id'] = id
-    })
-
-    return result > 0
+function ZTH.Functions.FullUpdateCache(self)
+    -- get all the garages from the database
+    self.Cache.Garages          =   self.MySQL.ExecQuery("Init - Get all garages", MySQL.Sync.fetchAll, "SELECT * FROM `garages`")
+    self.Cache.GarageSpots      =   self.MySQL.ExecQuery("Init - Get all garage spots", MySQL.Sync.fetchAll, "SELECT * FROM `garages_spots`")
+    self.Cache.PlayerVehicles   =   self.MySQL.ExecQuery("Init - Get all player vehicles", MySQL.Sync.fetchAll, "SELECT * FROM `player_vehicles`")
 end

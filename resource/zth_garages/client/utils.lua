@@ -39,3 +39,44 @@ function CreateMarker(_type, data)
 
     TriggerEvent('gridsystem:registerMarker', data)
 end
+
+function ClearSpawnPoint(coords)
+    RemoveVehiclesFromGeneratorsInArea(coords.x + 1.0, coords.y + 1.0, coords.z + 1.0, coords.x - 1.0, coords.y - 1.0, coords.z - 1.0)
+    local vehicles = GetVehiclesInArea(coords, 1.0)
+    for k, vehicle in pairs(vehicles) do
+        DeleteEntity(vehicle)
+    end
+end
+
+function EnumerateEntitiesWithinDistance(entities, isPlayerEntities, coords, maxDistance)
+    local nearbyEntities = {}
+
+    if coords then
+        coords = vector3(coords.x, coords.y, coords.z)
+    else
+        local ped = PlayerPedId()
+        coords = GetEntityCoords(ped)
+    end
+
+    for k, entity in pairs(entities) do
+        local distance = #(coords - GetEntityCoords(entity))
+
+        if distance <= maxDistance then
+            nearbyEntities[#nearbyEntities + 1] = isPlayerEntities and k or entity
+        end
+    end
+
+    return nearbyEntities
+end
+
+function GetVehicles() -- Leave the function for compatibility
+    return GetGamePool("CVehicle")
+end
+
+function IsSpawnPointFree(coords, maxDistance)
+    return #GetVehiclesInArea(coords, maxDistance) == 0
+end
+
+function GetVehiclesInArea(coords, maxDistance)
+    return EnumerateEntitiesWithinDistance(GetVehicles(), false, coords, maxDistance)
+end
