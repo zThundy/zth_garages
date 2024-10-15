@@ -48,6 +48,7 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
             ZTH.Cache.PlayerVehicles[k].body = data.mods.bodyHealth
             ZTH.Cache.PlayerVehicles[k].fuel = data.mods.fuelLevel
             ZTH.Cache.PlayerVehicles[k].engine = data.mods.engineHealth
+            ZTH.Cache.PlayerVehicles[k].mods = data.mods
             ZTH.Cache.PlayerVehicles[k].status = {}
             ZTH.Cache.PlayerVehicles[k].state = 1
 
@@ -74,7 +75,7 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
                 ['@fuel'] = data.mods.fuelLevel,
                 ['@engine'] = data.mods.engineHealth,
                 ['@status'] = json.encode({}),
-                ['@mods'] = json.encode(data.mods),
+                ['@mods'] = data.mods,
                 ['@plate'] = data.plate,
                 ['@citizenid'] = citizenid
             })
@@ -201,21 +202,11 @@ ZTH.Tunnel.Interface.TakeVehicle = function(plate, id)
     end
 end
 
-ZTH.Tunnel.Interface.GetManagementGarageData = function(id)
-    local config = ZTH.Config.Garages[id]["Settings"]
-    local configSpots = ZTH.Config.Garages[id]["ParkingSpots"]
-
+ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
     local spots = {}
-    local occupiedSlots = {}
     for _, spot in pairs(ZTH.Cache.GarageSpots) do
-        print(json.encode(spot))
-
         for _, vehicle in pairs(ZTH.Cache.PlayerVehicles) do
-            print(json.encode(vehicle))
-
             if spot.garage_id == id and vehicle.garage == id and tostring(vehicle.parking_spot) == tostring(spot.spot_id) then
-                print("found")
-
                 table.insert(spots, {
                     id = spot.spot_id,
                     user_id = spot.user_id,
@@ -225,11 +216,23 @@ ZTH.Tunnel.Interface.GetManagementGarageData = function(id)
                     toDate = spot["until"],
                     name = spot.player_name,
                     plate = vehicle.plate,
+                    model = vehicle.vehicle,
+                    mods = json.decode(vehicle.mods)
                 })
-
-                table.insert(occupiedSlots, spot.spot_id)
             end
         end
+    end
+    return spots
+end
+
+ZTH.Tunnel.Interface.GetManagementGarageData = function(id)
+    local config = ZTH.Config.Garages[id]["Settings"]
+    local configSpots = ZTH.Config.Garages[id]["ParkingSpots"]
+
+    local spots = ZTH.Tunnel.Interface.GetManagementGarageSpots(id)
+    local occupiedSlots = {}
+    for k, v in pairs(spots) do
+        table.insert(occupiedSlots, v.id)
     end
 
     local garageData = {}

@@ -10,6 +10,15 @@ ZTH.Config.Markers = {
         type = 20,
         color = { r = 255, g = 0, b = 0 },
     },
+    BuySpot = {
+        scale = vec3(1.0, 1.0, 1.0),
+        msg = "Press ~INPUT_CONTEXT~ to buy a parking space",
+        drawDistance = 40.0,
+        control = "E",
+        show3D = false,
+        type = 1,
+        color = { r = 255, g = 0, b = 0 },
+    },
     TakeVehicle = {
         scale = vec3(1.0, 1.0, 1.0),
         msg = "Press ~INPUT_CONTEXT~ to take the vehicle",
@@ -64,24 +73,26 @@ ZTH.Config.Garages = {
             type = 1,
             color = { r = 255, g = 0, b = 0 },
         },
+        BuySpot = {
+            pos = vec3(276.46, -342.28, 44.92),
+            scale = vec3(1.0, 1.0, 1.0),
+            msg = "Press ~INPUT_CONTEXT~ to buy a parking space",
+            control = "E",
+            type = 3,
+            color = { r = 0, g = 0, b = 120 },
+        },
         ParkingSpots = {
             {
                 pos = vec3(265.88, -332.03, 44.92),
-                heading = 0.0,
-                vehicle = nil,
-                enabled = nil,
+                heading = 65.64,
             },
             {
                 pos = vec3(267.65, -328.95, 44.92),
                 heading = 0.0,
-                vehicle = nil,
-                enabled = nil,
             },
             {
                 pos = vec3(268.8, -326.0, 44.92),
                 heading = 0.0,
-                vehicle = nil,
-                enabled = nil,
             },
         }
     },

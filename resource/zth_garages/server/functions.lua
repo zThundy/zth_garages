@@ -66,4 +66,6 @@ function ZTH.Functions.FullUpdateCache(self)
     self.Cache.Garages          =   self.MySQL.ExecQuery("Init - Get all garages", MySQL.Sync.fetchAll, "SELECT * FROM `garages`")
     self.Cache.GarageSpots      =   self.MySQL.ExecQuery("Init - Get all garage spots", MySQL.Sync.fetchAll, "SELECT * FROM `garages_spots`")
     self.Cache.PlayerVehicles   =   self.MySQL.ExecQuery("Init - Get all player vehicles", MySQL.Sync.fetchAll, "SELECT * FROM `player_vehicles`")
+
+    TriggerClientEvent("zth_garages:client:Init", -1)
 end

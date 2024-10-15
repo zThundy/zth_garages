@@ -39,7 +39,27 @@ function ZTH.Functions.RegisterZones(self)
 end
 
 function ZTH.Functions.InitializeGarages(self)
-    local spots = self.Tunnel.Interface.GetParkedVehicles()
+    for id, garage in pairs(self.Config.Garages) do
+        if not garage["ParkingSpots"] then goto continue end
+        local spots = self.Tunnel.Interface.GetManagementGarageSpots(id)
+
+        for k, vehicle in pairs(spots) do
+            vehicle.id = tonumber(vehicle.id)
+            local pos = garage["ParkingSpots"][vehicle.id].pos
+            local heading = garage["ParkingSpots"][vehicle.id].heading
+            local coords = vector4(pos.x, pos.y, pos.z, heading)
+            
+            self.Core.Functions.SpawnVehicle(vehicle.mods.model, function(veh)
+                Debug("Spawned vehicle " .. vehicle.plate .. " at " .. id .. " spot " .. vehicle.id)
+                SetVehicleOnGroundProperly(veh)
+                FreezeEntityPosition(veh, true)
+                SetEntityInvincible(veh, true)
+                self.Core.Functions.SetVehicleProperties(veh, vehicle.mods)
+            end, coords, false)
+        end
+
+        ::continue::
+    end
 end
 
 function ZTH.Functions.MarkerAction(self, _type, id, spotid)
@@ -63,6 +83,9 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
         end
 
         if _type == "ParkingSpots" then
+        end
+
+        if _type == "BuySpot" then
         end
 
         if _type == "Deposit" then
@@ -169,9 +192,10 @@ function ZTH.Functions.TakeVehicle(self, _data)
 end
 
 function ZTH.Functions.Init()
+    while not ZTH.IsReady do Wait(1000) end
     ZTH.PlayerData = ZTH.Core.Functions.GetPlayerData()
     -- print(json.encode(ZTH.PlayerData, { indent = true }))
     
-    ZTH.Functions.InitializeGarages(ZTH)
     ZTH.Functions.RegisterZones(ZTH)
+    ZTH.Functions.InitializeGarages(ZTH)
 end
