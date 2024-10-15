@@ -171,3 +171,16 @@ ZTH.Tunnel.Interface.GetGarageData = function(id)
         occupiedSlots = #parkedVehicles
     }
 end
+
+ZTH.Tunnel.Interface.IsOwnerOfGarage = function(id)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenId = Player.PlayerData.citizenid
+
+    local result = ZTH.MySQL.ExecQuery("IsOwnerOfGarage", MySQL.Sync.fetchScalar, "SELECT COUNT(*) FROM `garages` WHERE `user_id` = @user_id AND `garage_id` = @garage_id", {
+        ['@user_id'] = citizenId,
+        ['@garage_id'] = id
+    })
+
+    return result > 0
+end

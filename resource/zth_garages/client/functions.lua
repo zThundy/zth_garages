@@ -33,28 +33,36 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
     if spotid then
         self.Functions.DepositVehicle(self, id, spotid)
     else
-        Debug("MarkerAction: " .. _type .. " " .. id)
-        local garageData = self.Functions.GetGarageData(self, id)
+        if _type == "Manage" then
+            if self.Tunnel.Interface.IsOwnerOfGarage(id) then
+                Debug("MarkerAction: " .. _type .. " " .. id)
+                local garageData = self.Functions.GetGarageData(self, id)
+        
+                self.NUI.Open({ screen = "garage-manage", data = garageData })
+                -- Citizen.Wait(5000)
+                -- self.NUI.Close()
+            else
+                self.Core.Functions.Notify("You are not the owner of this garage", 'error', 5000)
+                return Debug("You are not the owner of this garage")
+            end
 
-        self.NUI.Open({ screen = "garage-manage", data = garageData })
-        -- Citizen.Wait(5000)
-        -- self.NUI.Close()
     end
 end
 
 function ZTH.Functions.GetGarageData(self, id)
     local garageData = self.Config.Garages[id]["Settings"]
+    local sGarageData = self.Tunnel.Interface.GetGarageData(id)
 
     return {
         name = garageData.displayName,
         spots = #self.Config.Garages[id]["ParkingSpots"],
-        occupied = self.Tunnel.Interface.GetGarageData(id).occupiedSpots,
+        occupied = #sGarageData.parkedVehicles,
         price = garageData.pricePerDay,
         managementPrice = garageData.managementPrice,
         sellPrice = garageData.sellPrice,
-        totEarning = self.Tunnel.Interface.GetGarageData(id).totalEarnings,
-        balance = self.Tunnel.Interface.GetGarageData(id).balance,
-        spotsData = self.Tunnel.Interface.GetGarageData(id).parkedVehicles,
+        totEarning = sGarageData.totalEarnings,
+        balance = sGarageData.balance,
+        spotsData = sGarageData.parkedVehicles,
     }
 end
 

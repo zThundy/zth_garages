@@ -27,6 +27,15 @@ ZTH.Config.Markers = {
         show3D = false,
         type = 20,
         color = { r = 255, g = 0, b = 0 },
+    },
+    Deposit = {
+        scale = vec3(1.0, 1.0, 1.0),
+        msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
+        drawDistance = 40.0,
+        control = "E",
+        show3D = false,
+        type = 20,
+        color = { r = 255, g =0, b = 0 },
     }
 }
 
@@ -72,6 +81,13 @@ ZTH.Config.Garages = {
         },
         TakeVehicle = {
             pos = vec3(276.41, -342.34, 44.92),
+        },
+        Deposit = {
+            pos = vec3(272.41, -336.83, 44.92),
+            msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
+            type = 1,
+            color = { r = 0, g = 200, b = 0 },
+            scale = vec3(2.0, 2.0, 2.0),
         },
         ParkingSpots = {
             {
