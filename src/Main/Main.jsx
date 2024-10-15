@@ -17,10 +17,18 @@ const theme = createTheme({
   cssVariables: true
 });
 
-function Main({ parkingData, screen, title, setScreen, setTitle }) {
+function Main({ parkingData, screen, title, setScreen, setTitle, vehicles, showManage }) {
   return (
     <ThemeProvider theme={theme}>
-      <MainContainer parkingData={parkingData} screen={screen} title={title} setScreen={setScreen} setTitle={setTitle} />
+      <MainContainer
+        parkingData={parkingData}
+        screen={screen}
+        title={title}
+        setScreen={setScreen}
+        setTitle={setTitle}
+        vehicles={vehicles}
+        showManage={showManage}
+      />
       <div
         style={{
           position: 'absolute',

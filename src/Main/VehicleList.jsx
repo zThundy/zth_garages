@@ -7,9 +7,10 @@ import { Button, Tooltip } from '@mui/material';
 import { DriveEta, LocalGasStation } from '@mui/icons-material';
 
 import { T } from '../lib/language';
+import { api } from '../index';
 
-function VehicleList() {
-  const [carData, setCarData] = useState([]);
+function VehicleList({ vehicles }) {
+  const [carData, setCarData] = useState(vehicles);
 
   return (
     <div className={"VehicleList_container"}>
@@ -77,6 +78,9 @@ function VehicleList() {
                     disableRipple
                     disableFocusRipple
                     disableTouchRipple
+                    onClick = {() => {
+                      api.callEvent("take", { car });
+                    }}
                   >
                     <img src="/html/svg/wheel.svg" alt="wheel" />
                   </Button>

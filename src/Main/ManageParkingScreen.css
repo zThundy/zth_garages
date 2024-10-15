@@ -110,17 +110,17 @@
 }
 
 .ManageParkingScreen_buttonsContainer button {
-  width: fit-content;
-  border-radius: 1rem;
-  box-shadow: 0 0 1rem var(--mui-palette-primary-dark);
-  padding: .5rem 1.2rem;
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin: 0 1rem;
+  width: fit-content !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 0 1rem var(--mui-palette-primary-dark) !important;
+  padding: .5rem 1.2rem !important;
+  font-size: 1.5rem !important;
+  font-weight: bold !important;
+  margin: 0 1rem !important;
 }
 
 .ManageParkingScreen_buttonsContainer svg {
-  font-size: 1.8rem;
+  font-size: 1.8rem !important;
 }
 
 .ManageParkingScreen_list {
@@ -141,7 +141,8 @@
   border: 1px solid var(--mui-palette-secondary-main);
   /* width: 100%; */
   border-collapse: collapse;
-  height: 100%;
+  height: fit-content;
+
 }
 
 .ManageParkingScreen_slot tr {
@@ -199,14 +200,14 @@
 }
 
 .ManageParkingScreen_icon {
-  top: -3rem;
-  right: 0;
-  position: absolute;
-  font-size: 12rem;
-  margin: 0;
-  transform: rotate(15deg);
-  z-index: 0;
-  opacity: 0.3;
+  top: -3rem !important;
+  right: 0 !important;
+  position: absolute !important;
+  font-size: 12rem !important;
+  margin: 0 !important;
+  transform: rotate(15deg) !important;
+  z-index: 0 !important;
+  opacity: 0.3 !important;
 }
 
 .ManageParkingScreen_rightContainer button {
@@ -259,21 +260,21 @@
 }
 
 .ManageParkingScreen_modalBG input {
-  color: var(--mui-palette-primary-main);
-  font-weight: bold;
+  color: var(--mui-palette-primary-main) !important;
+  font-weight: bold !important;
   /* border: 1px solid var(--mui-palette-primary-main); */
-  border-radius: .3rem;
+  border-radius: .3rem !important;
   /* border: white 1px solid; */
 }
 
 .ManageParkingScreen_modalBG button {
-  margin: 1rem;
-  font-weight: bold;
-  padding: .5rem 1rem;
-  font-size: 1.2rem;
+  margin: 1rem !important;
+  font-weight: bold !important;
+  padding: .5rem 1rem !important;
+  font-size: 1.2rem !important;
 }
 
 .ManageParkingScreen_modalBG svg {
-  font-size: 1.6rem;
-  font-weight: bold;
+  font-size: 1.6rem !important;
+  font-weight: bold !important;
 }

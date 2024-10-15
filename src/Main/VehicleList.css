@@ -17,6 +17,8 @@
   color: white;
   margin: .5rem;
   width: 100%;
+  max-height: fit-content;
+  height: fit-content;
   border-radius: 1rem;
   background-color: rgba(80, 80, 80, .6);
   transition: background-color 0.1s;
@@ -86,11 +88,12 @@
 .VehicleList_levels {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   justify-content: center;
   align-items: center;
   margin: 0 .4rem 0 .2rem;
   position: relative;
+  flex-wrap: nowrap;
 }
 
 .VehicleList_fuelLevel {

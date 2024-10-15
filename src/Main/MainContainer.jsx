@@ -9,7 +9,7 @@ import { T } from '../lib/language';
 
 import { useState } from 'react';
 
-function MainContainer({ parkingData, screen, title, setScreen, setTitle }) {
+function MainContainer({ parkingData, screen, title, setScreen, setTitle, vehicles, showManage }) {
 
   return (
     <>
@@ -23,6 +23,8 @@ function MainContainer({ parkingData, screen, title, setScreen, setTitle }) {
                 title={title}
                 setTitle={setTitle}
                 parkingData={parkingData}
+                vehicles={vehicles}
+                showManage={showManage}
               />
             </div>
           </div>

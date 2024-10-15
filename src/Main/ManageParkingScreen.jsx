@@ -1,7 +1,7 @@
 
 import './ManageParkingScreen.css';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 import { Button, TextField, Modal, Tooltip, InputAdornment } from '@mui/material';
 import { Check, Close, DirectionsCar, Download, LocalParking, MonetizationOn, Upload } from '@mui/icons-material';
@@ -12,16 +12,7 @@ import { pad, formatDate } from '../lib/utils';
 function ManageParkingScreen({ parkingData }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState("WITHDRAW");
-
-  const handleClick = (action) => {
-    switch (action) {
-      case "close":
-        api.post("close");
-        break;
-      default:
-        break;
-    }
-  }
+  const amountRef = useRef(null);
 
   const manageModal = (open) => {
     setModalOpen(open);
@@ -34,9 +25,7 @@ function ManageParkingScreen({ parkingData }) {
         onClose={() => manageModal(false)}
         className={"ManageParkingScreen_modalContainer"}
       >
-        <div
-          className={"ManageParkingScreen_modalBG"}
-        >
+        <div className={"ManageParkingScreen_modalBG"}>
           <h2>{T(modalType)}</h2>
           <span className={"ManageParkingScreen_modalDescription"}>{T(modalType + "_DESCRIPTION")}</span>
 
@@ -47,6 +36,7 @@ function ManageParkingScreen({ parkingData }) {
             autoCapitalize
             autoFocus
             defaultValue={5000}
+            inputRef={amountRef}
             slotProps={{
               input: {
                 startAdornment: <InputAdornment position="start">$</InputAdornment>,
@@ -57,7 +47,11 @@ function ManageParkingScreen({ parkingData }) {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => manageModal(false)}
+            onClick={() => {
+              manageModal(false)
+              const amount = amountRef.current.value
+              api.callEvent("money", { type: modalType.toLowerCase(), amount })
+            }}
             startIcon={<Check />}
           >
             {T("CONFIRM")}
@@ -75,7 +69,7 @@ function ManageParkingScreen({ parkingData }) {
           <Tooltip
             title={T("CLOSE")}
             placement="top"
-            onClick={() => handleClick("close")}
+            onClick={() => api.callEvent("close", {})}
             arrow
           >
             <Button
@@ -93,7 +87,7 @@ function ManageParkingScreen({ parkingData }) {
           <div className={"ManageParkingScreen_listContainer"}>
             <div className={"ManageParkingScreen_listHeader"}>
               <span>{T("BALANCE")}:</span>
-              <i>${pad(parkingData.totEarning)}</i>
+              <i>${pad(parkingData.balance)}</i>
 
               <div className={"ManageParkingScreen_divider"}><span></span></div>
 

@@ -11,13 +11,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../index';
 import { T } from '../lib/language';
 
-function ManageList({ screen, setScreen, title, setTitle, parkingData }) {
-  const [showManage, setShowManage] = useState(false)
-
-  useEffect(() => {
-    setShowManage(true)
-  }, [])
-
+function ManageList({ screen, setScreen, title, setTitle, parkingData, vehicles, showManage }) {
   const handleClick = (action) => {
     switch (action) {
       case "manage":
@@ -29,7 +23,7 @@ function ManageList({ screen, setScreen, title, setTitle, parkingData }) {
         setTitle(T("TAKE_VEHICLE"))
         break;
       case "close":
-        api.post("close");
+        api.callEvent("close", {});
         break;
       case "garage-buy":
         setTitle(T("BUY_SPOT"))
@@ -111,7 +105,7 @@ function ManageList({ screen, setScreen, title, setTitle, parkingData }) {
         <div className={["SmallList_divider"]}></div>
 
         {screen === "manage" ? <ManageListTable /> : null}
-        {screen === "list" ? <VehicleList /> : null}
+        {screen === "list" ? <VehicleList vehicles={vehicles} /> : null}
         {screen === "garage-buy" ? <BuySpotList parkingData={parkingData} /> : null}
       </div>
     </>

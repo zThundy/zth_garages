@@ -1,5 +1,6 @@
 {
     "resName": "zth_garages",
+    "debug": true,
     "language": "IT",
     "buyMenu": {
         "paragraph_1": "This is a paragraph from config.json",

@@ -1,13 +1,11 @@
 
 
 const testParkingData = {
-  name: 'Legion square parking',
-  spots: 120,
-  occupied: [12, 6, 15, 8, 120],
-  price: 1800, // for 1 day
   managementPrice: 5000000,
+  price: 1800, // for 1 day
   sellPrice: 400000,
-  totEarning: 148343,
+  occupied: [12, 6, 15, 8, 120],
+  spots: 120,
   spotsData: [
     {
       id: 1,
@@ -170,7 +168,9 @@ const testParkingData = {
       fromDate: new Date("2021-10-01T00:00:00"),
       toDate: new Date("2021-10-02T00:00:00"),
     }
-  ]
+  ],
+  name: 'Legion square parking',
+  totEarning: 148343,
 }
 
 const _testCarData = [];
