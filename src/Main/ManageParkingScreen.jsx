@@ -1,7 +1,7 @@
 
 import './ManageParkingScreen.css';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { Button, TextField, Modal, Tooltip, InputAdornment } from '@mui/material';
 import { Check, Close, DirectionsCar, Download, LocalParking, MonetizationOn, Upload } from '@mui/icons-material';
@@ -10,6 +10,8 @@ import { T } from '../lib/language';
 import { pad, formatDate } from '../lib/utils';
 
 function ManageParkingScreen({ parkingData }) {
+  const [pData, setPData] = useState(parkingData);
+  const [balance, setBalance] = useState(parkingData.balance);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState("WITHDRAW");
   const amountRef = useRef(null);
@@ -17,6 +19,21 @@ function ManageParkingScreen({ parkingData }) {
   const manageModal = (open) => {
     setModalOpen(open);
   }
+
+  useEffect(() => {
+    api.registerEvent("balance-update", (data) => {
+      setPData((old) => {
+        old.balance = data.balance
+        setBalance(data.balance)
+        return old
+      })
+    }, false)
+  }, [])
+
+  // bruh
+  useEffect(() => {
+    setBalance(pData.balance)
+  }, [pData, balance])
 
   return (
     <>
@@ -50,7 +67,7 @@ function ManageParkingScreen({ parkingData }) {
             onClick={() => {
               manageModal(false)
               const amount = amountRef.current.value
-              api.callEvent("money", { type: modalType.toLowerCase(), amount })
+              api.callEvent("money", { type: modalType.toLowerCase(), amount, id: pData.id })
             }}
             startIcon={<Check />}
           >
@@ -63,7 +80,7 @@ function ManageParkingScreen({ parkingData }) {
         <div className={"ManageParkingScreen_header"}>
           <div className={"ManageParkingScreen_parkingName"}>
             <span>{T("PARKING")}</span>
-            <div>{parkingData.name}</div>
+            <div>{pData.name}</div>
           </div>
 
           <Tooltip
@@ -87,7 +104,7 @@ function ManageParkingScreen({ parkingData }) {
           <div className={"ManageParkingScreen_listContainer"}>
             <div className={"ManageParkingScreen_listHeader"}>
               <span>{T("BALANCE")}:</span>
-              <i>${pad(parkingData.balance)}</i>
+              <i>${pad(balance)}</i>
 
               <div className={"ManageParkingScreen_divider"}><span></span></div>
 
@@ -130,7 +147,7 @@ function ManageParkingScreen({ parkingData }) {
                 </thead>
                 <tbody>
                 {
-                  parkingData.spotsData.map((slot, index) => {
+                  pData.spotsData.map((slot, index) => {
                     return (
                       <tr key={index} style={{
                         backgroundColor: index % 2 === 0 ? 'rgba(80, 80, 80, 0.1)' : 'rgba(80, 80, 80, 0.2)'
@@ -151,17 +168,17 @@ function ManageParkingScreen({ parkingData }) {
           <div className={"ManageParkingScreen_rightColumn"}>
             <div className={"ManageParkingScreen_rightContainer"}>
               <span>{T("TOTAL_EARN")}:</span>
-              <i>${pad(parkingData.totEarning)}</i>
+              <i>${pad(pData.totEarning)}</i>
               <MonetizationOn className={"ManageParkingScreen_icon"} />
             </div>
             <div className={"ManageParkingScreen_rightContainer"}>
               <span>{T("PARKING_AVAILABLE")}:</span>
-              <i>{parkingData.spots}</i>
+              <i>{pData.spots}</i>
               <LocalParking className={"ManageParkingScreen_icon"} />
             </div>
             <div className={"ManageParkingScreen_rightContainer"}>
               <span>{T("PARKING_OCCUPIED")}:</span>
-              <i>{parkingData.occupied.length}</i>
+              <i>{pData.occupied.length}</i>
               <DirectionsCar className={"ManageParkingScreen_icon"} />
             </div>
             <div className={"ManageParkingScreen_rightContainer"}>
@@ -176,7 +193,7 @@ function ManageParkingScreen({ parkingData }) {
                 color="primary"
                 onClick={() => {}}
               >
-                ${parkingData.sellPrice}
+                ${pData.sellPrice}
               </Button>
             </div>
           </div>

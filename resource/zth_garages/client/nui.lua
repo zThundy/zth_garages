@@ -30,7 +30,19 @@ ZTH.NUI.RegisterNUICallback("take", function(data, cb)
 end)
 
 ZTH.NUI.RegisterNUICallback("money", function(data, cb)
-    print("money", json.encode(data, { indent = true }))
+    local errorMessage = "The balance in the garage is not enough"
+    local message = "You have withdrawn $" .. data.amount
+    if data.type == "deposit" then
+        errorMessage = "You do not have enough money"
+        message = "You have deposited $" .. data.amount
+    end
+
+    if ZTH.Tunnel.Interface.BalanceAction(data) then
+        ZTH.Core.Functions.Notify(message, "success")
+        SendNUIMessage({ action = "balance-update", balance = ZTH.Tunnel.Interface.GetBalance(data.id) })
+    else
+        ZTH.Core.Functions.Notify(errorMessage, "error")
+    end
     cb({ message = "ok" })
 end)
 

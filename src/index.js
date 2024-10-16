@@ -67,6 +67,9 @@ const RootComponent = () => {
         console.logger('Received NUI message:', JSON.stringify(message));
         setVisible(false);
         break;
+      case "balance-update":
+        api.callEvent("balance-update", event.data);
+        break;
       default:
         console.logger('Unknown action', event.data.action);
         console.logger('Data:', JSON.stringify(event.data));

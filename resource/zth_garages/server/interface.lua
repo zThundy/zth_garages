@@ -296,13 +296,7 @@ ZTH.Tunnel.Interface.GetManagementGarageData = function(id)
         table.insert(occupiedSlots, v.id)
     end
 
-    local garageData = {}
-    for k, v in pairs(ZTH.Cache.Garages) do
-        if v.garage_id == id then
-            garageData = v
-            break
-        end
-    end
+    local garageData = ZTH.Functions.GetGarageFromCahce(id)
 
     return {
         id = id,
@@ -395,8 +389,66 @@ ZTH.Tunnel.Interface.BuySpot = function(data)
             ['@until'] = until_date,
             ['@player_name'] = Player.PlayerData.charinfo.firstname .. " " .. Player.PlayerData.charinfo.lastname
         })
+
+        local garage = ZTH.Functions.GetGarageFromCahce(data.parkingId)
+        garage.total_earnings = garage.total_earnings + amountToRemove
+        garage.balance = garage.balance + amountToRemove
+
+        ZTH.MySQL.ExecQuery("BuySpot", MySQL.Sync.execute, 
+            [[
+                UPDATE `garages`
+                SET `total_earnings` = `total_earnings` + @amount,
+                    `balance` = `balance` + @amount
+                WHERE `garage_id` = @garage_id
+            ]]
+        , {
+            ['@amount'] = amountToRemove,
+            ['@garage_id'] = data.parkingId
+        })
+
         return true
     else
         return false
     end
+end
+
+ZTH.Tunnel.Interface.BalanceAction = function(data)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenid = Player.PlayerData.citizenid
+    
+    if data.type == "deposit" then
+        if Player.Functions.RemoveMoney("cash", data.amount) then
+            local garage = ZTH.Functions.GetGarageFromCahce(data.id)
+            garage.balance = garage.balance + data.amount
+            ZTH.MySQL.ExecQuery("BalanceAction", MySQL.Sync.execute, "UPDATE `garages` SET `balance` = @balance WHERE `garage_id` = @garage_id AND user_id = @user_id", {
+                ['@balance'] = garage.balance,
+                ['@garage_id'] = data.id,
+                ['@user_id'] = citizenid
+            })
+            return true
+        end
+    elseif data.type == "withdraw" then
+        local garage = ZTH.Functions.GetGarageFromCahce(data.id)
+        if garage.balance >= data.amount then
+            garage.balance = garage.balance - data.amount
+            ZTH.MySQL.ExecQuery("BalanceAction", MySQL.Sync.execute, "UPDATE `garages` SET `balance` = @balance WHERE `garage_id` = @garage_id AND user_id = @user_id", {
+                ['@balance'] = garage.balance,
+                ['@garage_id'] = data.id,
+                ['@user_id'] = citizenid
+            })
+            Player.Functions.AddMoney("cash", data.amount)
+            return true
+        end
+    end
+    return false
+end
+
+ZTH.Tunnel.Interface.GetBalance = function(id)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenid = Player.PlayerData.citizenid
+
+    local garage = ZTH.Functions.GetGarageFromCahce(id)
+    return garage.balance
 end

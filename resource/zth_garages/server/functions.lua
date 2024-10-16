@@ -90,6 +90,14 @@ function ZTH.Functions.AutoImpountVehicles(self)
     end
 end
 
+function ZTH.Functions.GetGarageFromCahce(id)
+    for k, v in pairs(ZTH.Cache.Garages) do
+        if tostring(v.garage_id) == tostring(id) then
+            return v
+        end
+    end
+end
+
 RegisterCommand("dumpcache", function(source, args)
     if args[1] == "garages" then
         print(json.encode(ZTH.Cache.Garages, { indent = true }))
