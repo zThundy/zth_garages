@@ -34,6 +34,7 @@ const RootComponent = () => {
       case "garage-buy":
         setTitle(T("TITLE_BUY_SPOT"))
         setScreen("garage-buy")
+        setParkingData(data)
         break;
       case "property-buy":
         setTitle(T("TITLE_BUY_PARKING"))
@@ -115,12 +116,16 @@ const RootComponent = () => {
 
     api.registerEvent("take", (data) => {
       api.post("take", data);
-    });
+    }, false);
 
     api.registerEvent("money", (data) => {
       // parse check data.amount just in case
       data.amount = parseInt(data.amount);
       api.post("money", data);
+    }, false)
+
+    api.registerEvent("buySpot", data => {
+      api.post("buySpot", data);
     }, false)
 
     window.addEventListener('message', handleNuiCallback)

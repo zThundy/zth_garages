@@ -154,6 +154,7 @@
   margin: 1rem;
   width: 100%;
   justify-content: space-evenly;
+  height: fit-content;
 }
 
 .BuySpotList_spotsList {
@@ -165,6 +166,7 @@
   font-weight: bold;
   text-align: center;
   font-size: 1.3rem;
+  height: fit-content;
 }
 
 .BuySpotList_leftArrow {

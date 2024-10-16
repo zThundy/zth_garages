@@ -34,9 +34,9 @@ function Main({ parkingData, screen, title, setScreen, setTitle, vehicles, showM
           position: 'absolute',
           bottom: '10px',
           zIndex: '1000',
-          left: '10px',
+          right: '20px',
           color: "white",
-          opacity: 0.2
+          opacity: 0.6
         }}
       >
         Made with ❤️ by zThundy__
