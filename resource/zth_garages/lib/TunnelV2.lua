@@ -71,9 +71,11 @@ local function tunnel_resolve(itable, key)
                     mtable.tunnel_callbacks[rid] = r
                 end
                 if SERVER then
+                    Debug("Tunneling to " .. dest .. " with " .. fname .. " Event name: " .. mtable.license .. "::" .. mtable.name .. ":tunnel_req")
                     -- TriggerRemoteEvent(mtable.license .. "::" .. mtable.name .. ":tunnel_req:" .. mtable.c, dest, fname, args, mtable.identifier, rid)
                     TriggerRemoteEvent(mtable.license .. "::" .. mtable.name .. ":tunnel_req", dest, fname, args, mtable.identifier, rid)
                 else
+                    Debug("Tunneling with " .. fname .. " Event name: " .. mtable.license .. "::" .. mtable.name .. ":tunnel_req")
                     -- TriggerRemoteEvent(mtable.license .. "::" .. mtable.name .. ":tunnel_req:" .. mtable.c, fname, args, mtable.identifier, rid)
                     TriggerRemoteEvent(mtable.license .. "::" .. mtable.name .. ":tunnel_req", fname, args, mtable.identifier, rid)
                 end
@@ -85,8 +87,10 @@ local function tunnel_resolve(itable, key)
                 mtable.tunnel_callbacks[rid] = r
             end
             if SERVER then
+                Debug("Tunneling to " .. dest .. " with " .. fname .. " Event name: " .. mtable.license .. "::" .. mtable.name .. ":tunnel_req")
                 TriggerRemoteEvent(mtable.license .. "::" .. mtable.name .. ":tunnel_req", dest, fname, args, mtable.identifier, rid)
             else
+                Debug("Tunneling with " .. fname .. " Event name: " .. mtable.license .. "::" .. mtable.name .. ":tunnel_req")
                 TriggerRemoteEvent(mtable.license .. "::" .. mtable.name .. ":tunnel_req", fname, args, mtable.identifier, rid)
             end
         end
