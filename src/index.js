@@ -122,14 +122,14 @@ const RootComponent = () => {
       data.amount = parseInt(data.amount);
       api.post("money", data);
     }, false)
-  }, [])
 
-  window.addEventListener('message', handleNuiCallback)
-  window.addEventListener('keydown', (e) => {
-    if ('Escape'.includes(e.code)) {
-      api.callEvent("close", {});
-    }
-  })
+    window.addEventListener('message', handleNuiCallback)
+    window.addEventListener('keydown', (e) => {
+      if ('Escape'.includes(e.code)) {
+        api.callEvent("close", {});
+      }
+    })
+  }, [])
   
   return (
     <React.StrictMode>
