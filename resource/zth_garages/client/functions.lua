@@ -243,6 +243,8 @@ function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
             ZTH.Core.Functions.SetVehicleProperties(veh, vehicleData.mods)
             ZTH.Core.Functions.Notify("Vehicle taken from the garage", 'success', 5000)
         end, coords, true, true)
+    else
+        Debug("EnteredVehicle: Vehicle data not found, ignoring...")
     end
 end
 

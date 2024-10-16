@@ -102,9 +102,8 @@ ZTH.Tunnel.Interface.GetParkedVehicleData = function(plate)
 
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
         if v.plate == plate and v.citizenid == citizenid and v.state == 1 then
-            -- print(json.encode(ZTH.Config.Garages[v.garage]))
-            -- print(json.encode(ZTH.Config.Garages[v.garage].ParkingSpots))
-
+            if v.parking_spot == nil then return false end
+            
             return {
                 plate = v.plate,
                 state = v.state,
@@ -270,6 +269,9 @@ ZTH.Tunnel.Interface.GetManagementGarageData = function(id)
     local spots = ZTH.Tunnel.Interface.GetManagementGarageSpots(id)
     local occupiedSlots = {}
     for k, v in pairs(spots) do
+        if v.state == 0 then
+            v.plate = "NOT PARKED"
+        end
         table.insert(occupiedSlots, v.id)
     end
 
