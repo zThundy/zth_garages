@@ -1,6 +1,8 @@
 
 ZTH.Garages = {}
 ZTH.Tunnel = {}
+ZTH.Blips = {}
+ZTH.Zones = {}
 
 ZTH.Tunnel = module("zth_garages", "lib/TunnelV2")
 ZTH.Tunnel.Interface = ZTH.Tunnel.getInterface("zth_garages", "zth_garages_t", "zth_garages_t")
@@ -39,15 +41,11 @@ Citizen.CreateThread(function()
 				isInVehicle = true
 				currentVehicle = GetVehiclePedIsUsing(ped)
 				currentSeat = GetPedVehicleSeat(ped)
-				local model = GetEntityModel(currentVehicle)
-				local name = GetDisplayNameFromVehicleModel()
                 ZTH.Functions.EnteredVehicle(currentVehicle, currentSeat, GetDisplayNameFromVehicleModel(GetEntityModel(currentVehicle)))
 			end
 		elseif isInVehicle then
 			if not IsPedInAnyVehicle(ped, false) or IsPlayerDead(PlayerId()) then
 				-- bye, vehicle
-				local model = GetEntityModel(currentVehicle)
-				local name = GetDisplayNameFromVehicleModel()
                 ZTH.Functions.LeftVehicle(currentVehicle, currentSeat, GetDisplayNameFromVehicleModel(GetEntityModel(currentVehicle)))
 				isInVehicle = false
 				currentVehicle = 0

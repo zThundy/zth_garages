@@ -27,14 +27,22 @@ ZTH.Tunnel.Interface.CanDeposit = function(garage, spot, plate)
     local citizenid = Player.PlayerData.citizenid
 
     if ZTH.Tunnel.Interface.OwnsCar(garage, plate) then
-        for k, v in pairs(ZTH.Cache.PlayerVehicles) do
-            if v.user_id == citizenid and v.garage_id == garage and v.parking_spot == spot then
-                if v["until"] > os.time() then
+        Debug("CanDeposit: Player owns the vehicle")
+        for k, v in pairs(ZTH.Cache.GarageSpots) do
+            if v.garage_id == garage and tonumber(v.spot_id) == tonumber(spot) then
+                Debug("CanDeposit: Spot exists")
+                if v.user_id == citizenid then
+                    Debug("CanDeposit: Player owns the spot")
+                    -- check if v.until is passed, if so, return false
+                    if v["until"] ~= nil and os.time() > v["until"] then
+                        Debug("CanDeposit: Spot is expired")
+                        return false
+                    end
+                    
                     return true
                 end
             end
         end
-        return false
     end
     return false
 end
@@ -46,15 +54,15 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
 
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
         if v.plate == data.plate and v.citizenid == citizenid then
-            ZTH.Cache.PlayerVehicles[k].garage = garage
-            ZTH.Cache.PlayerVehicles[k].parking_spot = spot
-            ZTH.Cache.PlayerVehicles[k].parking_date = os.time()
-            ZTH.Cache.PlayerVehicles[k].body = data.mods.bodyHealth
-            ZTH.Cache.PlayerVehicles[k].fuel = data.mods.fuelLevel
-            ZTH.Cache.PlayerVehicles[k].engine = data.mods.engineHealth
-            ZTH.Cache.PlayerVehicles[k].mods = data.mods
-            ZTH.Cache.PlayerVehicles[k].status = {}
-            ZTH.Cache.PlayerVehicles[k].state = 1
+            v.garage = garage
+            v.parking_spot = spot
+            v.parking_date = os.time()
+            v.body = data.mods.bodyHealth
+            v.fuel = data.mods.fuelLevel
+            v.engine = data.mods.engineHealth
+            v.mods = data.mods
+            v.status = {}
+            v.state = 1
 
             ZTH.MySQL.ExecQuery("UpdateVehicle", MySQL.Sync.execute, 
                 [[
@@ -83,6 +91,29 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
                 ['@plate'] = data.plate,
                 ['@citizenid'] = citizenid
             })
+        end
+    end
+end
+
+ZTH.Tunnel.Interface.GetParkedVehicleData = function(plate)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenid = Player.PlayerData.citizenid
+
+    for k, v in pairs(ZTH.Cache.PlayerVehicles) do
+        if v.plate == plate and v.citizenid == citizenid and v.state == 1 then
+            -- print(json.encode(ZTH.Config.Garages[v.garage]))
+            -- print(json.encode(ZTH.Config.Garages[v.garage].ParkingSpots))
+
+            return {
+                plate = v.plate,
+                state = v.state,
+                model = v.vehicle,
+                spot_id = v.parking_spot,
+                garage_id = v.garage,
+                spot_config = ZTH.Config.Garages[v.garage].ParkingSpots[tonumber(v.parking_spot)],
+                mods = json.decode(v.mods)
+            }
         end
     end
 end
@@ -215,6 +246,7 @@ ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
             if spot.garage_id == id and vehicle.garage == id and tostring(vehicle.parking_spot) == tostring(spot.spot_id) then
                 table.insert(spots, {
                     id = spot.spot_id,
+                    state = vehicle.state,
                     user_id = spot.user_id,
                     garage_id = spot.garage_id,
                     price = spot.price,
@@ -285,4 +317,24 @@ ZTH.Tunnel.Interface.UpdateVehiclesCacheForUser = function()
     end
 
     return
+end
+
+ZTH.Tunnel.Interface.SetParkedVehicleState = function(vehData, state)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenid = Player.PlayerData.citizenid
+
+    for k, v in pairs(ZTH.Cache.PlayerVehicles) do
+        if v.plate == vehData.plate and v.citizenid == citizenid then
+            print("Setting state to " .. state .. " for " .. vehData.plate)
+            v.state = state
+            
+            ZTH.MySQL.ExecQuery("SetParkedVehicleState", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `state` = @state WHERE `plate` = @plate AND `citizenid` = @citizenid", {
+                ['@state'] = state,
+                ['@plate'] = vehData.plate,
+                ['@citizenid'] = citizenid
+            })
+            break
+        end
+    end
 end

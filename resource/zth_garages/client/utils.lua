@@ -4,6 +4,13 @@ function CreateBlip(data)
     if not data.pos then return Debug("CreateBlip: data.pos is required") end
     if not data.name then return Debug("CreateBlip: data.name is required") end
 
+    for k, v in pairs(ZTH.Blips) do
+        if v.data.name == data.name .. "_" .. v.blip then
+            RemoveBlip(v.blip)
+            table.remove(ZTH.Blips, k)
+        end
+    end
+
     local blip = AddBlipForCoord(data.pos.x, data.pos.y, data.pos.z)
     SetBlipSprite(blip, data.sprite or 357)
     SetBlipDisplay(blip, data.display or 4)
@@ -15,6 +22,8 @@ function CreateBlip(data)
     AddTextComponentString(data.name)
     EndTextCommandSetBlipName(blip)
     
+    data.name = data.name .. "_" .. blip
+    table.insert(ZTH.Blips, { blip = blip, data = data })
     return blip
 end
 
@@ -35,9 +44,23 @@ function CreateMarker(_type, data)
     if not data.pos then return Debug("CreateMarker: data.pos is required for marker " .. _type) end
     if not data.action then return Debug("CreateMarker: data.action is required for marker " .. _type) end
     
-    if data.type == 1 then data.pos = vec3(data.pos.x, data.pos.y, data.pos.z - 1.0) end
-
-    TriggerEvent('gridsystem:registerMarker', data)
+    local pos = data.pos
+    if data.type == 1 then pos = vec3(data.pos.x, data.pos.y, data.pos.z - 1.0) end
+    table.insert(ZTH.Zones, { data = data, action = data.action })
+    TriggerEvent('gridsystem:registerMarker', {
+        id = data.name,
+        pos = pos,
+        scale = data.scale,
+        msg = data.msg,
+        drawDistance = data.drawDistance,
+        control = data.control,
+        forceExit = data.forceExit,
+        show3D = data.show3D,
+        type = data.type,
+        color = data.color,
+        name = data.name,
+        action = data.action
+    })
 end
 
 function ClearSpawnPoint(coords)

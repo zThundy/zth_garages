@@ -77,12 +77,16 @@ end
 
 function ZTH.Functions.AutoImpountVehicles(self)
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
-        if v.state == 0 and v.garage ~= "impound" then
+        if v.state == 0 and v.garage ~= "impound" and v.parking_spot == nil then
             v.garage = "impound"
             self.MySQL.ExecQuery("AutoImpoundVehicles", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `garage` = @garage WHERE `id` = @id", {
                 ['@garage'] = v.garage,
                 ['@id'] = v.id
             })
+        elseif v.parking_spot == nil then
+            -- 4 later cause not bothered enough now
+            -- check if veh is actually parked in the spot and the until date is still valid.
+            -- else imound the mfk
         end
     end
 end
