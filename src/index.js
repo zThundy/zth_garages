@@ -128,6 +128,10 @@ const RootComponent = () => {
       api.post("buySpot", data);
     }, false)
 
+    api.registerEvent("changeSpot", data => {
+      api.post("changeSpot", data);
+    }, false)
+
     window.addEventListener('message', handleNuiCallback)
     window.addEventListener('keydown', (e) => {
       if ('Escape'.includes(e.code)) {

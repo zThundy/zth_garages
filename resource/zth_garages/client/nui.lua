@@ -38,3 +38,8 @@ ZTH.NUI.RegisterNUICallback("buySpot", function(data, cb)
     print("buySpot", json.encode(data, { indent = true }))
     cb({ message = "ok" })
 end)
+
+ZTH.NUI.RegisterNUICallback("changeSpot", function(data, cb)
+    print("changeSpot", json.encode(data, { indent = true }))
+    cb({ message = "ok" })
+end)

@@ -241,14 +241,18 @@ end
 ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
     local spots = {}
     for _, spot in pairs(ZTH.Cache.GarageSpots) do
+        spot.spot_id = tonumber(spot.spot_id)
+        
         for _, vehicle in pairs(ZTH.Cache.PlayerVehicles) do
+            vehicle.state = tonumber(vehicle.state)
+            vehicle.parking_spot = tonumber(vehicle.parking_spot)
+
             -- if spot.garage_id == id and vehicle.garage == id then
             if spot.garage_id == id and vehicle.garage == id then
-                if tonumber(vehicle.parking_spot) == tonumber(spot.spot_id) then
-                    spot.spot_id = tonumber(spot.spot_id)
+                if vehicle.parking_spot == spot.spot_id then
                     spots[spot.spot_id] = {
-                        id = tonumber(spot.spot_id),
-                        state = tonumber(vehicle.state),
+                        id = spot.spot_id,
+                        state = vehicle.state,
                         user_id = spot.user_id,
                         garage_id = spot.garage_id,
                         price = spot.price,
@@ -263,9 +267,10 @@ ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
                 end
             end
         end
+        
         if not spots[spot.spot_id] then
             spots[spot.spot_id] = {
-                id = tonumber(spot.spot_id),
+                id = spot.spot_id,
                 state = 0,
                 user_id = spot.user_id,
                 garage_id = spot.garage_id,
@@ -289,11 +294,9 @@ ZTH.Tunnel.Interface.GetManagementGarageData = function(id)
     local spots = ZTH.Tunnel.Interface.GetManagementGarageSpots(id)
     local occupiedSlots = {}
     for k, v in pairs(spots) do
-        if v.state == 0 then
-            v.plate = "NOT PARKED"
-        end
         table.insert(occupiedSlots, v.id)
     end
+    print(json.encode(occupiedSlots))
 
     local garageData = {}
     for k, v in pairs(ZTH.Cache.Garages) do
