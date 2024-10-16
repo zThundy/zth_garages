@@ -42,8 +42,6 @@ function ZTH.Functions.RegisterSpotZones(self, garage_id)
     if not garage.ParkingSpots then return end
     if not spotsData then return end
 
-    -- print(json.encode(garage, { indent = true }))
-
     Debug("Registering spot zones for garage " .. garage_id)
     for j, spot in pairs(garage.ParkingSpots) do
         ClearSpawnPoint(spot.pos)
@@ -55,7 +53,6 @@ function ZTH.Functions.RegisterSpotZones(self, garage_id)
 
         spot.occupiedData = _spotData
         spot.occupied = spot.occupiedData.user_id
-        print(json.encode(_spotData, { indent = true }))
 
         if spot.occupied and self.PlayerData.citizenid == spot.occupied and spot.occupiedData.state == 0 then
             spot.name = "ParkingSpots_" .. garage_id .. "_" .. j
@@ -68,6 +65,7 @@ function ZTH.Functions.RegisterSpotZones(self, garage_id)
 end
 
 function ZTH.Functions.InitializeGarages(self)
+    Debug("Initializing garages")
     for id, garage in pairs(self.Config.Garages) do
         if not garage["ParkingSpots"] then goto continue end
         local spots = self.Tunnel.Interface.GetManagementGarageSpots(id)
@@ -132,9 +130,26 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
 end
 
 function ZTH.Functions.OpenTakeVehicle(self, id)
-    ZTH.Tunnel.Interface.UpdateVehiclesCacheForUser()
+    self.Tunnel.Interface.UpdateVehiclesCacheForUser()
     local garageData = self.Tunnel.Interface.GetParkedVehicles(id)
     self.NUI.Open({ screen = "list", garageData = { vehicles = garageData, showManage = false } })
+end
+
+function ZTH.Functions.BuySpot(self, data)
+    if not data.canBuy then
+        -- todo: add debug serverside with client data???
+        return self.Core.Functions.Notify("You can't buy this spot", 'error', 5000)
+    end
+
+    if self.Tunnel.Interface.BuySpot(data) then
+        self.Core.Functions.Notify("Spot bought", 'success', 5000)
+        self.Functions.RegisterSpotZones(self, data.parkingId)
+        self.Functions.RegisterZones(self)
+        self.Functions.InitializeGarages(self)
+        self.NUI.Close()
+    else
+        self.Core.Functions.Notify("You can't buy this spot", 'error', 5000)
+    end
 end
 
 function ZTH.Functions.DepositVehicle(self, id, spotid)
@@ -267,7 +282,6 @@ function ZTH.Functions.Init()
     ZTH.IsReady = ZTH.Tunnel.Interface.RequestReady()
     while not ZTH.IsReady do Wait(1000) end
     ZTH.PlayerData = ZTH.Core.Functions.GetPlayerData()
-    -- print(json.encode(ZTH.PlayerData, { indent = true }))
 
     ZTH.Functions.RegisterZones(ZTH)
     ZTH.Functions.InitializeGarages(ZTH)

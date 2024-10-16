@@ -29,13 +29,13 @@ ZTH.Config.Markers = {
         color = { r = 255, g = 0, b = 0 },
     },
     ParkingSpots = {
-        scale = vec3(1.0, 1.0, 1.0),
+        scale = vec3(0.8, 0.8, 0.8),
         msg = "Press ~INPUT_CONTEXT~ to park the vehicle",
         drawDistance = 40.0,
         control = "E",
         show3D = false,
-        type = 20,
-        color = { r = 255, g = 0, b = 0 },
+        type = 36,
+        color = { r = 150, g = 150, b = 255 },
     },
     Deposit = {
         scale = vec3(1.0, 1.0, 1.0),
@@ -84,16 +84,24 @@ ZTH.Config.Garages = {
         ParkingSpots = {
             {
                 pos = vec3(265.88, -332.03, 44.92),
-                heading = 65.64,
+                heading = 65.64
             },
             {
                 pos = vec3(267.65, -328.95, 44.92),
-                heading = 65.64,
+                heading = 65.64
             },
             {
                 pos = vec3(269.19, -325.93, 44.92),
-                heading = 74.8,
+                heading = 65.64
             },
+            {
+                pos = vec3(270.38, -322.57, 44.92),
+                heading = 65.64
+            },
+            {
+                pos = vec3(271.55, -319.41, 44.92),
+                heading = 65.64
+            }
         }
     },
     ["garage_2"] = {

@@ -29,7 +29,6 @@ function ZTH.Functions.Init()
                 `user_id` VARCHAR(255) NOT NULL DEFAULT '0',
                 `garage_id` VARCHAR(255) NOT NULL,
                 `spot_id` VARCHAR(255) NOT NULL,
-                `price` INT(11) NOT NULL DEFAULT '0',
                 `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `until` DATETIME NOT NULL,
                 `player_name` VARCHAR(255) NOT NULL,

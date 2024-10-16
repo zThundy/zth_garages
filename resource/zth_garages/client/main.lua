@@ -16,6 +16,8 @@ AddEventHandler("zth_garages:client:Init", function()
 end)
 
 Citizen.CreateThread(function()
+	while not ZTH.IsReady do Wait(1000) end
+
     local isInVehicle = false
     local isEnteringVehicle = false
     local currentVehicle = 0

@@ -36,6 +36,7 @@ end)
 
 ZTH.NUI.RegisterNUICallback("buySpot", function(data, cb)
     print("buySpot", json.encode(data, { indent = true }))
+    ZTH.Functions.BuySpot(ZTH, data)
     cb({ message = "ok" })
 end)
 

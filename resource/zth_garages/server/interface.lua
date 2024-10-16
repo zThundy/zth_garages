@@ -123,7 +123,6 @@ ZTH.Tunnel.Interface.IsOwnerOfGarage = function(id)
     local citizenid = Player.PlayerData.citizenid
 
     for k, v in pairs(ZTH.Cache.Garages) do
-        print(json.encode(v))
         if v.user_id == citizenid and v.garage_id == id then
             return true
         end
@@ -248,7 +247,7 @@ ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
             vehicle.parking_spot = tonumber(vehicle.parking_spot)
 
             -- if spot.garage_id == id and vehicle.garage == id then
-            if spot.garage_id == id and vehicle.garage == id then
+            if spot.garage_id == id and vehicle.garage == id and vehicle.state == 1 then
                 if vehicle.parking_spot == spot.spot_id then
                     spots[spot.spot_id] = {
                         id = spot.spot_id,
@@ -267,7 +266,7 @@ ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
                 end
             end
         end
-        
+
         if not spots[spot.spot_id] then
             spots[spot.spot_id] = {
                 id = spot.spot_id,
@@ -296,7 +295,6 @@ ZTH.Tunnel.Interface.GetManagementGarageData = function(id)
     for k, v in pairs(spots) do
         table.insert(occupiedSlots, v.id)
     end
-    print(json.encode(occupiedSlots))
 
     local garageData = {}
     for k, v in pairs(ZTH.Cache.Garages) do
@@ -307,6 +305,7 @@ ZTH.Tunnel.Interface.GetManagementGarageData = function(id)
     end
 
     return {
+        id = id,
         managementPrice = config.managementPrice,
         sellPrice = config.sellPrice,
         price = config.pricePerDay,
@@ -351,7 +350,7 @@ ZTH.Tunnel.Interface.SetParkedVehicleState = function(vehData, state)
 
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
         if v.plate == vehData.plate and v.citizenid == citizenid then
-            print("Setting state to " .. state .. " for " .. vehData.plate)
+            Debug("SetParkedVehicleState: Setting state to " .. state .. " for " .. vehData.plate)
             v.state = state
             
             ZTH.MySQL.ExecQuery("SetParkedVehicleState", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `state` = @state WHERE `plate` = @plate AND `citizenid` = @citizenid", {
@@ -361,5 +360,43 @@ ZTH.Tunnel.Interface.SetParkedVehicleState = function(vehData, state)
             })
             break
         end
+    end
+end
+
+ZTH.Tunnel.Interface.BuySpot = function(data)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenid = Player.PlayerData.citizenid
+    
+    local amountToRemove = tonumber(data.days) * ZTH.Config.Garages[data.parkingId]["Settings"].pricePerDay
+    if Player.Functions.RemoveMoney("bank", amountToRemove) then
+        local current_date = os.time()
+        local until_time = current_date + (data.days * 86400)
+        local until_date = os.date("%Y-%m-%d %H:%M:%S", until_time)
+
+        table.insert(ZTH.Cache.GarageSpots, {
+            spot_id = tostring(data.spotId),
+            garage_id = tostring(data.parkingId),
+            user_id = citizenid,
+            date = os.time(),
+            ["until"] = until_time,
+            player_name = Player.PlayerData.charinfo.firstname .. " " .. Player.PlayerData.charinfo.lastname
+        })
+
+        ZTH.MySQL.ExecQuery("BuySpot", MySQL.Sync.execute, 
+            [[
+                INSERT INTO `garages_spots` (`spot_id`, `garage_id`, `user_id`, `until`, `player_name`)
+                VALUES (@spot_id, @garage_id, @user_id, @until, @player_name)
+            ]]
+        , {
+            ['@spot_id'] = data.spotId,
+            ['@garage_id'] = data.parkingId,
+            ['@user_id'] = citizenid,
+            ['@until'] = until_date,
+            ['@player_name'] = Player.PlayerData.charinfo.firstname .. " " .. Player.PlayerData.charinfo.lastname
+        })
+        return true
+    else
+        return false
     end
 end
