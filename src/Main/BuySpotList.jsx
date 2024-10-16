@@ -16,7 +16,7 @@ function BuySpotList({ parkingData }) {
 
   const showPrice = (days) => {
     if (days === 0) return setShowingPrice(0);
-    if (pData.occupied.includes(currentSpot.toString())) return setShowingPrice(-1);
+    if (pData.occupied.includes(currentSpot)) return setShowingPrice(-1);
     setShowingPrice(pData.price * days);
   }
 
@@ -27,11 +27,13 @@ function BuySpotList({ parkingData }) {
   const leftArrowClick = () => {
     if (currentSpot === 1) return;
     setCurrentSpot(currentSpot - 1);
+    api.callEvent("changeSpot", { spotId: currentSpot - 1 });
   }
 
   const rightArrowClick = () => {
     if (currentSpot === pData.spots) return;
     setCurrentSpot(currentSpot + 1);
+    api.callEvent("changeSpot", { spotId: currentSpot + 1 });
   }
 
   return (
