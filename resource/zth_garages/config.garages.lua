@@ -91,8 +91,8 @@ ZTH.Config.Garages = {
                 heading = 65.64,
             },
             {
-                pos = vec3(268.8, -326.0, 44.92),
-                heading = 0.0,
+                pos = vec3(269.19, -325.93, 44.92),
+                heading = 74.8,
             },
         }
     },

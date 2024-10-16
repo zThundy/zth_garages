@@ -242,21 +242,41 @@ ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
     local spots = {}
     for _, spot in pairs(ZTH.Cache.GarageSpots) do
         for _, vehicle in pairs(ZTH.Cache.PlayerVehicles) do
-            if spot.garage_id == id and vehicle.garage == id and tostring(vehicle.parking_spot) == tostring(spot.spot_id) then
-                table.insert(spots, {
-                    id = spot.spot_id,
-                    state = vehicle.state,
-                    user_id = spot.user_id,
-                    garage_id = spot.garage_id,
-                    price = spot.price,
-                    fromDate = spot.date,
-                    toDate = spot["until"],
-                    name = spot.player_name,
-                    plate = vehicle.plate,
-                    model = vehicle.vehicle,
-                    mods = json.decode(vehicle.mods)
-                })
+            -- if spot.garage_id == id and vehicle.garage == id then
+            if spot.garage_id == id and vehicle.garage == id then
+                if tonumber(vehicle.parking_spot) == tonumber(spot.spot_id) then
+                    spot.spot_id = tonumber(spot.spot_id)
+                    spots[spot.spot_id] = {
+                        id = tonumber(spot.spot_id),
+                        state = tonumber(vehicle.state),
+                        user_id = spot.user_id,
+                        garage_id = spot.garage_id,
+                        price = spot.price,
+                        fromDate = spot.date,
+                        toDate = spot["until"],
+                        name = spot.player_name,
+                        plate = vehicle.plate,
+                        model = vehicle.vehicle,
+                        mods = json.decode(vehicle.mods)
+                    }
+                    break
+                end
             end
+        end
+        if not spots[spot.spot_id] then
+            spots[spot.spot_id] = {
+                id = tonumber(spot.spot_id),
+                state = 0,
+                user_id = spot.user_id,
+                garage_id = spot.garage_id,
+                price = spot.price,
+                fromDate = spot.date,
+                toDate = spot["until"],
+                name = spot.player_name,
+                plate = "NOT PARKED",
+                model = "NOT PARKED",
+                mods = {}
+            }
         end
     end
     return spots

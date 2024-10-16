@@ -48,10 +48,14 @@ function ZTH.Functions.RegisterSpotZones(self, garage_id)
     for j, spot in pairs(garage.ParkingSpots) do
         ClearSpawnPoint(spot.pos)
         local _spotData = spotsData[j]
-        if not _spotData then goto continue end
+        if not _spotData then
+            Debug("Skipped _spotData for spot " .. j)
+            goto continue
+        end
 
         spot.occupiedData = _spotData
         spot.occupied = spot.occupiedData.user_id
+        print(json.encode(_spotData, { indent = true }))
 
         if spot.occupied and self.PlayerData.citizenid == spot.occupied and spot.occupiedData.state == 0 then
             spot.name = "ParkingSpots_" .. garage_id .. "_" .. j
@@ -117,6 +121,8 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
         end
 
         if _type == "BuySpot" then
+            local managementTable = self.Tunnel.Interface.GetManagementGarageData(id)
+            self.NUI.Open({ screen = "garage-buy", garageData = managementTable })
         end
 
         if _type == "Deposit" then
@@ -229,9 +235,6 @@ function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
 
     if vehicleData then
         local garage_id = vehicleData.garage_id
-        -- get this for future refresh (maybe????)
-        -- local spots = self.Tunnel.Interface.GetManagementGarageSpots(garage_id)
-
         local vehCoords = GetEntityCoords(vehicle)
         local coords = vector4(vehCoords.x, vehCoords.y, vehCoords.z, vehicleData.spot_config.heading)
         ZTH.Tunnel.Interface.SetParkedVehicleState(vehicleData, 0)
