@@ -4,13 +4,17 @@ ZTH.Tunnel = module("zth_garages", "lib/TunnelV2")
 ZTH.Tunnel.Interface = {}
 ZTH.Tunnel.bindInterface("zth_garages", "zth_garages_t", ZTH.Tunnel.Interface)
 
+ZTH.Tunnel.Interface.RequestReady = function()
+    return ZTH.IsReady
+end
+
 ZTH.Tunnel.Interface.OwnsCar = function(garage, plate)
     local Player = ZTH.Core.Functions.GetPlayer(source)
     if not Player then return end
     local citizenid = Player.PlayerData.citizenid
     
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
-        if v.plate == plate and v.citizenid == citizenid and v.garage == garage then
+        if v.plate == plate and v.citizenid == citizenid then
             return true
         end
     end
@@ -141,39 +145,41 @@ ZTH.Tunnel.Interface.GetParkedVehicles = function(id)
     if not Player then return end
     local citizenId = Player.PlayerData.citizenid
 
-    local parkedVehicles = ZTH.MySQL.ExecQuery("Get parked vehicles", MySQL.Sync.fetchAll,
-        [[
-            SELECT
-                `id`, `vehicle`, `plate`, `fuel`, `engine`, `body`,
-                `state`, `garage`, `citizenid`, `mods`
-            FROM `player_vehicles`
-            WHERE `garage` = @garage
-            AND `citizenid` = @citizenid
-            AND `state` = 1
-        ]]
-    , {
-        ['@garage'] = id,
-        ["@citizenid"] = citizenId
-    })
+    -- local parkedVehicles = ZTH.MySQL.ExecQuery("Get parked vehicles", MySQL.Sync.fetchAll,
+    --     [[
+    --         SELECT
+    --             `id`, `vehicle`, `plate`, `fuel`, `engine`, `body`,
+    --             `state`, `garage`, `citizenid`, `mods`
+    --         FROM `player_vehicles`
+    --         WHERE `garage` = @garage
+    --         AND `citizenid` = @citizenid
+    --         AND `state` = 1
+    --     ]]
+    -- , {
+    --     ['@garage'] = id,
+    --     ["@citizenid"] = citizenId
+    -- })
 
     
     local vehicles = {}
-    for k, v in pairs(parkedVehicles) do
-        local mods = json.decode(v.mods)
-        local fuelLevel = math.floor(mods.fuelLevel)
-        local engineLevel = math.floor(mods.engineHealth / 10)
-        local bodyLevel = math.floor(mods.bodyHealth / 10)
+    for k, v in pairs(ZTH.Cache.PlayerVehicles) do
+        if v.garage == id and v.citizenid == citizenId and v.state == 1 then
+            local mods = json.decode(v.mods)
+            local fuelLevel = math.floor(mods.fuelLevel)
+            local engineLevel = math.floor(mods.engineHealth / 10)
+            local bodyLevel = math.floor(mods.bodyHealth / 10)
 
-        table.insert(vehicles, {
-            id = v.id,
-            garage = id,
-            name = string.upper(v.vehicle),
-            plate = v.plate,
-            fuelLevel = fuelLevel,
-            engineLevel = engineLevel,
-            bodyLevel = bodyLevel,
-            mods = json.decode(v.mods)
-        })
+            table.insert(vehicles, {
+                id = v.id,
+                garage = id,
+                name = string.upper(v.vehicle),
+                plate = v.plate,
+                fuelLevel = fuelLevel,
+                engineLevel = engineLevel,
+                bodyLevel = bodyLevel,
+                mods = json.decode(v.mods)
+            })
+        end
     end
 
     return vehicles
@@ -254,4 +260,29 @@ ZTH.Tunnel.Interface.GetManagementGarageData = function(id)
         balance = garageData.balance,
         totEarning = garageData.total_earnings
     }
+end
+
+ZTH.Tunnel.Interface.UpdateVehiclesCacheForUser = function()
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenid = Player.PlayerData.citizenid
+
+    local vehicles = ZTH.MySQL.ExecQuery("Update vehicles for user", MySQL.Sync.fetchAll, "SELECT * FROM `player_vehicles` WHERE `citizenid` = @citizenid", {
+        ['@citizenid'] = citizenid
+    })
+
+    for k, v in pairs(vehicles) do
+        for i, j in pairs(ZTH.Cache.PlayerVehicles) do
+            if v.plate == j.plate and v.citizenid == citizenid then
+                table.remove(ZTH.Cache.PlayerVehicles, i)
+                break
+            end
+        end
+    end
+
+    for k, v in pairs(vehicles) do
+        table.insert(ZTH.Cache.PlayerVehicles, v)
+    end
+
+    return
 end

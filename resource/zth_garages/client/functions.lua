@@ -73,8 +73,7 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
                 local managementTable = self.Tunnel.Interface.GetManagementGarageData(id)
                 self.NUI.Open({ screen = "garage-manage", garageData = managementTable })
             else
-                self.Core.Functions.Notify("You are not the owner of this garage", 'error', 5000)
-                return Debug("You are not the owner of this garage")
+                return self.Core.Functions.Notify("You are not the owner of this garage", 'error', 5000)
             end
         end
 
@@ -95,6 +94,7 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
 end
 
 function ZTH.Functions.OpenTakeVehicle(self, id)
+    ZTH.Tunnel.Interface.UpdateVehiclesCacheForUser()
     local garageData = self.Tunnel.Interface.GetParkedVehicles(id)
     self.NUI.Open({ screen = "list", garageData = { vehicles = garageData, showManage = false } })
 end
@@ -102,8 +102,7 @@ end
 function ZTH.Functions.DepositVehicle(self, id, spotid)
     local ped = PlayerPedId()
     if not IsPedInAnyVehicle(ped, false) then
-        self.Core.Functions.Notify("You are not in a vehicle", 'error', 5000)
-        return Debug("You are not in a vehicle")
+        return self.Core.Functions.Notify("You are not in a vehicle", 'error', 5000)
     end
 
     local vehicle = GetVehiclePedIsIn(ped, false)
@@ -132,10 +131,11 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
             Citizen.Wait(3000)
             self.Core.Functions.DeleteVehicle(vehicle)
         else
-            self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
-            return Debug("You can't deposit here")
+            return self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
         end
     elseif not spotid then
+        ZTH.Tunnel.Interface.UpdateVehiclesCacheForUser()
+
         if self.Tunnel.Interface.OwnsCar(id, plate) then
             local model = GetEntityModel(vehicle)
             local hash = GetHashKey(vehicle)
@@ -155,15 +155,13 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
 
             -- walk out of the vehicle
             TaskLeaveVehicle(ped, vehicle, 0)
-            Citizen.Wait(3000)
+            Citizen.Wait(2000)
             self.Core.Functions.DeleteVehicle(vehicle)
         else
-            self.Core.Functions.Notify("You don't own this car", 'error', 5000)
-            return Debug("You don't own this car")
+            return self.Core.Functions.Notify("You don't own this car", 'error', 5000)
         end
     else
-        self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
-        return Debug("You can't deposit here")
+        return self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
     end
 end
 
@@ -174,8 +172,7 @@ function ZTH.Functions.TakeVehicle(self, _data)
     local coords = vector4(spawnCoords.pos.x, spawnCoords.pos.y, spawnCoords.pos.z, spawnCoords.heading)
     -- check if the spawnpoint is free
     if not IsSpawnPointFree(coords, 5.0) then
-        self.Core.Functions.Notify("The spawnpoint is not free", 'error', 5000)
-        return Debug("The spawnpoint is not free")
+        return self.Core.Functions.Notify("The spawnpoint is not free", 'error', 5000)
     end
     
     if self.Tunnel.Interface.TakeVehicle(data.plate, data.garage) then
@@ -186,16 +183,16 @@ function ZTH.Functions.TakeVehicle(self, _data)
             self.Core.Functions.Notify("Vehicle taken from the garage", 'success', 5000)
         end, coords, true, true)
     else
-        self.Core.Functions.Notify("You can't take this vehicle", 'error', 5000)
-        return Debug("You can't take this vehicle")
+        return self.Core.Functions.Notify("You can't take this vehicle", 'error', 5000)
     end
 end
 
 function ZTH.Functions.Init()
+    ZTH.IsReady = ZTH.Tunnel.Interface.RequestReady()
     while not ZTH.IsReady do Wait(1000) end
     ZTH.PlayerData = ZTH.Core.Functions.GetPlayerData()
     -- print(json.encode(ZTH.PlayerData, { indent = true }))
-    
+
     ZTH.Functions.RegisterZones(ZTH)
     ZTH.Functions.InitializeGarages(ZTH)
 end

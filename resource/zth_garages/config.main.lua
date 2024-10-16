@@ -1,6 +1,7 @@
 ZTH = {}
 ZTH.Config = {}
 
+ZTH.IsReady = false
 ZTH.Config.Debug = true
 
 local frameworkAutoFind = function()

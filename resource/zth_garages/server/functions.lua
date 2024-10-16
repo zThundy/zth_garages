@@ -67,5 +67,32 @@ function ZTH.Functions.FullUpdateCache(self)
     self.Cache.GarageSpots      =   self.MySQL.ExecQuery("Init - Get all garage spots", MySQL.Sync.fetchAll, "SELECT * FROM `garages_spots`")
     self.Cache.PlayerVehicles   =   self.MySQL.ExecQuery("Init - Get all player vehicles", MySQL.Sync.fetchAll, "SELECT * FROM `player_vehicles`")
 
+    -- set ready
+    ZTH.IsReady = true
+    -- this is sent for restart of the resource
     TriggerClientEvent("zth_garages:client:Init", -1)
+
+    ZTH.Functions.AutoImpountVehicles(self)
 end
+
+function ZTH.Functions.AutoImpountVehicles(self)
+    for k, v in pairs(ZTH.Cache.PlayerVehicles) do
+        if v.state == 0 and v.garage ~= "impound" then
+            v.garage = "impound"
+            self.MySQL.ExecQuery("AutoImpoundVehicles", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `garage` = @garage WHERE `id` = @id", {
+                ['@garage'] = v.garage,
+                ['@id'] = v.id
+            })
+        end
+    end
+end
+
+RegisterCommand("dumpcache", function(source, args)
+    if args[1] == "garages" then
+        print(json.encode(ZTH.Cache.Garages, { indent = true }))
+    elseif args[1] == "garages_spots" then
+        print(json.encode(ZTH.Cache.GarageSpots, { indent = true }))
+    elseif args[1] == "player_vehicles" then
+        print(json.encode(ZTH.Cache.PlayerVehicles, { indent = true }))
+    end
+end)
