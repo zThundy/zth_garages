@@ -187,6 +187,22 @@ function ZTH.Functions.TakeVehicle(self, _data)
     end
 end
 
+function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
+    print("Entered vehicle", vehicle, seat, vehDisplay)
+end
+
+function ZTH.Functions.LeftVehicle(vehicle, seat, vehDisplay)
+    print("Left vehicle", vehicle, seat, vehDisplay)
+end
+
+function ZTH.Functions.EnteringVehicle(vehicle, seat, vehDisplay)
+    print("Entering vehicle", vehicle, seat, vehDisplay)
+end
+
+function ZTH.Functions.EnteredVehicleAborted(vehicle, seat, vehDisplay)
+    print("Entered vehicle aborted", vehicle, seat, vehDisplay)
+end
+
 function ZTH.Functions.Init()
     ZTH.IsReady = ZTH.Tunnel.Interface.RequestReady()
     while not ZTH.IsReady do Wait(1000) end

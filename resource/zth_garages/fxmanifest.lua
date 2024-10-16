@@ -48,5 +48,5 @@ server_scripts {
 
 dependencies {
     "gridsystem",
-    "oxmysql"
+    "oxmysql",
 }
