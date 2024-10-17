@@ -486,7 +486,6 @@ end
 
 ZTH.Tunnel.Interface.GetGarageLevels = function(id)
     local garage = ZTH.Config.Garages[id]
-
     if garage.Settings.JobSettings then
         if ZTH.Config.Shared.Jobs[garage.Settings.JobSettings.job] then
             local jobGrades = {}
@@ -494,8 +493,10 @@ ZTH.Tunnel.Interface.GetGarageLevels = function(id)
                 table.insert(jobGrades, {
                     id = k,
                     grade = k,
-                    name = v.label,
-                    label = v.label,
+                    label = v.name,
+                    name = v.name,
+                    job = garage.Settings.JobSettings.job,
+                    garage = id,
                     isboss = v.isboss or false
                 })
             end
@@ -507,18 +508,32 @@ end
 
 ZTH.Tunnel.Interface.GetGarageUsers = function(id)
     local garage = ZTH.Config.Garages[id]
-
-    if garage.Settings.JobSettins then
+    if garage.Settings.JobSettings then
         local jobPlayers = {}
         for _, v in pairs(ZTH.Cache.Players) do
+            if type(v.job) == "string" then v.job = json.decode(v.job) end
+            if type(v.charinfo) == "string" then  v.charinfo = json.decode(v.charinfo) end
             if v.job.name == garage.Settings.JobSettings.job then
                 table.insert(jobPlayers, {
                     name = v.charinfo.firstname .. " " .. v.charinfo.lastname,
-                    id = v.citizenid
+                    id = v.citizenid,
+                    job = v.job,
+                    license = v.license,
+                    garage = id
                 })
             end
         end
         return jobPlayers
     end
     return {}
+end
+
+ZTH.Tunnel.Interface.BuyVehicles = function(toBuy, totalAmount)
+    print("Total amount: " .. totalAmount)
+    for _, v in pairs(toBuy) do
+        v.plate = v.platePrefix .. MakeRandomString(4)
+    end
+    print(json.encode(toBuy, { indent = true }))
+
+    return true
 end

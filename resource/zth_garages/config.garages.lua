@@ -53,8 +53,7 @@ ZTH.Config.Garages = {
         Settings = {
             parkingType = {
                 ["car"] = true,
-                ["bike"] = false,
-                ["boat"] = false,
+                ["taxi"] = true
             },
             pricePerDay = 200,
             displayName = "Garage 1",
@@ -115,6 +114,14 @@ ZTH.Config.Garages = {
             },
             {
                 pos = vec3(281.38, -326.8, 44.92),
+                heading = 244.76
+            },
+            {
+                pos = vec3(279.84, -330.07, 44.92),
+                heading = 244.76
+            },
+            {
+                pos = vec3(279.0, -333.6, 44.92),
                 heading = 244.76
             }
         }

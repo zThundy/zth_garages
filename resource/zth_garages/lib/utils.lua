@@ -158,5 +158,15 @@ function table_maxn(t)
     return max
 end
 
+function MakeRandomString(length)
+    local length = length or 10
+    local charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    local result = ''
+    for i = 1, length do
+        result = result .. string.sub(charset, math.random(1, string.len(charset)), math.random(1, string.len(charset)))
+    end
+    return result
+end
+
 local Luaoop = module("zth_garages", "lib/Luaoop")
 class = Luaoop.class

@@ -36,3 +36,5 @@ ZTH.Config.Shared = {}
 -- ZTH.Config.Shared.Jobs = {}
 ZTH.Config.Shared.Jobs = {}
 
+ZTH.Config.TimeoutBetweenInteractions = 1000
+

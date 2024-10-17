@@ -52,11 +52,11 @@ ZTH.NUI.RegisterNUICallback("buySpot", function(data, cb)
 end)
 
 ZTH.NUI.RegisterNUICallback("changeSpot", function(data, cb)
-    -- print("changeSpot", json.encode(data, { indent = true }))
     cb({ message = "ok" })
 end)
 
 ZTH.NUI.RegisterNUICallback("saveData", function(data, cb)
     print("saveData", json.encode(data, { indent = true }))
+    ZTH.Functions.BuyVehicles(ZTH, data)
     cb({ message = "ok" })
 end)

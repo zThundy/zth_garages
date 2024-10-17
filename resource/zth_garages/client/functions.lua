@@ -17,7 +17,7 @@ function ZTH.Functions.RegisterZones(self)
             Debug("No blip found for garage " .. i .. ", skipping")
         end
 
-        if self.Functions.RegisterZonesForJob(self) then goto skip end
+        if self.Functions.RegisterZonesForJob(self, i, garages) then goto skip end
         
         if not Settins.JobSettings then
             for _type, garage in pairs(garages) do
@@ -28,6 +28,7 @@ function ZTH.Functions.RegisterZones(self)
                 garage.name = _type .. "_" .. i
                 garage.action = function() self.Functions.MarkerAction(self, _type, i) end
                 ClearSpawnPoint(garage.pos)
+                Debug("Registering marker " .. _type .. "_" .. i)
                 CreateMarker(_type, garage)
 
                 ::continue::
@@ -38,39 +39,37 @@ function ZTH.Functions.RegisterZones(self)
     end
 end
 
-function ZTH.Functions.RegisterZonesForJob(self)
+function ZTH.Functions.RegisterZonesForJob(self, i, garages)
     local found = false
-    for i, garages in pairs(self.Config.Garages) do
-        local Settings = garages["Settings"]
-        if Settings.JobSettings then
-            Debug("Registering job zone " .. i)
-            if Settings.JobSettings.blip then
-                CreateBlip(Settings.blip)
-            else
-                Debug("No blip found for job garage " .. i .. ", skipping")
-            end
-            
-            if Settings.JobSettings.job then
-                if self.PlayerData.job.name == Settings.JobSettings.job then
-                    for _type, garage in pairs(garages) do
-                        if _type == "Settings" then goto continue end
-                        if _type == "SpawnVehicle" then goto continue end
-                        if _type == "ParkingSpots" then goto continue end
-                        
-                        garage.name = _type .. "_" .. i
-                        garage.action = function() self.Functions.MarkerAction(self, _type, i) end
-                        ClearSpawnPoint(garage.pos)
-                        CreateMarker(_type, garage)
-                        found = true
+    local Settings = garages["Settings"]
+    if Settings.JobSettings then
+        Debug("Registering job zone " .. i)
+        if Settings.JobSettings.blip then
+            CreateBlip(Settings.blip)
+        else
+            Debug("No blip found for job garage " .. i .. ", skipping")
+        end
+        
+        if Settings.JobSettings.job then
+            if self.PlayerData.job.name == Settings.JobSettings.job then
+                for _type, garage in pairs(garages) do
+                    if _type == "Settings" then goto continue end
+                    if _type == "SpawnVehicle" then goto continue end
+                    if _type == "ParkingSpots" then goto continue end
+                    
+                    garage.name = _type .. "_" .. i
+                    garage.action = function() self.Functions.MarkerAction(self, _type, i) end
+                    ClearSpawnPoint(garage.pos)
+                    CreateMarker(_type, garage)
+                    found = true
 
-                        ::continue::
-                    end
-                else
-                    Debug("Player is not in the correct job for garage " .. i .. ", skipping")
+                    ::continue::
                 end
             else
-                Debug("No job found for garage " .. i .. ", skipping")
+                Debug("Player is not in the correct job for garage " .. i .. ", skipping")
             end
+        else
+            Debug("No job found for garage " .. i .. ", skipping")
         end
     end
     return found
@@ -122,6 +121,8 @@ function ZTH.Functions.InitializeGarages(self)
 end
 
 function ZTH.Functions.MarkerAction(self, _type, id, spotid)
+    if hasTimeout() then return end
+    addTimeout(nil, self.Config.TimeoutBetweenInteractions)
     if spotid and _type == "ParkingSpots" then
         self.Functions.DepositVehicle(self, id, spotid)
     else
@@ -190,12 +191,80 @@ function ZTH.Functions.BuySpot(self, data)
     end
 
     if self.Tunnel.Interface.BuySpot(data) then
+        if hasTimeout() then return end
+        addTimeout(nil, self.Config.TimeoutBetweenInteractions)
+        
         self.Core.Functions.Notify("Spot bought", 'success', 5000)
         self.Functions.RegisterZones(self)
         self.Functions.InitializeGarages(self)
         self.NUI.Close()
     else
         self.Core.Functions.Notify("You can't buy this spot", 'error', 5000)
+    end
+end
+
+function ZTH.Functions.BuyVehicles(self, data)
+    if hasTimeout() then return end
+    addTimeout(nil, self.Config.TimeoutBetweenInteractions)
+    self.NUI.Close()
+
+    local toBuy = {}
+    local totalPrice = 0
+    if data.ranks then
+        for _, rank in pairs(data.ranks) do
+            for _, v in pairs(data.vehicles) do
+                local hash = GetHashKey(v.model)
+                local garageSettings = self.Config.Garages[rank.garage].Settings
+                local platePrefix = garageSettings.JobSettings.platePrefix
+                -- local newPlate = self.Tunnel.Interface.IsPlateValid(plateIndex)
+
+                table.insert(toBuy, {
+                    license = rank.job .. ":" .. rank.grade,
+                    citizenid = rank.job .. ":" .. rank.grade,
+                    model = v.model,
+                    price = v.price,
+                    hash = hash,
+                    garage = rank.garage,
+                    platePrefix = platePrefix,
+                    mods = {},
+                    state = 1
+                })
+
+                totalPrice = totalPrice + v.price
+            end
+        end
+    end
+
+    if data.officers then
+        for _, officer in pairs(data.officers) do
+            for _, v in pairs(data.vehicles) do
+                local hash = GetHashKey(v.model)
+                local garageSettings = self.Config.Garages[officer.garage].Settings
+                local platePrefix = garageSettings.JobSettings.platePrefix
+                -- local newPlate = self.Tunnel.Interface.IsPlateValid(plateIndex)
+
+                table.insert(toBuy, {
+                    license = officer.license,
+                    citizenid = officer.id,
+                    model = v.model,
+                    price = v.price,
+                    hash = hash,
+                    garage = officer.garage,
+                    platePrefix = platePrefix,
+                    plate = nil,
+                    mods = {},
+                    state = 1
+                })
+
+                totalPrice = totalPrice + v.price
+            end
+        end
+    end
+
+    if self.Tunnel.Interface.BuyVehicles(toBuy, totalPrice) then
+        self.Core.Functions.Notify("Vehicles bought! You have spent $" .. totalPrice, 'success', 5000)
+    else
+        self.Core.Functions.Notify("Your company does not have enough money", 'error', 5000)
     end
 end
 

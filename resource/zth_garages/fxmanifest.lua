@@ -29,6 +29,7 @@ shared_scripts {
     '@qb-core/shared/jobs.lua',
 
 	"lib/utils.lua",
+    "lib/timeouts.lua",
 }
 
 client_scripts {
