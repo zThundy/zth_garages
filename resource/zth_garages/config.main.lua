@@ -2,7 +2,7 @@ ZTH = {}
 ZTH.Config = {}
 
 ZTH.IsReady = false
-ZTH.Config.Debug = true
+ZTH.Config.Debug = false
 
 local frameworkAutoFind = function()
     if GetResourceState('es_extended') ~= 'missing' then
@@ -33,8 +33,7 @@ ZTH.Config.Events.PlayerLogoutServer = ZTH.Config.Core == "ESX" and "esx:playerD
 ZTH.Config.Events.PlayerSetJob = ZTH.Config.Core == "ESX" and "esx:setJob" or "QBCore:Client:OnJobUpdate"
 
 ZTH.Config.Shared = {}
--- ZTH.Config.Shared.Jobs = {}
-ZTH.Config.Shared.Jobs = {}
+ZTH.Config.Shared.Jobs = ZTH.Core.Shared.Jobs
 
 ZTH.Config.TimeoutBetweenInteractions = 1000
 

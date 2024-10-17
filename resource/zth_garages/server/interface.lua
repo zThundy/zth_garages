@@ -529,6 +529,7 @@ ZTH.Tunnel.Interface.GetGarageUsers = function(id)
 end
 
 ZTH.Tunnel.Interface.BuyVehicles = function(toBuy, totalAmount)
+    local account = exports["qb-bossmenu"]:GetAccount()
     print("Total amount: " .. totalAmount)
     for _, v in pairs(toBuy) do
         v.plate = v.platePrefix .. MakeRandomString(4)

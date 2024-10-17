@@ -7,9 +7,8 @@ end)
 AddEventHandler("QBCore:Server:OnJobUpdate", function(job)
     for _, v in pairs(ZTH.Cache.Players) do
         if v.job == job then
-            print("Player: " .. v.name .. " has changed from: " .. json.encode(v.job))
             v.job = job
-            print("Player: " .. v.name .. " has changed job to: " .. json.encode(v.job))
+            Debug("Player: " .. v.name .. " has changed job to: " .. json.encode(v.job))
             break
         end
     end

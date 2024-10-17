@@ -42,8 +42,6 @@ local function tunnel_resolve(itable, key)
         local args = {...}
         local r = nil
 
-        -- print("should be using", mtable.c)
-
         local dest = nil
         if SERVER then
             dest = args[1]

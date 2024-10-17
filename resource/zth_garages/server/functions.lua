@@ -56,7 +56,6 @@ function ZTH.Functions.Init()
 
     ZTH.Cache = {}
     ZTH.Cache.Garages = {}
-    ZTH.Config.Shared.Jobs = QBShared.Jobs
 
     ZTH.Functions.FullUpdateCache(ZTH)
 end
@@ -126,13 +125,3 @@ function ZTH.Functions.UpdateSingleCache(self, type)
         ZTH.Cache.PlayerVehicles = self.MySQL.ExecQuery("UpdateSingleCache - Get all player vehicles", MySQL.Sync.fetchAll, "SELECT * FROM `player_vehicles`")
     end
 end
-
-RegisterCommand("dumpcache", function(source, args)
-    if args[1] == "garages" then
-        print(json.encode(ZTH.Cache.Garages, { indent = true }))
-    elseif args[1] == "garages_spots" then
-        print(json.encode(ZTH.Cache.GarageSpots, { indent = true }))
-    elseif args[1] == "player_vehicles" then
-        print(json.encode(ZTH.Cache.PlayerVehicles, { indent = true }))
-    end
-end)

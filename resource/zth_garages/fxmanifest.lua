@@ -26,7 +26,6 @@ ui_page "html/index.html"
 shared_scripts {
 	"config.main.lua",
     "config.garages.lua",
-    '@qb-core/shared/jobs.lua',
 
 	"lib/utils.lua",
     "lib/timeouts.lua",

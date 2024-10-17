@@ -422,7 +422,6 @@ function ZTH.Functions.Init()
     ZTH.IsReady = ZTH.Tunnel.Interface.RequestReady()
     while not ZTH.IsReady do Wait(1000) end
     ZTH.PlayerData = ZTH.Core.Functions.GetPlayerData()
-    ZTH.Config.Shared.Jobs = QBShared.Jobs
 
     ZTH.Functions.RegisterZones(ZTH)
     ZTH.Functions.InitializeGarages(ZTH)
