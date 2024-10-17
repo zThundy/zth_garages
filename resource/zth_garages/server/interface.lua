@@ -13,6 +13,7 @@ ZTH.Tunnel.Interface.OwnsCar = function(garage, plate)
     if not Player then return end
     local citizenid = Player.PlayerData.citizenid
     
+    ZTH.Functions.UpdateSingleCache(ZTH, "player_vehicles")
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
         if v.plate == plate and v.citizenid == citizenid then
             return true
@@ -169,7 +170,7 @@ ZTH.Tunnel.Interface.GetOwnParkedVehicles = function(id, citizenid)
     return _parkedVehicles
 end
 
-ZTH.Tunnel.Interface.GetParkedVehicles = function(id)
+ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
     local Player = ZTH.Core.Functions.GetPlayer(source)
     if not Player then return end
     local citizenId = Player.PlayerData.citizenid
@@ -189,29 +190,70 @@ ZTH.Tunnel.Interface.GetParkedVehicles = function(id)
     --     ["@citizenid"] = citizenId
     -- })
 
-    
-    local vehicles = {}
-    for k, v in pairs(ZTH.Cache.PlayerVehicles) do
-        if v.garage == id and v.citizenid == citizenId and v.state == 1 then
-            local mods = json.decode(v.mods)
-            local fuelLevel = math.floor(mods.fuelLevel)
-            local engineLevel = math.floor(mods.engineHealth / 10)
-            local bodyLevel = math.floor(mods.bodyHealth / 10)
-
-            table.insert(vehicles, {
-                id = v.id,
-                garage = id,
-                name = string.upper(v.vehicle),
-                plate = v.plate,
-                fuelLevel = fuelLevel,
-                engineLevel = engineLevel,
-                bodyLevel = bodyLevel,
-                mods = json.decode(v.mods)
-            })
+    local isJobGarage = false
+    local canManage = false
+    local garageSettings = ZTH.Config.Garages[id]["Settings"]
+    if garageSettings.JobSettings then
+        isJobGarage = true
+        local jobSettings = garageSettings.JobSettings
+        if jobSettings.manageGrades then
+            local gradeLevel = Player.PlayerData.job.grade.level
+            if jobSettings.manageGrades[tonumber(gradeLevel)] then
+                canManage = true
+            elseif jobSettings.manageGrades[tostring(gradeLevel)] then
+                canManage = true
+            end
         end
     end
 
-    return vehicles
+    
+    local vehicles = {}
+    for k, v in pairs(ZTH.Cache.PlayerVehicles) do
+        if not isJobGarage then
+            if v.garage == id and v.citizenid == citizenId and v.state == 1 then
+                local mods = json.decode(v.mods)
+                local fuelLevel = math.floor(mods.fuelLevel)
+                local engineLevel = math.floor(mods.engineHealth / 10)
+                local bodyLevel = math.floor(mods.bodyHealth / 10)
+
+                table.insert(vehicles, {
+                    id = v.id,
+                    garage = id,
+                    name = string.upper(v.vehicle),
+                    plate = v.plate,
+                    fuelLevel = fuelLevel,
+                    engineLevel = engineLevel,
+                    bodyLevel = bodyLevel,
+                    mods = json.decode(v.mods)
+                })
+            end
+        else
+            local settings = garageSettings.JobSettings
+            -- get all plates that begin with settings.platePrefix
+            if string.sub(v.plate, 1, string.len(settings.platePrefix)) == settings.platePrefix and v.garage == id and v.state == 1 then
+                local mods = json.decode(v.mods)
+                local fuelLevel = math.floor(mods.fuelLevel)
+                local engineLevel = math.floor(mods.engineHealth / 10)
+                local bodyLevel = math.floor(mods.bodyHealth / 10)
+
+                table.insert(vehicles, {
+                    id = v.id,
+                    garage = id,
+                    name = string.upper(v.vehicle),
+                    plate = v.plate,
+                    fuelLevel = fuelLevel,
+                    engineLevel = engineLevel,
+                    bodyLevel = bodyLevel,
+                    mods = json.decode(v.mods)
+                })
+            end
+        end
+    end
+
+    return { 
+        canManage = canManage,
+        vehicles = vehicles
+    }
 end
 
 ZTH.Tunnel.Interface.TakeVehicle = function(plate, id)

@@ -56,7 +56,7 @@ ZTH.Config.Garages = {
             managementPrice = 1000000,
             sellPrice = 5000,
             center = vec3(274.49, -329.74, 44.92),
-            renderDistance = 10.0,
+            renderDistance = 100.0,
             blip = {
                 pos = vec3(275.47, -345.14, 45.17),
                 sprite = 357,
@@ -139,6 +139,53 @@ ZTH.Config.Garages = {
         },
         Deposit = {
             pos = vec3(289.15, -342.04, 44.92),
+            scale = vec3(3.0, 3.0, 1.0),
+            msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
+            type = 1,
+        },
+    },
+    ["garage_police"] = {
+        Settings = {
+            pricePerDay = 0,
+            displayName = "Garage Police",
+            managementPrice = 0,
+            sellPrice = 0,
+            JobSettings = {
+                job = "police",
+                platePrefix = "LSPD",
+                manageGrades = {1, 2, 3},
+                lists = {
+                    cars = {
+                        {model = "police", label = "Police Cruiser", price = 0},
+                        {model = "police2", label = "Police Buffalo", price = 0},
+                        {model = "police3", label = "Police Interceptor", price = 0},
+                        {model = "police4", label = "Police Riot", price = 0},
+                        {model = "policeb", label = "Police Bike", price = 0},
+                        {model = "policet", label = "Police Transport", price = 0},
+                        {model = "fbi", label = "FBI", price = 0},
+                        {model = "fbi2", label = "FBI Buffalo", price = 0},
+                        {model = "sheriff", label = "Sheriff Cruiser", price = 0},
+                        {model = "sheriff2", label = "Sheriff Granger", price = 0},
+                        {model = "riot", label = "Riot", price = 0},
+                        {model = "riot2", label = "Riot 2", price = 0},
+                    },
+                    levels = {
+                        {grade = 1, max = 5},
+                        {grade = 2, max = 10},
+                        {grade = 3, max = 15},
+                    },
+                }
+            }
+        },
+        TakeVehicle = {
+            pos = vec3(454.65, -1017.78, 28.43),
+        },
+        SpawnVehicle = {
+            pos = vec3(443.77, -1021.69, 28.52),
+            heading = 95.88,
+        },
+        Deposit = {
+            pos = vec3(449.09, -1013.84, 28.49),
             scale = vec3(3.0, 3.0, 1.0),
             msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
             type = 1,

@@ -7,7 +7,7 @@ import BuySpotList from './BuySpotList';
 
 import { Button, Tooltip } from '@mui/material';
 import { Settings, Close, Check, ArrowBack } from '@mui/icons-material';
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 import { api } from '../index';
 import { T } from '../lib/language';
 
@@ -37,7 +37,6 @@ function ManageList({ screen, setScreen, title, setTitle, parkingData, vehicles,
 
   return (
     <>
-      
       <div className={["SmallList_listContainer"]}>
         <div className={["SmallList_titleContainer"]}>
           <div className={["SmallList_title"]}>{title}</div>

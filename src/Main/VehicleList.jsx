@@ -10,7 +10,7 @@ import { T } from '../lib/language';
 import { api } from '../index';
 
 function VehicleList({ vehicles }) {
-  const [carData, setCarData] = useState(vehicles);
+  const [carData, _] = useState(vehicles);
 
   return (
     <div className={"VehicleList_container"}>

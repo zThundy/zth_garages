@@ -16,20 +16,64 @@ function ZTH.Functions.RegisterZones(self)
         else
             Debug("No blip found for garage " .. i .. ", skipping")
         end
-        
-        for _type, garage in pairs(garages) do
-            if _type == "Settings" then goto continue end
-            if _type == "SpawnVehicle" then goto continue end
-            if _type == "ParkingSpots" then goto continue end
-            
-            garage.name = _type .. "_" .. i
-            garage.action = function() self.Functions.MarkerAction(self, _type, i) end
-            ClearSpawnPoint(garage.pos)
-            CreateMarker(_type, garage)
 
-            ::continue::
+        if self.Functions.RegisterZonesForJob(self) then goto skip end
+        
+        if not Settins.JobSettings then
+            for _type, garage in pairs(garages) do
+                if _type == "Settings" then goto continue end
+                if _type == "SpawnVehicle" then goto continue end
+                if _type == "ParkingSpots" then goto continue end
+                
+                garage.name = _type .. "_" .. i
+                garage.action = function() self.Functions.MarkerAction(self, _type, i) end
+                ClearSpawnPoint(garage.pos)
+                CreateMarker(_type, garage)
+
+                ::continue::
+            end
+        end
+
+        ::skip::
+    end
+end
+
+function ZTH.Functions.RegisterZonesForJob(self)
+    local found = false
+    for i, garages in pairs(self.Config.Garages) do
+        local Settings = garages["Settings"]
+        if Settings.JobSettings then
+            Debug("Registering job zone " .. i)
+            if Settings.JobSettings.blip then
+                CreateBlip(Settings.blip)
+            else
+                Debug("No blip found for job garage " .. i .. ", skipping")
+            end
+            
+            if Settings.JobSettings.job then
+                if self.PlayerData.job.name == Settings.JobSettings.job then
+                    for _type, garage in pairs(garages) do
+                        if _type == "Settings" then goto continue end
+                        if _type == "SpawnVehicle" then goto continue end
+                        if _type == "ParkingSpots" then goto continue end
+                        
+                        garage.name = _type .. "_" .. i
+                        garage.action = function() self.Functions.MarkerAction(self, _type, i) end
+                        ClearSpawnPoint(garage.pos)
+                        CreateMarker(_type, garage)
+                        found = true
+
+                        ::continue::
+                    end
+                else
+                    Debug("Player is not in the correct job for garage " .. i .. ", skipping")
+                end
+            else
+                Debug("No job found for garage " .. i .. ", skipping")
+            end
         end
     end
+    return found
 end
 
 function ZTH.Functions.InitializeGarages(self)
@@ -93,7 +137,13 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
         end
 
         if _type == "TakeVehicle" then
-            self.Functions.OpenTakeVehicle(self, id)
+            self.Tunnel.Interface.UpdateVehiclesCacheForUser()
+            local garageData = self.Tunnel.Interface.GetParkedVehicleList(id)
+            self.NUI.Open({ screen = "list", garageData = { vehicles = garageData.vehicles } })
+            if garageData.canManage then
+                Debug("Showing manage button")
+                SendNUIMessage({ action = "show-manage", value = garageData.canManage })
+            end
         end
 
         if _type == "BuySpot" then
@@ -105,12 +155,6 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
             self.Functions.DepositVehicle(self, id, spotid)
         end
     end
-end
-
-function ZTH.Functions.OpenTakeVehicle(self, id)
-    self.Tunnel.Interface.UpdateVehiclesCacheForUser()
-    local garageData = self.Tunnel.Interface.GetParkedVehicles(id)
-    self.NUI.Open({ screen = "list", garageData = { vehicles = garageData, showManage = false } })
 end
 
 function ZTH.Functions.BuySpot(self, data)
@@ -167,6 +211,18 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
         end
     elseif not spotid then
         ZTH.Tunnel.Interface.UpdateVehiclesCacheForUser()
+
+        local garageSettings = self.Config.Garages[id].Settings
+        if garageSettings.JobSettings then
+            if self.PlayerData.job.name ~= garageSettings.JobSettings.job then
+                return self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
+            end
+            
+            -- check if the plate starts with the plate prefix
+            if string.sub(plate, 1, string.len(garageSettings.JobSettings.platePrefix)) ~= garageSettings.JobSettings.platePrefix then
+                return self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
+            end
+        end
 
         if self.Tunnel.Interface.OwnsCar(id, plate) then
             local model = GetEntityModel(vehicle)

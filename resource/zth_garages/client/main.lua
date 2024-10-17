@@ -21,6 +21,11 @@ AddEventHandler("QBCore:Client:OnPlayerLoaded", function()
 	ZTH.Functions.Init()
 end)
 
+RegisterNetEvent("QBCore:Client:OnJobUpdate", function(job)
+    ZTH.PlayerData = ZTH.Core.Functions.GetPlayerData()
+	ZTH.Functions.Init()
+end)
+
 -- Enter / Leave vehicle thread
 Citizen.CreateThread(function()
 	while not ZTH.IsReady do Wait(1000) end
@@ -70,21 +75,17 @@ Citizen.CreateThread(function()
 	while not ZTH.IsReady do Wait(1000) end
 
 	while true do
-		Debug("Checking for garages. Closest is " .. tostring(ZTH.CloseGarage))
-
-		Citizen.Wait(5000)
 		if not ZTH.CloseGarage then
 			for id, garage in pairs(ZTH.Config.Garages) do
 				if garage.ParkingSpots then
-					print("Checking garage " .. id)
 					local center = garage.Settings.center
 					local coords = GetEntityCoords(PlayerPedId())
 					local dst = #(coords - center)
 
-					print(dst, garage.Settings.renderDistance)
 					if dst < garage.Settings.renderDistance then
 						ZTH.CloseGarage = id
 						ZTH.Functions.Init()
+						Debug("Closest found! Now is " .. tostring(ZTH.CloseGarage))
 						break
 					end
 				end
@@ -98,7 +99,14 @@ Citizen.CreateThread(function()
 			if dst > garage.Settings.renderDistance then
 				ZTH.Functions.UnloadVehicles(ZTH.CloseGarage)
 				ZTH.CloseGarage = nil
+				Debug("Closest lost! Now is " .. tostring(ZTH.CloseGarage))
 			end
 		end
+		Citizen.Wait(1000)
 	end
+end)
+
+RegisterNetEvent("kok", function(a)
+	local veh = GetVehiclePedIsIn(PlayerPedId(), false)
+	SetVehicleNumberPlateText(veh, a)
 end)

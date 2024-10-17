@@ -38,18 +38,18 @@ class API {
         console.logger("Got response", response)
         try {
           if (!response.ok) {
-            console.error("Response not ok", response)
+            console.logger_error("Response not ok", response)
             return response.status;
           } else {
-            console.logger("Trying to parse response")
+            console.logger("Parsing response...")
             return response.json()
           }
         } catch (error) {
-          console.error("Error parsing response", error)
+          console.logger_error("Error parsing response", error)
           return "ok"
         }
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => console.logger_error('Error:', error));
   }
 }
 

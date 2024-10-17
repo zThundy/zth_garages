@@ -18,6 +18,12 @@ console.logger = function(message, ...params) {
   }
 }
 
+console.logger_error = function(message, ...params) {
+  if (config.debug) {
+    console.error(`[${config.resName}] ${message}`, ...params);
+  }
+}
+
 // const root = ReactDOM.createRoot(document.getElementById('root'));
 
 const RootComponent = () => {
@@ -32,23 +38,25 @@ const RootComponent = () => {
   const HandleScreen = (action, data) => {
     switch (action) {
       case "garage-buy":
-        setTitle(T("TITLE_BUY_SPOT"))
-        setScreen("garage-buy")
-        setParkingData(data)
+        setTitle(T("TITLE_BUY_SPOT"));
+        setScreen("garage-buy");
+        setParkingData(data);
+        setShowManage(false);
         break;
       case "property-buy":
-        setTitle(T("TITLE_BUY_PARKING"))
-        setScreen("property-buy")
+        setTitle(T("TITLE_BUY_PARKING"));
+        setScreen("property-buy");
         break;
       case "garage-manage":
-        setScreen("garage-manage")
-        setParkingData(data)
+        setScreen("garage-manage");
+        setParkingData(data);
+        setShowManage(false);
         break;
       default:
-        setScreen("list")
-        setTitle(T("TITLE_TAKE_VEHICLE"))
-        setVehicles(data.vehicles)
-        setShowManage(data.showManage)
+        setScreen("list");
+        setTitle(T("TITLE_TAKE_VEHICLE"));
+        setVehicles(data.vehicles);
+        setShowManage(false);
         break;
     }
   }
@@ -66,6 +74,10 @@ const RootComponent = () => {
       case "close":
         console.logger('Received NUI message:', JSON.stringify(message));
         setVisible(false);
+        break;
+      case "show-manage":
+        console.logger('Received NUI message:', JSON.stringify(message));
+        setShowManage(Boolean(message.value) || false);
         break;
       case "balance-update":
         api.callEvent("balance-update", event.data);
