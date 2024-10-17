@@ -193,7 +193,7 @@ function ZTH.Functions.BuySpot(self, data)
     if self.Tunnel.Interface.BuySpot(data) then
         if hasTimeout() then return end
         addTimeout(nil, self.Config.TimeoutBetweenInteractions)
-        
+
         self.Core.Functions.Notify("Spot bought", 'success', 5000)
         self.Functions.RegisterZones(self)
         self.Functions.InitializeGarages(self)
@@ -378,10 +378,8 @@ function ZTH.Functions.TakeVehicle(self, _data)
 end
 
 function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
-    print("Entered vehicle", vehicle, seat, vehDisplay)
     local mods = ZTH.Core.Functions.GetVehicleProperties(vehicle)
     local vehicleData = ZTH.Tunnel.Interface.GetParkedVehicleData(mods.plate)
-    -- print(json.encode(vehicleData, { indent = true }))
 
     if vehicleData then
         local garage_id = vehicleData.garage_id
