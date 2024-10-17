@@ -241,6 +241,7 @@ ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
     local spots = {}
     for _, spot in pairs(ZTH.Cache.GarageSpots) do
         spot.spot_id = tonumber(spot.spot_id)
+        local config = ZTH.Config.Garages[id]["ParkingSpots"][spot.spot_id]
         
         for _, vehicle in pairs(ZTH.Cache.PlayerVehicles) do
             vehicle.state = tonumber(vehicle.state)
@@ -260,7 +261,8 @@ ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
                         name = spot.player_name,
                         plate = vehicle.plate,
                         model = vehicle.vehicle,
-                        mods = json.decode(vehicle.mods)
+                        mods = json.decode(vehicle.mods),
+                        config = config
                     }
                     break
                 end
@@ -279,7 +281,8 @@ ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
                 name = spot.player_name,
                 plate = "NOT PARKED",
                 model = "NOT PARKED",
-                mods = {}
+                mods = {},
+                config = config
             }
         end
     end

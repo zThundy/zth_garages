@@ -4,6 +4,8 @@ ZTH.Tunnel = {}
 ZTH.Blips = {}
 ZTH.Zones = {}
 
+ZTH.CloseGarage = nil
+
 ZTH.Tunnel = module("zth_garages", "lib/TunnelV2")
 ZTH.Tunnel.Interface = ZTH.Tunnel.getInterface("zth_garages", "zth_garages_t", "zth_garages_t")
 
@@ -15,6 +17,11 @@ AddEventHandler("zth_garages:client:Init", function()
     ZTH.IsReady = true
 end)
 
+AddEventHandler("QBCore:Client:OnPlayerLoaded", function()
+	ZTH.Functions.Init()
+end)
+
+-- Enter / Leave vehicle thread
 Citizen.CreateThread(function()
 	while not ZTH.IsReady do Wait(1000) end
 
@@ -35,7 +42,7 @@ Citizen.CreateThread(function()
                 ZTH.Functions.EnteringVehicle(vehicle, seat, GetDisplayNameFromVehicleModel(GetEntityModel(vehicle)))
 			elseif not DoesEntityExist(GetVehiclePedIsTryingToEnter(ped)) and not IsPedInAnyVehicle(ped, true) and isEnteringVehicle then
 				-- vehicle entering aborted
-                ZTH.Function.EnteredVehicleAborted(0, 0, "nil")
+                ZTH.Functions.EnteredVehicleAborted(0, 0, "nil")
 				isEnteringVehicle = false
 			elseif IsPedInAnyVehicle(ped, false) then
 				-- suddenly appeared in a vehicle, possible teleport
@@ -55,5 +62,43 @@ Citizen.CreateThread(function()
 			end
 		end
 		Citizen.Wait(50)
+	end
+end)
+
+-- check if vehicles are actually at coords
+Citizen.CreateThread(function()
+	while not ZTH.IsReady do Wait(1000) end
+
+	while true do
+		Debug("Checking for garages. Closest is " .. tostring(ZTH.CloseGarage))
+
+		Citizen.Wait(5000)
+		if not ZTH.CloseGarage then
+			for id, garage in pairs(ZTH.Config.Garages) do
+				if garage.ParkingSpots then
+					print("Checking garage " .. id)
+					local center = garage.Settings.center
+					local coords = GetEntityCoords(PlayerPedId())
+					local dst = #(coords - center)
+
+					print(dst, garage.Settings.renderDistance)
+					if dst < garage.Settings.renderDistance then
+						ZTH.CloseGarage = id
+						ZTH.Functions.Init()
+						break
+					end
+				end
+			end
+		else
+			local garage = ZTH.Config.Garages[ZTH.CloseGarage]
+			local center = garage.Settings.center
+			local coords = GetEntityCoords(PlayerPedId())
+			local dst = #(coords - center)
+
+			if dst > garage.Settings.renderDistance then
+				ZTH.Functions.UnloadVehicles(ZTH.CloseGarage)
+				ZTH.CloseGarage = nil
+			end
+		end
 	end
 end)

@@ -19,79 +19,57 @@ function ZTH.Functions.RegisterZones(self)
         
         for _type, garage in pairs(garages) do
             if _type == "Settings" then goto continue end
-            if _type == "ParkingSpots" then goto spots end
             if _type == "SpawnVehicle" then goto continue end
+            if _type == "ParkingSpots" then goto continue end
             
             garage.name = _type .. "_" .. i
             garage.action = function() self.Functions.MarkerAction(self, _type, i) end
             ClearSpawnPoint(garage.pos)
             CreateMarker(_type, garage)
-            goto continue
-
-            ::spots::
-            self.Functions.RegisterSpotZones(self, i)
 
             ::continue::
         end
     end
 end
 
-function ZTH.Functions.RegisterSpotZones(self, garage_id)
-    local garage = self.Config.Garages[garage_id]
-    local spotsData = ZTH.Tunnel.Interface.GetManagementGarageSpots(garage_id)
-    if not garage.ParkingSpots then return end
-    if not spotsData then return end
-
-    Debug("Registering spot zones for garage " .. garage_id)
-    for j, spot in pairs(garage.ParkingSpots) do
-        ClearSpawnPoint(spot.pos)
-        local _spotData = spotsData[j]
-        if not _spotData then
-            Debug("Skipped _spotData for spot " .. j)
-            goto continue
-        end
-
-        spot.occupiedData = _spotData
-        spot.occupied = spot.occupiedData.user_id
-
-        if spot.occupied and self.PlayerData.citizenid == spot.occupied and spot.occupiedData.state == 0 then
-            spot.name = "ParkingSpots_" .. garage_id .. "_" .. j
-            spot.action = function() self.Functions.MarkerAction(self, "ParkingSpots", garage_id, j) end
-            CreateMarker("ParkingSpots", spot)
-        end
-
-        ::continue::
-    end
-end
-
 function ZTH.Functions.InitializeGarages(self)
-    Debug("Initializing garages")
     for id, garage in pairs(self.Config.Garages) do
+        if self.CloseGarage ~= id then goto continue end
         if not garage["ParkingSpots"] then goto continue end
         local spots = self.Tunnel.Interface.GetManagementGarageSpots(id)
-
+        
+        Debug("Initializing garage " .. id)
         for k, vehicle in pairs(spots) do
+            ClearSpawnPoint(vehicle.config.pos)
+
             vehicle.id = tonumber(vehicle.id)
             if vehicle.state == 1 then
                 local pos = garage["ParkingSpots"][vehicle.id].pos
                 local heading = garage["ParkingSpots"][vehicle.id].heading
                 local coords = vector4(pos.x, pos.y, pos.z, heading)
                 
-                self.Core.Functions.SpawnVehicle(vehicle.mods.model, function(veh)
+                SpawnVehicle(vehicle.mods.model, function(veh)
                     Debug("Spawned vehicle " .. vehicle.plate .. " at " .. id .. " spot " .. vehicle.id)
                     SetVehicleOnGroundProperly(veh)
                     FreezeEntityPosition(veh, true)
                     SetEntityInvincible(veh, true)
+                    if vehicle.user_id ~= self.PlayerData.citizenid then
+                        SetVehicleDoorsLocked(veh, 2)
+                    end
                     self.Core.Functions.SetVehicleProperties(veh, vehicle.mods)
                 end, coords, false)
             else
-                garage["ParkingSpots"][vehicle.id].occupiedData = vehicle
-                garage["ParkingSpots"][vehicle.id].occupied = garage["ParkingSpots"][vehicle.id].occupiedData.user_id
-                garage["ParkingSpots"][vehicle.id].name = "ParkingSpots_" .. vehicle.garage_id .. "_" .. vehicle.id
-                garage["ParkingSpots"][vehicle.id].action = function()
-                    self.Functions.MarkerAction(self, "ParkingSpots", vehicle.garage_id, vehicle.id)
+                if vehicle.user_id == self.PlayerData.citizenid then
+                    garage["ParkingSpots"][vehicle.id].occupiedData = vehicle
+                    garage["ParkingSpots"][vehicle.id].occupied = garage["ParkingSpots"][vehicle.id].occupiedData.user_id
+                    garage["ParkingSpots"][vehicle.id].name = "ParkingSpots_" .. vehicle.garage_id .. "_" .. vehicle.id
+                    garage["ParkingSpots"][vehicle.id].action = function()
+                        self.Functions.MarkerAction(self, "ParkingSpots", vehicle.garage_id, vehicle.id)
+                    end
+                    CreateMarker("ParkingSpots", garage["ParkingSpots"][vehicle.id])
+                else
+                    Debug("Skipped vehicle " .. vehicle.plate .. " at " .. id .. " spot " .. vehicle.id)
                 end
-                CreateMarker("ParkingSpots", garage["ParkingSpots"][vehicle.id])
             end
         end
 
@@ -143,7 +121,6 @@ function ZTH.Functions.BuySpot(self, data)
 
     if self.Tunnel.Interface.BuySpot(data) then
         self.Core.Functions.Notify("Spot bought", 'success', 5000)
-        self.Functions.RegisterSpotZones(self, data.parkingId)
         self.Functions.RegisterZones(self)
         self.Functions.InitializeGarages(self)
         self.NUI.Close()
@@ -183,7 +160,6 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
             TaskLeaveVehicle(ped, vehicle, 0)
             Citizen.Wait(2000)
             self.Core.Functions.DeleteVehicle(vehicle)
-            self.Functions.RegisterSpotZones(self, id)
             self.Functions.RegisterZones(self)
             self.Functions.InitializeGarages(self)
         else
@@ -232,9 +208,10 @@ function ZTH.Functions.TakeVehicle(self, _data)
     end
     
     if self.Tunnel.Interface.TakeVehicle(data.plate, data.garage) then
-        self.Core.Functions.SpawnVehicle(data.mods.model, function(vehicle)
+        SpawnVehicle(data.mods.model, function(vehicle)
             ZTH.NUI.Close()
             self.Core.Functions.SetVehicleProperties(vehicle, data.mods)
+            TriggerEvent('vehiclekeys:client:SetOwner', data.plate)
             self.Core.Functions.Notify("Vehicle taken from the garage", 'success', 5000)
         end, coords, true, true)
     else
@@ -254,11 +231,11 @@ function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
         local coords = vector4(vehCoords.x, vehCoords.y, vehCoords.z, vehicleData.spot_config.heading)
         ZTH.Tunnel.Interface.SetParkedVehicleState(vehicleData, 0)
         DeleteVehicle(vehicle)
-        ZTH.Functions.RegisterSpotZones(ZTH, garage_id)
         ZTH.Functions.RegisterZones(ZTH)
         ZTH.Functions.InitializeGarages(ZTH)
-        ZTH.Core.Functions.SpawnVehicle(vehicleData.mods.model, function(veh)
+        SpawnVehicle(vehicleData.mods.model, function(veh)
             ZTH.Core.Functions.SetVehicleProperties(veh, vehicleData.mods)
+            TriggerEvent('vehiclekeys:client:SetOwner', mods.plate)
             ZTH.Core.Functions.Notify("Vehicle taken from the garage", 'success', 5000)
         end, coords, true, true)
     else
@@ -276,6 +253,13 @@ end
 
 function ZTH.Functions.EnteredVehicleAborted(vehicle, seat, vehDisplay)
     -- print("Entered vehicle aborted", vehicle, seat, vehDisplay)
+end
+
+function ZTH.Functions.UnloadVehicles(id)
+    local configSpots = ZTH.Config.Garages[id].ParkingSpots
+    for _, spot in pairs(configSpots) do
+        ClearSpawnPoint(spot.pos)
+    end
 end
 
 function ZTH.Functions.Init()

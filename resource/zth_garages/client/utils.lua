@@ -111,3 +111,27 @@ function GetPedVehicleSeat(ped)
     end
     return -2
 end
+
+function LoadModel(model)
+    if HasModelLoaded(model) then return end
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(0)
+    end
+end
+
+function SpawnVehicle(model, cb, coords, isnetworked, teleportInto)
+    model = type(model) == 'string' and joaat(model) or model
+    if not IsModelInCdimage(model) then return end
+    if not isnetworked then isnetworked = false end
+    LoadModel(model)
+    local veh = CreateVehicle(model, coords.x, coords.y, coords.z, coords.w, isnetworked, false)
+    SetVehicleHasBeenOwnedByPlayer(veh, true)
+    SetVehicleNeedsToBeHotwired(veh, false)
+    SetVehRadioStation(veh, 'OFF')
+    SetVehicleFuelLevel(veh, 100.0)
+    SetModelAsNoLongerNeeded(model)
+    SetVehicleOnGroundProperly(veh)
+    if teleportInto then TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1) end
+    if cb then cb(veh) end
+end
