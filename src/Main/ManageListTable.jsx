@@ -1,16 +1,42 @@
 
 import "./ManageListTable.css";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Checkbox } from '@mui/material';
 import { pad } from '../lib/utils';
 import { T } from '../lib/language';
 
-function ManageListTable() {
-  const [carData, setCarData] = useState([]);
-  const [officerData, setOfficerData] = useState([]);
-  const [rankData, setRankData] = useState([]);
+import { api } from '../index';
+
+function ManageListTable({ manageData }) {
+  const [carData, setCarData] = useState(manageData.vehicles);
+  const [officerData, setOfficerData] = useState(manageData.users);
+  const [rankData, setRankData] = useState(manageData.levels);
+
+  useEffect(() => {
+    api.registerEvent("appliedChanges", () => {
+      setCarData((_carData) => {
+        setOfficerData((_officerData) => {
+          setRankData((_rankData) => {
+            // get all checked values and combine themm in one single array
+            const filteredCars = _carData.filter((item) => item.selected);
+            const filteredOfficers = _officerData.filter((item) => item.selected);
+            const filteredRanks = _rankData.filter((item) => item.selected);
+      
+            api.post("saveData", {
+              vehicles: filteredCars,
+              officers: filteredOfficers,
+              ranks: filteredRanks
+            });
+            return _rankData;
+          })
+          return _officerData;
+        })
+        return _carData;
+      })
+    })
+  }, []);
 
   return (
     <div className={"ManageListTable_table"}>
@@ -28,6 +54,17 @@ function ManageListTable() {
                       disableFocusRipple
                       disableRipple
                       disableTouchRipple
+                      onChange={() => {
+                        setOfficerData(() => officerData.map((officer) => {
+                          if (officer.id === usr.id) {
+                            return {
+                              ...officer,
+                              selected: !officer.selected
+                            }
+                          }
+                          return officer;
+                        }))
+                      }}
                     />
                   </div>
                 </div>
@@ -49,6 +86,17 @@ function ManageListTable() {
                       disableFocusRipple
                       disableRipple
                       disableTouchRipple
+                      onChange={() => {
+                        setRankData(() => rankData.map((rank) => {
+                          if (rank.id === car.id) {
+                            return {
+                              ...rank,
+                              selected: !rank.selected
+                            }
+                          }
+                          return rank;
+                        }))
+                      }}
                     />
                   </div>
                 </div>
@@ -72,6 +120,17 @@ function ManageListTable() {
                       disableFocusRipple
                       disableRipple
                       disableTouchRipple
+                      onChange={() => {
+                        setCarData(() => carData.map((vehicle) => {
+                          if (vehicle.id === car.id) {
+                            return {
+                              ...vehicle,
+                              selected: !vehicle.selected
+                            }
+                          }
+                          return vehicle;
+                        }))
+                      }}
                     />
                   </div>
                 </div>

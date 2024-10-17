@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-// import reportWebVitals from './reportWebVitals';
 
 import Main from './Main/Main';
 
@@ -34,6 +33,7 @@ const RootComponent = () => {
   const [vehicles, setVehicles] = useState([]);
   const [screen, setScreen] = useState('list');
   const [title, setTitle] = useState(T("UNKNOWN"));
+  const [manageData, setManageData] = useState({});
 
   const HandleScreen = (action, data) => {
     switch (action) {
@@ -77,6 +77,7 @@ const RootComponent = () => {
         break;
       case "show-manage":
         console.logger('Received NUI message:', JSON.stringify(message));
+        setManageData(message.data);
         setShowManage(Boolean(message.value) || false);
         break;
       case "balance-update":
@@ -167,6 +168,7 @@ const RootComponent = () => {
           setTitle={setTitle}
           vehicles={vehicles}
           showManage={showManage}
+          manageData={manageData}
         />
       }
     </React.StrictMode>

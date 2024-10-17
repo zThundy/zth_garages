@@ -128,6 +128,10 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
         Debug("MarkerAction: " .. _type .. " " .. id)
 
         if _type == "Manage" then
+            if IsPedDriving() then
+                return self.Core.Functions.Notify("You can't manage a garage while driving", 'error', 5000)
+            end
+
             if self.Tunnel.Interface.IsOwnerOfGarage(id) then
                 local managementTable = self.Tunnel.Interface.GetManagementGarageData(id)
                 self.NUI.Open({ screen = "garage-manage", garageData = managementTable })
@@ -137,16 +141,38 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
         end
 
         if _type == "TakeVehicle" then
+            if IsPedDriving() then
+                return self.Core.Functions.Notify("You can't take a vehicle while driving", 'error', 5000)
+            end
+
             self.Tunnel.Interface.UpdateVehiclesCacheForUser()
             local garageData = self.Tunnel.Interface.GetParkedVehicleList(id)
             self.NUI.Open({ screen = "list", garageData = { vehicles = garageData.vehicles } })
             if garageData.canManage then
                 Debug("Showing manage button")
-                SendNUIMessage({ action = "show-manage", value = garageData.canManage })
+                local data = {}
+                data.vehicles = {}
+                data.levels = {}
+                data.users = {}
+
+                for k, v in pairs(self.Config.Garages[id].Settings.JobSettings.lists.cars) do
+                    v.id = v.model
+                    v.name = v.label
+                    table.insert(data.vehicles, v)
+                end
+                
+                data.users = self.Tunnel.Interface.GetGarageUsers(id)
+                data.levels = self.Tunnel.Interface.GetGarageLevels(id)
+
+                SendNUIMessage({ action = "show-manage", value = garageData.canManage, data = data })
             end
         end
 
         if _type == "BuySpot" then
+            if IsPedDriving() then
+                return self.Core.Functions.Notify("You can't buy a spot while driving", 'error', 5000)
+            end
+
             local managementTable = self.Tunnel.Interface.GetManagementGarageData(id)
             self.NUI.Open({ screen = "garage-buy", garageData = managementTable })
         end
@@ -175,8 +201,16 @@ end
 
 function ZTH.Functions.DepositVehicle(self, id, spotid)
     local ped = PlayerPedId()
-    if not IsPedInAnyVehicle(ped, false) then
+    local garageSettings = self.Config.Garages[id].Settings
+    local drivingType = IsPedDriving()
+    if not drivingType then
         return self.Core.Functions.Notify("You are not in a vehicle", 'error', 5000)
+    end
+
+    if garageSettings.parkingType then
+        if not garageSettings.parkingType[drivingType] then
+            return self.Core.Functions.Notify("You can't deposit this vehicle here", 'error', 5000)
+        end
     end
 
     local vehicle = GetVehiclePedIsIn(ped, false)
@@ -212,7 +246,6 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
     elseif not spotid then
         ZTH.Tunnel.Interface.UpdateVehiclesCacheForUser()
 
-        local garageSettings = self.Config.Garages[id].Settings
         if garageSettings.JobSettings then
             if self.PlayerData.job.name ~= garageSettings.JobSettings.job then
                 return self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
@@ -322,6 +355,7 @@ function ZTH.Functions.Init()
     ZTH.IsReady = ZTH.Tunnel.Interface.RequestReady()
     while not ZTH.IsReady do Wait(1000) end
     ZTH.PlayerData = ZTH.Core.Functions.GetPlayerData()
+    ZTH.Config.Shared.Jobs = QBShared.Jobs
 
     ZTH.Functions.RegisterZones(ZTH)
     ZTH.Functions.InitializeGarages(ZTH)

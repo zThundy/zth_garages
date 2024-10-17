@@ -32,3 +32,7 @@ ZTH.Config.Events.PlayerLoaded = ZTH.Config.Core == "ESX" and "esx:playerLoaded"
 ZTH.Config.Events.PlayerLogoutServer = ZTH.Config.Core == "ESX" and "esx:playerDropped" or "QBCore:Server:OnPlayerUnload"
 ZTH.Config.Events.PlayerSetJob = ZTH.Config.Core == "ESX" and "esx:setJob" or "QBCore:Client:OnJobUpdate"
 
+ZTH.Config.Shared = {}
+-- ZTH.Config.Shared.Jobs = {}
+ZTH.Config.Shared.Jobs = {}
+

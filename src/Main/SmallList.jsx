@@ -11,7 +11,7 @@ import { Settings, Close, Check, ArrowBack } from '@mui/icons-material';
 import { api } from '../index';
 import { T } from '../lib/language';
 
-function ManageList({ screen, setScreen, title, setTitle, parkingData, vehicles, showManage }) {
+function ManageList({ screen, setScreen, title, setTitle, parkingData, vehicles, showManage, manageData }) {
   const handleClick = (action) => {
     switch (action) {
       case "manage":
@@ -64,6 +64,7 @@ function ManageList({ screen, setScreen, title, setTitle, parkingData, vehicles,
                 <Button
                   style={{ backgroundColor: 'rgb(120, 200, 120)' }}
                   variant="text"
+                  onClick={() => api.callEvent("appliedChanges", {})}
                 >
                   <Check />
                 </Button>
@@ -103,7 +104,7 @@ function ManageList({ screen, setScreen, title, setTitle, parkingData, vehicles,
 
         <div className={["SmallList_divider"]}></div>
 
-        {screen === "manage" ? <ManageListTable /> : null}
+        {screen === "manage" ? <ManageListTable manageData={manageData} /> : null}
         {screen === "list" ? <VehicleList vehicles={vehicles} /> : null}
         {screen === "garage-buy" ? <BuySpotList parkingData={parkingData} /> : null}
       </div>

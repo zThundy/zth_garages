@@ -17,7 +17,7 @@ const theme = createTheme({
   cssVariables: true
 });
 
-function Main({ parkingData, screen, title, setScreen, setTitle, vehicles, showManage }) {
+function Main({ parkingData, screen, title, setScreen, setTitle, vehicles, showManage, manageData }) {
   return (
     <ThemeProvider theme={theme}>
       <MainContainer
@@ -28,6 +28,7 @@ function Main({ parkingData, screen, title, setScreen, setTitle, vehicles, showM
         setTitle={setTitle}
         vehicles={vehicles}
         showManage={showManage}
+        manageData={manageData}
       />
       <div
         style={{

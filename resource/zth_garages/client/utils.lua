@@ -5,7 +5,7 @@ function CreateBlip(data)
     if not data.name then return Debug("CreateBlip: data.name is required") end
 
     for k, v in pairs(ZTH.Blips) do
-        if v.data.name == data.name .. "_" .. v.blip then
+        if v.data.id == data.name .. "_" .. v.blip then
             RemoveBlip(v.blip)
             table.remove(ZTH.Blips, k)
         end
@@ -22,7 +22,7 @@ function CreateBlip(data)
     AddTextComponentString(data.name)
     EndTextCommandSetBlipName(blip)
     
-    data.name = data.name .. "_" .. blip
+    data.id = data.name .. "_" .. blip
     table.insert(ZTH.Blips, { blip = blip, data = data })
     return blip
 end
@@ -134,4 +134,38 @@ function SpawnVehicle(model, cb, coords, isnetworked, teleportInto)
     SetVehicleOnGroundProperly(veh)
     if teleportInto then TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1) end
     if cb then cb(veh) end
+end
+
+function IsPedDriving()
+    local ped = PlayerPedId()
+    local type = false
+    if IsPedInAnyBoat(ped) then
+        type = "boat"
+    elseif IsPedInAnyHeli(ped) then
+        type = "heli"
+    elseif IsPedInAnyPlane(ped) then
+        type = "plane"
+    elseif IsPedInAnySub(ped) then
+        type = "sub"
+    elseif IsPedInAnyPoliceVehicle(ped) then
+        type = "police"
+    elseif IsPedInAnyTrain(ped) then
+        type = "train"
+    elseif IsPedInAnyTaxi(ped) then
+        type = "taxi"
+    elseif IsPedInAnyVehicle(ped, false) then
+        local model = GetEntityModel(GetVehiclePedIsIn(ped, false))
+        if IsThisModelACar(model) then
+            type = "car"
+        elseif IsThisModelABike(model) then
+            type = "bike"
+        elseif IsThisModelABicycle(model) then
+            type = "bicycle"
+        elseif IsThisModelAQuadbike(model) then
+            type = "quadbike"
+        else
+            type = "vehicle"
+        end
+    end
+    return type
 end

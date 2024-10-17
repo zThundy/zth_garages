@@ -175,21 +175,6 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
     if not Player then return end
     local citizenId = Player.PlayerData.citizenid
 
-    -- local parkedVehicles = ZTH.MySQL.ExecQuery("Get parked vehicles", MySQL.Sync.fetchAll,
-    --     [[
-    --         SELECT
-    --             `id`, `vehicle`, `plate`, `fuel`, `engine`, `body`,
-    --             `state`, `garage`, `citizenid`, `mods`
-    --         FROM `player_vehicles`
-    --         WHERE `garage` = @garage
-    --         AND `citizenid` = @citizenid
-    --         AND `state` = 1
-    --     ]]
-    -- , {
-    --     ['@garage'] = id,
-    --     ["@citizenid"] = citizenId
-    -- })
-
     local isJobGarage = false
     local canManage = false
     local garageSettings = ZTH.Config.Garages[id]["Settings"]
@@ -206,7 +191,6 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
         end
     end
 
-    
     local vehicles = {}
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
         if not isJobGarage then
@@ -230,22 +214,24 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
         else
             local settings = garageSettings.JobSettings
             -- get all plates that begin with settings.platePrefix
-            if string.sub(v.plate, 1, string.len(settings.platePrefix)) == settings.platePrefix and v.garage == id and v.state == 1 then
-                local mods = json.decode(v.mods)
-                local fuelLevel = math.floor(mods.fuelLevel)
-                local engineLevel = math.floor(mods.engineHealth / 10)
-                local bodyLevel = math.floor(mods.bodyHealth / 10)
+            if string.sub(v.plate, 1, string.len(settings.platePrefix)) == settings.platePrefix then
+                if v.garage == id and v.state == 1 and v.citizenid == citizenId then
+                    local mods = json.decode(v.mods)
+                    local fuelLevel = math.floor(mods.fuelLevel)
+                    local engineLevel = math.floor(mods.engineHealth / 10)
+                    local bodyLevel = math.floor(mods.bodyHealth / 10)
 
-                table.insert(vehicles, {
-                    id = v.id,
-                    garage = id,
-                    name = string.upper(v.vehicle),
-                    plate = v.plate,
-                    fuelLevel = fuelLevel,
-                    engineLevel = engineLevel,
-                    bodyLevel = bodyLevel,
-                    mods = json.decode(v.mods)
-                })
+                    table.insert(vehicles, {
+                        id = v.id,
+                        garage = id,
+                        name = string.upper(v.vehicle),
+                        plate = v.plate,
+                        fuelLevel = fuelLevel,
+                        engineLevel = engineLevel,
+                        bodyLevel = bodyLevel,
+                        mods = json.decode(v.mods)
+                    })
+                end
             end
         end
     end
@@ -496,4 +482,43 @@ ZTH.Tunnel.Interface.GetBalance = function(id)
 
     local garage = ZTH.Functions.GetGarageFromCahce(id)
     return garage.balance
+end
+
+ZTH.Tunnel.Interface.GetGarageLevels = function(id)
+    local garage = ZTH.Config.Garages[id]
+
+    if garage.Settings.JobSettings then
+        if ZTH.Config.Shared.Jobs[garage.Settings.JobSettings.job] then
+            local jobGrades = {}
+            for k, v in pairs(ZTH.Config.Shared.Jobs[garage.Settings.JobSettings.job].grades) do
+                table.insert(jobGrades, {
+                    id = k,
+                    grade = k,
+                    name = v.label,
+                    label = v.label,
+                    isboss = v.isboss or false
+                })
+            end
+            return jobGrades
+        end
+    end
+    return {}
+end
+
+ZTH.Tunnel.Interface.GetGarageUsers = function(id)
+    local garage = ZTH.Config.Garages[id]
+
+    if garage.Settings.JobSettins then
+        local jobPlayers = {}
+        for _, v in pairs(ZTH.Cache.Players) do
+            if v.job.name == garage.Settings.JobSettings.job then
+                table.insert(jobPlayers, {
+                    name = v.charinfo.firstname .. " " .. v.charinfo.lastname,
+                    id = v.citizenid
+                })
+            end
+        end
+        return jobPlayers
+    end
+    return {}
 end

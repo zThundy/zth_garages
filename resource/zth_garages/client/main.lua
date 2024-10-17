@@ -11,20 +11,10 @@ ZTH.Tunnel.Interface = ZTH.Tunnel.getInterface("zth_garages", "zth_garages_t", "
 
 Citizen.CreateThread(ZTH.Functions.Init)
 
-RegisterNetEvent("zth_garages:client:Init")
-AddEventHandler("zth_garages:client:Init", function()
-    Debug("Script is ready")
-    ZTH.IsReady = true
-end)
-
-AddEventHandler("QBCore:Client:OnPlayerLoaded", function()
-	ZTH.Functions.Init()
-end)
-
-RegisterNetEvent("QBCore:Client:OnJobUpdate", function(job)
-    ZTH.PlayerData = ZTH.Core.Functions.GetPlayerData()
-	ZTH.Functions.Init()
-end)
+RegisterNetEvent("zth_garages:client:Init", function() ZTH.IsReady = true end)
+AddEventHandler("QBCore:Client:OnPlayerLoaded", function() ZTH.Functions.Init() end)
+RegisterNetEvent("QBCore:Client:OnJobUpdate", function(job) ZTH.Functions.Init() end)
+AddEventHandler("QBCore:Client:SharedUpdate", function(data) ZTH.Config.Shared = data end)
 
 -- Enter / Leave vehicle thread
 Citizen.CreateThread(function()

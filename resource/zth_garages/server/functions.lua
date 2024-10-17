@@ -56,6 +56,7 @@ function ZTH.Functions.Init()
 
     ZTH.Cache = {}
     ZTH.Cache.Garages = {}
+    ZTH.Config.Shared.Jobs = QBShared.Jobs
 
     ZTH.Functions.FullUpdateCache(ZTH)
 end
@@ -65,6 +66,7 @@ function ZTH.Functions.FullUpdateCache(self)
     self.Cache.Garages          =   self.MySQL.ExecQuery("Init - Get all garages", MySQL.Sync.fetchAll, "SELECT * FROM `garages`")
     self.Cache.GarageSpots      =   self.MySQL.ExecQuery("Init - Get all garage spots", MySQL.Sync.fetchAll, "SELECT * FROM `garages_spots`")
     self.Cache.PlayerVehicles   =   self.MySQL.ExecQuery("Init - Get all player vehicles", MySQL.Sync.fetchAll, "SELECT * FROM `player_vehicles`")
+    self.Cache.Players          =   self.MySQL.ExecQuery("Init - Get all players", MySQL.Sync.fetchAll, "SELECT * FROM `players`")
 
     -- set ready
     ZTH.IsReady = true
@@ -76,6 +78,20 @@ end
 
 function ZTH.Functions.AutoImpountVehicles(self)
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
+        local garage = self.Config.Garages[v.garage]
+        if garage and garage.Settings then
+            local jobSettings = garage.Settings.JobSettings
+            if jobSettings then
+                if not jobSettings.impoundVehicles then
+                    if string.sub(v.plate, 1, string.len(jobSettings.platePrefix)) == jobSettings.platePrefix then
+                        v.state = 1
+                        self.MySQL.ExecQuery("AutoStateToOne", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `state` = 1 WHERE `id` = @id", { ['@id'] = v.id })
+                        goto continue
+                    end
+                end
+            end
+        end
+
         if v.state == 0 and v.garage ~= "impound" and v.parking_spot == nil then
             v.garage = "impound"
             self.MySQL.ExecQuery("AutoImpoundVehicles", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `garage` = @garage WHERE `id` = @id", {
@@ -87,6 +103,8 @@ function ZTH.Functions.AutoImpountVehicles(self)
             -- check if veh is actually parked in the spot and the until date is still valid.
             -- else imound the mfk
         end
+
+        ::continue::
     end
 end
 

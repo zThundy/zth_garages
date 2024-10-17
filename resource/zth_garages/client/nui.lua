@@ -47,12 +47,16 @@ ZTH.NUI.RegisterNUICallback("money", function(data, cb)
 end)
 
 ZTH.NUI.RegisterNUICallback("buySpot", function(data, cb)
-    print("buySpot", json.encode(data, { indent = true }))
     ZTH.Functions.BuySpot(ZTH, data)
     cb({ message = "ok" })
 end)
 
 ZTH.NUI.RegisterNUICallback("changeSpot", function(data, cb)
-    print("changeSpot", json.encode(data, { indent = true }))
+    -- print("changeSpot", json.encode(data, { indent = true }))
+    cb({ message = "ok" })
+end)
+
+ZTH.NUI.RegisterNUICallback("saveData", function(data, cb)
+    print("saveData", json.encode(data, { indent = true }))
     cb({ message = "ok" })
 end)

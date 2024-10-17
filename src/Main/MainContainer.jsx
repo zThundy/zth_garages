@@ -5,12 +5,11 @@ import SmallList from './SmallList';
 import BuyParkingScreen from './BuyParkingScreen';
 import ManageParkingScreen from './ManageParkingScreen';
 
-import { T } from '../lib/language';
+// import { T } from '../lib/language';
 
-import { useState } from 'react';
+// import { useState } from 'react';
 
-function MainContainer({ parkingData, screen, title, setScreen, setTitle, vehicles, showManage }) {
-
+function MainContainer({ parkingData, screen, title, setScreen, setTitle, vehicles, showManage, manageData }) {
   return (
     <>
       {
@@ -25,6 +24,7 @@ function MainContainer({ parkingData, screen, title, setScreen, setTitle, vehicl
                 parkingData={parkingData}
                 vehicles={vehicles}
                 showManage={showManage}
+                manageData={manageData}
               />
             </div>
           </div>
