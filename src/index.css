@@ -23,7 +23,3 @@ body {
   border-radius: 0 0 1rem 0;
   background: var(--mui-palette-primary-main);
 }
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}

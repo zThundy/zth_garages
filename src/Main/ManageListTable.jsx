@@ -8,11 +8,20 @@ import { pad } from '../lib/utils';
 import { T } from '../lib/language';
 
 import { api } from '../index';
+import { DriveEta, Numbers, Person } from "@mui/icons-material";
 
 function ManageListTable({ manageData }) {
   const [carData, setCarData] = useState(manageData.vehicles || []);
   const [officerData, setOfficerData] = useState(manageData.users || []);
   const [rankData, setRankData] = useState(manageData.levels || []);
+
+  const splitAndTrim = (string, length) => {
+    if (!length) length = 30;
+    if (string && string.length > length) {
+      return string.slice(0, length).trim() + "...";
+    }
+    return string.trim();
+  }
 
   useEffect(() => {
     api.registerEvent("appliedChanges", () => {
@@ -41,14 +50,19 @@ function ManageListTable({ manageData }) {
   return (
     <div className={"ManageListTable_table"}>
       <div className={"ManageListTable_FirstRow"}>
-        <div className={"ManageListTable_FirstRow_Content_Container"} style={{ margin: "0 0 .2rem 0" }}>
-          <div className={"ManageListTable_Header"}>{T("USERS")}</div>
+        <div className={"ManageListTable_FirstRow_Content_Container"}>
+          <div className={"ManageListTable_Header"}>
+            <div className={"ManageListTable_Header_Content_Container"}>
+              <Person />
+              {T("USERS")}
+            </div>
+          </div>
           <div className={"ManageListTable_Column"}>
             {
               officerData.map((usr) => {
                 return (
                   <div key={usr.id} className={"ManageListTable_ContentRow"}>
-                    <span>{usr.name}</span>
+                    <span>{splitAndTrim(usr.name, 30)}</span>
                     <div className={"ManageListTable_ContentRow"}>
                       <div className={"ManageListTable_ColumnButtons"}>
                         <Checkbox
@@ -75,14 +89,19 @@ function ManageListTable({ manageData }) {
             }
           </div>
         </div>
-        <div className={"ManageListTable_FirstRow_Content_Container"} style={{ margin: ".2rem 0 0 0" }}>
-          <div className={"ManageListTable_Header"}>{T("LEVELS")}</div>
+        <div className={"ManageListTable_FirstRow_Content_Container"}>
+          <div className={"ManageListTable_Header"}>
+            <div className={"ManageListTable_Header_Content_Container"}>
+              <Numbers />
+              {T("LEVELS")}
+            </div>
+          </div>
           <div className={"ManageListTable_Column"}>
             {
               rankData.map((car) => {
                 return (
                   <div key={car.id} className={"ManageListTable_ContentRow"}>
-                    <span>{car.name}</span>
+                    <span>{splitAndTrim(car.name)}</span>
                     <div className={"ManageListTable_ContentRow"}>
                       <div className={"ManageListTable_ColumnButtons"}>
                         <Checkbox
@@ -111,12 +130,18 @@ function ManageListTable({ manageData }) {
         </div>
       </div>
       <div className={"ManageListTable_SecondRow"}>
+        <div className={"ManageListTable_Header"}>
+          <div className={"ManageListTable_Header_Content_Container"}>
+            <DriveEta />
+            {T("VEHICLES")}
+          </div>
+        </div>
         <div className={"ManageListTable_SecondRow_Column"}>
           {
             carData.map((car) => {
               return (
                 <div key={car.id} className={"ManageListTable_ContentRow"}>
-                  <span>{car.name}</span>
+                  <span>{splitAndTrim(car.name, 20)}</span>
                   <div className={"ManageListTable_ContentRow"}>
                     ${pad(car.price)}
                     <div className={"ManageListTable_ColumnButtons"}>

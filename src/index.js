@@ -164,15 +164,45 @@ const RootComponent = () => {
       for (let i = 0; i < 50; i++) {
         testCarData.push({
           id: i,
-          name: `Car ${i + 1}`,
+          name: `Car ${Math.floor(Math.random() * 10000)}`,
           // make a plate number for each car with a random number
-          plate: `ABC-${Math.floor(Math.random() * 1000)}`,
+          plate: `AB${Math.floor(Math.random() * 10000)}CD`,
           // random number between 0 and 100 for fuel, engine, and body levels
           fuelLevel: Math.floor(Math.random() * 100),
           engineLevel: Math.floor(Math.random() * 100),
           bodyLevel: Math.floor(Math.random() * 100),
         })
       }
+      let vehicles = []
+      for (let i = 0; i < 50; i++) {
+        vehicles.push({
+          id: i,
+          name: `Car with long name ${Math.floor(Math.random() * 10000)}`,
+          price : Math.floor(Math.random() * 10000),
+        })
+      }
+      let officers = []
+      for (let i = 0; i < 50; i++) {
+        officers.push({
+          id: i,
+          name: `Officer ${Math.floor(Math.random() * 10000)}`,
+          salary : Math.floor(Math.random() * 10000),
+        })
+      }
+      let levels = []
+      for (let i = 0; i < 50; i++) {
+        levels.push({
+          id: i,
+          name: `Level ${Math.floor(Math.random() * 10000)}`,
+          price : Math.floor(Math.random() * 10000),
+        })
+      }
+      const testManageData = {
+        levels: levels,
+        vehicles: vehicles,
+        users: officers
+      }
+      setManageData(testManageData)
       setVehicles(testCarData)
     }
   }, [])
