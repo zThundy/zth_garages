@@ -4,7 +4,7 @@
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
-  /* background-image: url("https://i.pinimg.com/originals/e2/6f/ba/e26fba8d9f2102d2dd8699c80b8ddc78.jpg"); */
+  background-image: url("https://i.pinimg.com/originals/e2/6f/ba/e26fba8d9f2102d2dd8699c80b8ddc78.jpg");
   overflow: hidden;
   user-select: none;
 }

@@ -7,7 +7,7 @@ import { Button, Tooltip } from '@mui/material';
 import { DriveEta, LocalGasStation } from '@mui/icons-material';
 
 import { T } from '../lib/language';
-import { api } from '../index';
+import { api, loadStaticSvg } from '../index';
 
 function VehicleList({ vehicles }) {
   const [carData, _] = useState(vehicles);
@@ -49,7 +49,10 @@ function VehicleList({ vehicles }) {
                         className={"VehicleList_engineLevelBar"}
                         style={{ transform: `translateY(${100 - car.engineLevel}%)` }}
                       ></div>
-                      <img src="/html/svg/engine.svg" alt="engine" />
+                      <img
+                        src={`${loadStaticSvg("engine")}`}
+                        alt="engine"
+                      />
                     </div>
                   </Tooltip>
                   <Tooltip
@@ -82,7 +85,10 @@ function VehicleList({ vehicles }) {
                       api.callEvent("take", { car });
                     }}
                   >
-                    <img src="/html/svg/wheel.svg" alt="wheel" />
+                    <img
+                      src={`${loadStaticSvg("wheel")}`}
+                      alt="wheel"
+                    />
                   </Button>
                 </Tooltip>
               </div>

@@ -4,11 +4,12 @@ import './index.css';
 
 import Main from './Main/Main';
 
+import { loadStaticSvg } from './lib/loadStatics';
 import config from './lib/config';
 import { T } from './lib/language';
 import API from "./lib/api";
 const api = new API(config.resName);
-export { api };
+export { api, loadStaticSvg };
 
 // check if config.debug is enabled, if so log
 console.logger = function(message, ...params) {
@@ -154,6 +155,26 @@ const RootComponent = () => {
         api.callEvent("close", {});
       }
     })
+
+    if (process.env.NODE_ENV === 'development') {
+      setVisible(true);
+      setRender(true);
+      setShowManage(true);
+      const testCarData = [];
+      for (let i = 0; i < 50; i++) {
+        testCarData.push({
+          id: i,
+          name: `Car ${i + 1}`,
+          // make a plate number for each car with a random number
+          plate: `ABC-${Math.floor(Math.random() * 1000)}`,
+          // random number between 0 and 100 for fuel, engine, and body levels
+          fuelLevel: Math.floor(Math.random() * 100),
+          engineLevel: Math.floor(Math.random() * 100),
+          bodyLevel: Math.floor(Math.random() * 100),
+        })
+      }
+      setVehicles(testCarData)
+    }
   }, [])
   
   return (

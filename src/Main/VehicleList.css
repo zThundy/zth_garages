@@ -192,12 +192,12 @@
 }
 
 
-::-webkit-scrollbar-track {
+.VehicleList_container::-webkit-scrollbar-track {
   border-radius: 0 1rem 1rem 0;
   background: rgba(200, 200, 200, 0.5);
 }
 
-.container::-webkit-scrollbar-thumb {
+.VehicleList_container::-webkit-scrollbar-thumb {
   border-radius: 0 1rem 1rem 0;
   background: var(--mui-palette-primary-main);
 }
