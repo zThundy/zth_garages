@@ -15,7 +15,8 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-height: calc(50% - .2rem);;
+  max-height: calc(50% - .2rem);
+  min-height: calc(50% - .2rem);
 }
 
 .ManageListTable_Header {

@@ -174,7 +174,7 @@ const RootComponent = () => {
         })
       }
       let vehicles = []
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 2; i++) {
         vehicles.push({
           id: i,
           name: `Car with long name ${Math.floor(Math.random() * 10000)}`,
@@ -182,7 +182,7 @@ const RootComponent = () => {
         })
       }
       let officers = []
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 4; i++) {
         officers.push({
           id: i,
           name: `Officer ${Math.floor(Math.random() * 10000)}`,
@@ -190,7 +190,7 @@ const RootComponent = () => {
         })
       }
       let levels = []
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 1; i++) {
         levels.push({
           id: i,
           name: `Level ${Math.floor(Math.random() * 10000)}`,
