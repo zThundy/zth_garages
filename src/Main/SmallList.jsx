@@ -11,7 +11,7 @@ import { Settings, Close, Check, ArrowBack } from '@mui/icons-material';
 import { api } from '../index';
 import { T } from '../lib/language';
 
-function ManageList({ screen, setScreen, title, setTitle, parkingData, vehicles, showManage, manageData }) {
+function SmallList({ screen, setScreen, title, setTitle, parkingData, vehicles, showManage, manageData }) {
   const handleClick = (action) => {
     switch (action) {
       case "manage":
@@ -112,4 +112,4 @@ function ManageList({ screen, setScreen, title, setTitle, parkingData, vehicles,
   )
 }
 
-export default ManageList;
+export default SmallList;

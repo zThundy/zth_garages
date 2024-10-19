@@ -165,8 +165,10 @@ ZTH.Config.Garages = {
             JobSettings = {
                 job = "police",
                 platePrefix = "LSPD",
-                impoundVehicles = true,
-                manageGrades = {1, 2, 3},
+                impoundVehicles = false,
+                manageGrades = {
+                    [4] = true
+                },
                 lists = {
                     cars = {
                         {model = "police", label = "Police Cruiser", price = 5000},

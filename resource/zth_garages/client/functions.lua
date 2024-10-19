@@ -91,11 +91,15 @@ function ZTH.Functions.InitializeGarages(self)
                 local heading = garage["ParkingSpots"][vehicle.id].heading
                 local coords = vector4(pos.x, pos.y, pos.z, heading)
                 
-                SpawnVehicle(vehicle.mods.model, function(veh)
+                SpawnVehicle(vehicle.model, function(veh)
                     Debug("Spawned vehicle " .. vehicle.plate .. " at " .. id .. " spot " .. vehicle.id)
                     SetVehicleOnGroundProperly(veh)
                     FreezeEntityPosition(veh, true)
                     SetEntityInvincible(veh, true)
+                    SetVehicleFuelLevel(veh, vehicle.fuel)
+                    SetVehicleEngineHealth(veh, vehicle.engine)
+                    SetVehicleBodyHealth(veh, vehicle.body)
+                    SetVehicleNumberPlateText(veh, vehicle.plate)
                     if vehicle.user_id ~= self.PlayerData.citizenid then
                         SetVehicleDoorsLocked(veh, 2)
                     end
@@ -366,10 +370,18 @@ function ZTH.Functions.TakeVehicle(self, _data)
     if not IsSpawnPointFree(coords, 5.0) then
         return self.Core.Functions.Notify("The spawnpoint is not free", 'error', 5000)
     end
+
+    if type(data.mods) == "string" then
+        data.mods = json.decode(data.mods)
+    end
     
     if self.Tunnel.Interface.TakeVehicle(data.plate, data.garage) then
-        SpawnVehicle(data.mods.model, function(vehicle)
+        SpawnVehicle(data.model, function(vehicle)
             ZTH.NUI.Close()
+            SetVehicleNumberPlateText(vehicle, data.plate)
+            SetVehicleFuelLevel(vehicle, data.fuel)
+            SetVehicleEngineHealth(vehicle, data.engine)
+            SetVehicleBodyHealth(vehicle, data.body)
             self.Core.Functions.SetVehicleProperties(vehicle, data.mods)
             TriggerEvent('vehiclekeys:client:SetOwner', data.plate)
             self.Core.Functions.Notify("Vehicle taken from the garage", 'success', 5000)
@@ -391,7 +403,11 @@ function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
         DeleteVehicle(vehicle)
         ZTH.Functions.RegisterZones(ZTH)
         ZTH.Functions.InitializeGarages(ZTH)
-        SpawnVehicle(vehicleData.mods.model, function(veh)
+        SpawnVehicle(vehicleData.model, function(veh)
+            SetVehicleNumberPlateText(veh, vehicleData.plate)
+            SetVehicleFuelLevel(veh, vehicleData.fuel)
+            SetVehicleEngineHealth(veh, vehicleData.engine)
+            SetVehicleBodyHealth(veh, vehicleData.body)
             ZTH.Core.Functions.SetVehicleProperties(veh, vehicleData.mods)
             TriggerEvent('vehiclekeys:client:SetOwner', mods.plate)
             ZTH.Core.Functions.Notify("Vehicle taken from the garage", 'success', 5000)

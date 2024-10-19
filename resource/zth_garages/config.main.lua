@@ -45,5 +45,5 @@ ZTH.Config.Events.PlayerSetJob = ZTH.Config.Core == "ESX" and "esx:setJob" or "Q
 ZTH.Config.Shared = {}
 ZTH.Config.Shared.Jobs = ZTH.Core.Shared.Jobs
 
-ZTH.Config.TimeoutBetweenInteractions = 1000
+ZTH.Config.TimeoutBetweenInteractions = 2000
 
