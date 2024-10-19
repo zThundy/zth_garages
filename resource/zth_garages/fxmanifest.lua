@@ -33,6 +33,7 @@ shared_scripts {
 
 client_scripts {
     "client/functions.lua",
+    "client/impounds.lua",
 
     "client/main.lua",
     "client/utils.lua",

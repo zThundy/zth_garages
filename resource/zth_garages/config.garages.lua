@@ -207,3 +207,43 @@ ZTH.Config.Garages = {
         },
     },
 }
+
+
+ZTH.Config.DefaultImpound = "impound"
+ZTH.Config.Impounds = {
+    ["impound"] = {
+        Settings = {
+            price = 5000,
+            displayName = "Impound",
+        },
+        ImpoundZone = {
+            pos = vec3(410.04, -1623.3, 29.29),
+            scale = vec3(3.0, 3.0, 1.0),
+            msg = "Press ~INPUT_CONTEXT~ to impound the vehicle",
+            type = 1,
+        },
+        TakeVehicle = {
+            pos = vec3(395.15, -1640.29, 29.29),
+        },
+        SpawnVehicle = {
+            pos = vec3(401.53, -1632.84, 29.29),
+            heading = 306.71,
+        }
+    },
+    ["impound2"] = {
+        Settings = {
+            price = 5000,
+            displayName = "Impound 2",
+        },
+        ImpoundZone = {
+            pos = vec3(416.8, -1642.2, 29.29),
+            scale = vec3(3.0, 3.0, 1.0),
+            msg = "Press ~INPUT_CONTEXT~ to impound the vehicle",
+            type = 1,
+        },
+        SpawnVehicle = {
+            pos = vec3(401.53, -1632.84, 29.29),
+            heading = 306.71,
+        }
+    }
+}
