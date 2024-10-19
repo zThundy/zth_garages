@@ -2,19 +2,19 @@ ZTH = {}
 ZTH.Config = {}
 
 ZTH.IsReady = false
-ZTH.Config.Debug = false
+ZTH.Config.Debug = true
 
-local frameworkAutoFind = function()
+ZTH.Config.CoreFunction = function()
     if GetResourceState('es_extended') ~= 'missing' then
         return "ESX"
     elseif GetResourceState('qb-core') ~= 'missing' then
         return "QB-Core"
     end
 end
+ZTH.Config.Core = ZTH.Config.CoreFunction()
 
 ZTH.Config.FuelResource = 'LegacyFuel' -- supports any that has a GetFuel() and SetFuel() export
 
-ZTH.Config.Core = frameworkAutoFind()
 ZTH.Config.CoreExport = function()
     if ZTH.Config.Core == "ESX" then
         return exports['es_extended']:getSharedObject()
@@ -24,8 +24,18 @@ ZTH.Config.CoreExport = function()
 
     return false
 end
-
 ZTH.Core = ZTH.Config.CoreExport()
+
+ZTH.Config.FindAccountScript = function()
+    if GetResourceState("qb-bossmenu") ~= "missing" then
+        return "qb-bossmenu"
+    elseif GetResourceState("qb-banking") ~= "missing" then
+        return "qb-banking"
+    elseif GetResourceState("esx_society") ~= "missing" then
+        return "esx_society"
+    end
+end
+ZTH.Config.AccountScript = ZTH.Config.FindAccountScript()
 
 ZTH.Config.Events = {}
 ZTH.Config.Events.PlayerLoaded = ZTH.Config.Core == "ESX" and "esx:playerLoaded" or "QBCore:Client:OnPlayerLoaded"  

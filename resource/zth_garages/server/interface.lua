@@ -195,20 +195,17 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
         if not isJobGarage then
             if v.garage == id and v.citizenid == citizenId and v.state == 1 then
-                local mods = json.decode(v.mods)
-                local fuelLevel = math.floor(mods.fuelLevel)
-                local engineLevel = math.floor(mods.engineHealth / 10)
-                local bodyLevel = math.floor(mods.bodyHealth / 10)
+                local data = ZTH.Functions.ParseVehicle(v)
 
                 table.insert(vehicles, {
-                    id = v.id,
+                    id = data.id,
                     garage = id,
-                    name = string.upper(v.vehicle),
-                    plate = v.plate,
-                    fuelLevel = fuelLevel,
-                    engineLevel = engineLevel,
-                    bodyLevel = bodyLevel,
-                    mods = json.decode(v.mods)
+                    name = data.vehicle,
+                    plate = data.plate,
+                    fuelLevel = data.fuelLevel,
+                    engineLevel = data.engineLevel,
+                    bodyLevel = data.bodyLevel,
+                    mods = data.mods
                 })
             end
         else
@@ -216,20 +213,32 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
             -- get all plates that begin with settings.platePrefix
             if string.sub(v.plate, 1, string.len(settings.platePrefix)) == settings.platePrefix then
                 if v.garage == id and v.state == 1 and v.citizenid == citizenId then
-                    local mods = json.decode(v.mods)
-                    local fuelLevel = math.floor(mods.fuelLevel)
-                    local engineLevel = math.floor(mods.engineHealth / 10)
-                    local bodyLevel = math.floor(mods.bodyHealth / 10)
+                    local data = ZTH.Functions.ParseVehicle(v)
 
                     table.insert(vehicles, {
-                        id = v.id,
+                        id = data.id,
                         garage = id,
-                        name = string.upper(v.vehicle),
-                        plate = v.plate,
-                        fuelLevel = fuelLevel,
-                        engineLevel = engineLevel,
-                        bodyLevel = bodyLevel,
-                        mods = json.decode(v.mods)
+                        name = data.vehicle,
+                        plate = data.plate,
+                        fuelLevel = data.fuelLevel,
+                        engineLevel = data.engineLevel,
+                        bodyLevel = data.bodyLevel,
+                        mods = data.mods
+                    })
+                end
+            elseif v.citizenid == Player.PlayerData.job.name .. ":" .. Player.PlayerData.job.grade.level then
+                if v.garage == id and v.state == 1 then
+                    local data = ZTH.Functions.ParseVehicle(v)
+
+                    table.insert(vehicles, {
+                        id = data.id,
+                        garage = id,
+                        name = data.vehicle,
+                        plate = data.plate,
+                        fuelLevel = data.fuelLevel,
+                        engineLevel = data.engineLevel,
+                        bodyLevel = data.bodyLevel,
+                        mods = data.mods
                     })
                 end
             end
@@ -529,12 +538,82 @@ ZTH.Tunnel.Interface.GetGarageUsers = function(id)
 end
 
 ZTH.Tunnel.Interface.BuyVehicles = function(toBuy, totalAmount)
-    local account = exports["qb-bossmenu"]:GetAccount()
-    print("Total amount: " .. totalAmount)
+    local foundJob = false
     for _, v in pairs(toBuy) do
-        v.plate = v.platePrefix .. MakeRandomString(4)
+        if v.job then
+            foundJob = v.job.name
+            break
+        end
     end
-    print(json.encode(toBuy, { indent = true }))
 
-    return true
+    local account = 0
+    if foundJob then
+        if ZTH.Config.AccountScript == "qb-bossmenu" then
+            account = exports["qb-bossmenu"]:GetAccount(foundJob)
+        elseif ZTH.Config.AccountScript == "qb-banking" then
+            account = exports["qb-banking"]:GetAccountBalance(foundJob)
+        end
+    else
+        return false
+    end
+
+    if account >= totalAmount then
+        for _, v in pairs(toBuy) do
+            local plateExists = false
+            repeat
+                plateExists = false
+                v.plate = v.platePrefix .. MakeRandomNumber(4)
+                for _, vehicle in pairs(ZTH.Cache.PlayerVehicles) do
+                    if vehicle.plate == v.plate then
+                        plateExists = true
+                        break
+                    end
+                end
+            until not plateExists
+
+            -- insert in cache
+            table.insert(ZTH.Cache.PlayerVehicles, {
+                plate = v.plate,
+                vehicle = v.model,
+                citizenid = v.citizenid,
+                garage = v.garage,
+                hash = v.hash,
+                parking_spot = nil,
+                parking_date = nil,
+                body = 1000,
+                fuel = 100,
+                engine = 1000,
+                status = {},
+                mods = json.encode({}),
+                state = 1
+            })
+
+            -- insert in db
+            ZTH.MySQL.ExecQuery("BuyVehicles", MySQL.Sync.execute, 
+                [[
+                    INSERT INTO `player_vehicles` (`plate`, `hash`, `license`, `vehicle`, `citizenid`, `garage`, `parking_spot`, `parking_date`, `body`, `fuel`, `engine`, `status`, `mods`, `state`)
+                    VALUES (@plate, @hash, @license, @vehicle, @citizenid, @garage, @parking_spot, @parking_date, @body, @fuel, @engine, @status, @mods, @state)
+                ]]
+            , {
+                ['@plate'] = v.plate,
+                ['@vehicle'] = v.model,
+                ['@citizenid'] = v.citizenid,
+                ["@license"] = v.license,
+                ['@garage'] = v.garage,
+                ["@hash"] = v.hash,
+                ['@parking_spot'] = nil,
+                ['@parking_date'] = nil,
+                ['@body'] = 1000,
+                ['@fuel'] = 100,
+                ['@engine'] = 1000,
+                ['@status'] = json.encode({}),
+                ['@mods'] = json.encode({}),
+                ['@state'] = 1
+            })
+        end
+
+        return true
+    end
+
+    return false
 end

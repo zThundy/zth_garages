@@ -159,14 +159,51 @@ function table_maxn(t)
 end
 
 function MakeRandomString(length)
-    local length = length or 10
-    local charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    local result = ''
-    for i = 1, length do
-        result = result .. string.sub(charset, math.random(1, string.len(charset)), math.random(1, string.len(charset)))
+    math.randomseed(os.time())
+    local character_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+    local string_sub = string.sub
+    local math_random = math.random
+    local table_concat = table.concat
+    local character_set_amount = #character_set
+    local number_one = 1
+    local default_length = 10
+
+    local random_string = {}
+
+    for int = number_one, length or default_length do
+        local random_number = math_random(number_one, character_set_amount)
+        local character = string_sub(character_set, random_number, random_number)
+
+        random_string[#random_string + number_one] = character
     end
-    return result
+
+    return table_concat(random_string)
 end
+
+function MakeRandomNumber(length)
+    math.randomseed(os.time())
+    local character_set = "0123456789"
+
+    local string_sub = string.sub
+    local math_random = math.random
+    local table_concat = table.concat
+    local character_set_amount = #character_set
+    local number_one = 1
+    local default_length = 10
+
+    local random_string = {}
+
+    for int = number_one, length or default_length do
+        local random_number = math_random(number_one, character_set_amount)
+        local character = string_sub(character_set, random_number, random_number)
+
+        random_string[#random_string + number_one] = character
+    end
+
+    return table_concat(random_string)
+end
+
 
 local Luaoop = module("zth_garages", "lib/Luaoop")
 class = Luaoop.class

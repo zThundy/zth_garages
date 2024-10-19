@@ -115,6 +115,29 @@ function ZTH.Functions.GetGarageFromCahce(id)
     end
 end
 
+function ZTH.Functions.ParseVehicle(data)
+    local mods = json.decode(data.mods)
+    if not mods then mods = {} end
+    if not mods.fuelLevel then mods.fuelLevel = 100 end
+    if not mods.engineHealth then mods.engineHealth = 1000 end
+    if not mods.bodyHealth then mods.bodyHealth = 1000 end
+    if not mods.model then mods.model = data.vehicle end
+    if not mods.plate then mods.plate = data.plate end
+
+    data.model = data.vehicle
+    data.vehicle = string.upper(data.vehicle)
+
+    local fuelLevel = math.floor(mods.fuelLevel)
+    local engineLevel = math.floor(mods.engineHealth / 10)
+    local bodyLevel = math.floor(mods.bodyHealth / 10)
+
+    data.fuelLevel = fuelLevel
+    data.engineLevel = engineLevel
+    data.bodyLevel = bodyLevel
+
+    return data
+end
+
 function ZTH.Functions.UpdateSingleCache(self, type)
     Debug("UpdateSingleCache - " .. type)
     if type == "garages" then

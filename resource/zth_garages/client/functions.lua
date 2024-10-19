@@ -223,6 +223,7 @@ function ZTH.Functions.BuyVehicles(self, data)
                     citizenid = rank.job .. ":" .. rank.grade,
                     model = v.model,
                     price = v.price,
+                    job = rank.job,
                     hash = hash,
                     garage = rank.garage,
                     platePrefix = platePrefix,
@@ -248,6 +249,7 @@ function ZTH.Functions.BuyVehicles(self, data)
                     citizenid = officer.id,
                     model = v.model,
                     price = v.price,
+                    job = officer.job,
                     hash = hash,
                     garage = officer.garage,
                     platePrefix = platePrefix,
@@ -264,7 +266,7 @@ function ZTH.Functions.BuyVehicles(self, data)
     if self.Tunnel.Interface.BuyVehicles(toBuy, totalPrice) then
         self.Core.Functions.Notify("Vehicles bought! You have spent $" .. totalPrice, 'success', 5000)
     else
-        self.Core.Functions.Notify("Your company does not have enough money", 'error', 5000)
+        self.Core.Functions.Notify("Your company does not have enough money or is not enabled to buy these vehicles", 'error', 5000)
     end
 end
 
