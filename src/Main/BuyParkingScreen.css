@@ -63,3 +63,8 @@
   background-color: var(--mui-palette-primary-main);
   border-radius: 0 1rem 1rem 0;
 }
+
+.BuyParkingScreen_textContainer::-webkit-scrollbar-track {
+  border-radius: 0 1rem 1rem 0;
+  background: rgba(200, 200, 200, 0.5);
+}

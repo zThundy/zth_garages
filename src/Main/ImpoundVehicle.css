@@ -1,0 +1,78 @@
+
+.ImpoundVehicle_Container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.ImpoundVehicle_Header {
+  display: flex;
+  align-items: center;
+  height: 10%;
+  width: 100%;
+}
+
+.ImpoundVehicle_Title {
+  color: white;
+  font-size: 1.4rem;
+  padding: 0 1em;
+}
+
+.ImpoundVehicle_divider {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 1px;
+}
+
+.ImpoundVehicle_divider span {
+  width: 95%;
+  background-color: var(--mui-palette-secondary-main);
+}
+
+.ImpoundVehicle_Body {
+  display: flex;
+  flex-direction: column;
+  margin: 0 1rem;
+}
+
+.ImpoundVehicle_SubTitle {
+  color: white;
+  font-size: 1.2rem;
+  margin: .8rem 0 .8rem 0;
+}
+
+.ImpoundVehicle_TextField {
+  width: 100%;
+  background-color: rgba(155, 155, 155, 0.3) !important;
+  border-radius: 1rem !important;
+}
+
+.ImpoundVehicle_TextField p {
+  color: white;
+}
+
+.MuiInputBase-root {
+  border-radius: 1rem !important;
+}
+
+.MuiInputBase-input {
+  color: white !important;
+}
+
+.ImpoundVehicle_Footer {
+  display: flex;
+  justify-content: center;
+  height: 10%;
+  width: 100%;
+}
+
+.ImpoundVehicle_Button {
+  background-color: var(--mui-palette-primary-main);
+  color: white;
+  border-radius: 1rem !important;
+  padding: 2rem !important;
+  font-size: 1.6rem !important;
+  font-weight: bold !important;
+}

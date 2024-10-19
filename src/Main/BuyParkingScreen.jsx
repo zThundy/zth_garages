@@ -11,6 +11,7 @@ function BuyParkingScreen({ parkingData }) {
   const computeText = () => {
     const html = []
     for (let i in config.buyMenu) {
+      console.log(i)
       if (i.includes("paragraph"))
         html.push(
           <span key={i}>

@@ -24,12 +24,15 @@ export function GetLang() {
 
 export function T(key, ...args) {
     try {
+        if (!lang[key]) throw new Error("Key not found");
+        console.logger("T", key, args);
         if (args.length > 0) {
             // replace all the %s with args in the string
             return lang[key].replace(/%s/g, () => args.shift());
         }
         return lang[key];
     } catch (e) {
+        console.error("Error getting language key", key)
         return key;
     }
 }

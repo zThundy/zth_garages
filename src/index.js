@@ -32,9 +32,10 @@ const RootComponent = () => {
   const [parkingData, setParkingData] = useState({});
   const [showManage, setShowManage] = useState(false);
   const [vehicles, setVehicles] = useState([]);
-  const [screen, setScreen] = useState('list');
+  const [screen, setScreen] = useState('impound-add');
   const [title, setTitle] = useState(T("UNKNOWN"));
   const [manageData, setManageData] = useState({});
+  const [impoundData, setImpoundData] = useState({});
 
   const HandleScreen = (action, data) => {
     switch (action) {
@@ -52,6 +53,10 @@ const RootComponent = () => {
         setScreen("garage-manage");
         setParkingData(data);
         setShowManage(false);
+        break;
+      case "impound-add":
+        setTitle(T("TITLE_IMPOUND_ADD_VEHICLE"));
+        setScreen("impound-add");
         break;
       default:
         setScreen("list");
@@ -149,6 +154,10 @@ const RootComponent = () => {
       api.post("changeSpot", data);
     }, false)
 
+    api.registerEvent("impoundVehicle", data => {
+      api.post("impoundVehicle", data);
+    })
+
     window.addEventListener('message', handleNuiCallback)
     window.addEventListener('keydown', (e) => {
       if ('Escape'.includes(e.code)) {
@@ -204,6 +213,35 @@ const RootComponent = () => {
       }
       setManageData(testManageData)
       setVehicles(testCarData)
+      const testParkingData = {
+        managementPrice: 5000000,
+        price: 1800, // for 1 day
+        balance: 2000,
+        sellPrice: 400000,
+        occupied: [12, 6, 15, 8, 120],
+        spots: 120,
+        spotsData: (function() {
+          const data = []
+          for (let i = 0; i < 120; i++) {
+            data.push({
+              id: 1,
+              name: `Car ${i + 1}`,
+              plate: "ABC-1234",
+              fromDate: new Date("2021-10-01T00:00:00"),
+              toDate: new Date("2021-10-02T00:00:00"),
+            })
+          }
+          return data
+        })(),
+        name: 'Legion square parking',
+        totEarning: 148343,
+      }
+      setParkingData(testParkingData)
+      const testImpoundData = {
+        name: "Impound Police"
+      }
+
+      setImpoundData(testImpoundData)
     }
   }, [])
   
@@ -220,6 +258,7 @@ const RootComponent = () => {
           vehicles={vehicles}
           showManage={showManage}
           manageData={manageData}
+          impoundData={impoundData}
         />
       }
     </React.StrictMode>

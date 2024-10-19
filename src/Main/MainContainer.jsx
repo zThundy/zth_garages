@@ -4,12 +4,23 @@ import './MainContainer.css';
 import SmallList from './SmallList';
 import BuyParkingScreen from './BuyParkingScreen';
 import ManageParkingScreen from './ManageParkingScreen';
+import ImpoundVehicle from './ImpoundVehicle';
 
 // import { T } from '../lib/language';
 
 // import { useState } from 'react';
 
-function MainContainer({ parkingData, screen, title, setScreen, setTitle, vehicles, showManage, manageData }) {
+function MainContainer({
+  parkingData,
+  screen,
+  title,
+  setScreen,
+  setTitle,
+  vehicles,
+  showManage,
+  manageData,
+  impoundData
+}) {
   return (
     <>
       {
@@ -49,6 +60,18 @@ function MainContainer({ parkingData, screen, title, setScreen, setTitle, vehicl
             <div className={"MainContainer_buyCurrent"}>
               <BuyParkingScreen
                 parkingData={parkingData}
+              />
+            </div>
+          </div>
+          : null
+      }
+
+      {
+        screen == "impound-add" ?
+          <div className={"MainContainer_containerFull"}>
+            <div className={"MainContainer_buyCurrent"}>
+              <ImpoundVehicle
+                impoundData={impoundData}
               />
             </div>
           </div>

@@ -278,3 +278,13 @@
   font-size: 1.6rem !important;
   font-weight: bold !important;
 }
+
+.ManageParkingScreen_list::-webkit-scrollbar-track {
+  border-radius: 0 1rem 1rem 0;
+  background: rgba(200, 200, 200, 0.5);
+}
+
+.ManageParkingScreen_list::-webkit-scrollbar-thumb {
+  border-radius: 0 1rem 1rem 0;
+  background: var(--mui-palette-primary-main);
+}
