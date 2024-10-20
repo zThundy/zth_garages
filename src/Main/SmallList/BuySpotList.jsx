@@ -5,9 +5,9 @@ import './BuySpotList.css';
 import { useState } from 'react';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 
-import { pad } from '../lib/utils';
-import { T } from '../lib/language';
-import { api } from '../index';
+import { pad } from '../../lib/utils';
+import { T } from '../../lib/language';
+import { api } from '../../index';
 
 function BuySpotList({ parkingData }) {
   const [pData, _] = useState(parkingData);

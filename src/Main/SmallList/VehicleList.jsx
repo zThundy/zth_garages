@@ -4,10 +4,10 @@ import './VehicleList.css';
 import { useState } from 'react';
 
 import { Button, Tooltip } from '@mui/material';
-import { DriveEta, LocalGasStation } from '@mui/icons-material';
+import { DriveEta, LocalGasStation, AttachMoney } from '@mui/icons-material';
 
-import { T } from '../lib/language';
-import { api, loadStaticSvg } from '../index';
+import { T } from '../../lib/language';
+import { api, loadStaticSvg } from '../../index';
 
 function VehicleList({ vehicles }) {
   const [carData, _] = useState(vehicles);
@@ -24,6 +24,24 @@ function VehicleList({ vehicles }) {
               </div>
               <div className={"VehicleList_rightAlign"}>
                 <div className={"VehicleList_levels"}>
+                  {
+                    car.isImpounded ?
+                      <Tooltip
+                        title={T("IMPOUND_PAYAMOUNT", car.impoundAmount)}
+                        style={{ cursor: "pointer" }}
+                        placement="top"
+                        arrow
+                      >
+                        <div className={"VehicleList_impound"}>
+                          <div
+                            className={"VehicleList_impoundBar"}
+                            style={{ transform: `translateY(${0}%)` }}
+                          ></div>
+                          <AttachMoney />
+                        </div>
+                      </Tooltip>
+                      : null
+                  }
                   <Tooltip
                     title={T("FUEL_LEVEL", car.fuelLevel)}
                     style={{ cursor: "pointer" }}
@@ -81,7 +99,7 @@ function VehicleList({ vehicles }) {
                     disableRipple
                     disableFocusRipple
                     disableTouchRipple
-                    onClick = {() => {
+                    onClick={() => {
                       api.callEvent("take", { car });
                     }}
                   >

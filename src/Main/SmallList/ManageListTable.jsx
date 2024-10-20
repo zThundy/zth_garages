@@ -4,10 +4,10 @@ import "./ManageListTable.css";
 import { useEffect, useState } from 'react';
 
 import { Checkbox } from '@mui/material';
-import { pad } from '../lib/utils';
-import { T } from '../lib/language';
+import { pad } from '../../lib/utils';
+import { T } from '../../lib/language';
 
-import { api } from '../index';
+import { api } from '../../index';
 import { DriveEta, Numbers, Person } from "@mui/icons-material";
 
 function ManageListTable({ manageData }) {

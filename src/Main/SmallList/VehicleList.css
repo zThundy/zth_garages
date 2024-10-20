@@ -97,6 +97,34 @@
   flex-wrap: nowrap;
 }
 
+.VehicleList_impound {
+  border-radius: 50%;
+  margin: .2rem;
+  width: 3rem;
+  height: 3rem;
+  background-color: var(--mui-palette-secondary-main);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.VehicleList_impoundBar {
+  background-color: rgba(255, 0, 0, 0.7);
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  transform: translateY(0%);
+  transition: transform 0.5s;
+}
+
+.VehicleList_impound svg {
+  font-size: 1.5rem;
+  color: white;
+  z-index: 2;
+  position: absolute;
+}
+
 .VehicleList_fuelLevel {
   border-radius: 50%;
   margin: .2rem;

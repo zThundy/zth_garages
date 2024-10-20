@@ -1,9 +1,9 @@
 
 import "./SmallList.css";
 
-import ManageListTable from './ManageListTable';
-import VehicleList from './VehicleList';
-import BuySpotList from './BuySpotList';
+import ManageListTable from './SmallList/ManageListTable';
+import VehicleList from './SmallList/VehicleList';
+import BuySpotList from './SmallList/BuySpotList';
 
 import { Button, Tooltip } from '@mui/material';
 import { Settings, Close, Check, ArrowBack } from '@mui/icons-material';

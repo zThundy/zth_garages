@@ -32,7 +32,7 @@ const RootComponent = () => {
   const [parkingData, setParkingData] = useState({});
   const [showManage, setShowManage] = useState(false);
   const [vehicles, setVehicles] = useState([]);
-  const [screen, setScreen] = useState('impound-add');
+  const [screen, setScreen] = useState('list');
   const [title, setTitle] = useState(T("UNKNOWN"));
   const [manageData, setManageData] = useState({});
   const [impoundData, setImpoundData] = useState({});
@@ -180,6 +180,8 @@ const RootComponent = () => {
           fuelLevel: Math.floor(Math.random() * 100),
           engineLevel: Math.floor(Math.random() * 100),
           bodyLevel: Math.floor(Math.random() * 100),
+          isImpounded: Math.random() > 0.5,
+          impoundAmount: Math.floor(Math.random() * 10000),
         })
       }
       let vehicles = []

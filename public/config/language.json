@@ -48,6 +48,7 @@
         "IMPOUND_VEHICLE_MONEY_VALUE": "Valore",
         "IMPOUND_VEHICLE_IMPOUND": "Sequestra veicolo",
         "IMPOUND_VEHICLE_NO_DESCRIPTION": "Nessuna descrizione fornita",
+        "IMPOUND_PAYAMOUNT": "Paga $%s per dissequestrare il veicolo",
 
         "TITLE_BUY_PARKING": "Acquista parcheggio",
         "TITLE_BUY_SPOT": "Acquista posto auto",
@@ -104,6 +105,7 @@
         "IMPOUND_VEHICLE_MONEY_VALUE": "Value",
         "IMPOUND_VEHICLE_IMPOUND": "Impound vehicle",
         "IMPOUND_VEHICLE_NO_DESCRIPTION": "No description provided",
+        "IMPOUND_PAYAMOUNT": "Pay $%s to unimpound the vehicle",
 
         "TITLE_BUY_PARKING": "Buy parking",
         "TITLE_BUY_SPOT": "Buy spot",
