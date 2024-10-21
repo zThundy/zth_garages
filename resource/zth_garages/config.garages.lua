@@ -55,6 +55,7 @@ ZTH.Config.Garages = {
                 ["car"] = true,
                 ["taxi"] = true
             },
+            autoImpoundOnExpire = true,
             pricePerDay = 200,
             displayName = "Garage 1",
             managementPrice = 1000000,

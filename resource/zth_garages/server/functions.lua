@@ -30,7 +30,7 @@ function ZTH.Functions.Init()
             CREATE TABLE IF NOT EXISTS `garages_spots` (
                 `user_id` VARCHAR(255) NOT NULL DEFAULT '0',
                 `garage_id` VARCHAR(255) NOT NULL,
-                `spot_id` VARCHAR(255) NOT NULL,
+                `spot_id` INT(11) NOT NULL,
                 `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `until` DATETIME NOT NULL,
                 `player_name` VARCHAR(255) NOT NULL,
@@ -77,40 +77,86 @@ function ZTH.Functions.FullUpdateCache(self)
     ZTH.Functions.AutoImpountVehicles(self)
 end
 
+function ZTH.Functions.GetSpotFromGarageId(garageId, spotId)
+    if type(garageId) ~= "string" then garageId = tostring(garageId) end
+    if type(spotId) ~= "number" then spotId = tonumber(spotId) end
+
+    for k, v in pairs(ZTH.Cache.GarageSpots) do
+        if v.garage_id == garageId and v.spot_id == spotId then
+            return v
+        end
+    end
+end
+
 function ZTH.Functions.AutoImpountVehicles(self)
     local setStateVehIds = ""
+    local autoImpoundVehicles = ""
 
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
         local garage = self.Config.Garages[v.garage]
-        if garage and garage.Settings then
-            local jobSettings = garage.Settings.JobSettings
-            if jobSettings then
-                if not jobSettings.impoundVehicles then
-                    if string.sub(v.plate, 1, string.len(jobSettings.platePrefix)) == jobSettings.platePrefix and v.state ~= 1 then
-                        v.state = 1
-                        -- create a string for the query like v.id in (1, 2, 3).
-                        -- if it's the last one, don't add a comma
-                        if setStateVehIds == "" then
-                            setStateVehIds = tostring(v.id)
-                        else
-                            setStateVehIds = setStateVehIds .. ", " .. v.id
-                        end
-                        goto continue
+        if not garage then
+            Debug("AutoImpoundVehicles: [^1FATAL^0] No garage found for vehicle: " .. v.id)
+            goto continue
+        end
+
+        if not garage.Settings then
+            Debug("AutoImpoundVehicles: [^1FATAL^0] No settings found for garage: " .. v.garage)
+            goto continue
+        end
+
+        local jobSettings = garage.Settings.JobSettings
+        if jobSettings then
+            if not jobSettings.impoundVehicles then
+                if string.sub(v.plate, 1, string.len(jobSettings.platePrefix)) == jobSettings.platePrefix and v.state ~= 1 then
+                    v.state = 1
+                    if setStateVehIds == "" then
+                        setStateVehIds = tostring(v.id)
+                    else
+                        setStateVehIds = setStateVehIds .. ", " .. v.id
                     end
+                    goto continue
                 end
             end
         end
 
-        if v.state == 0 and v.garage ~= "impound" and v.parking_spot == nil then
-            v.garage = "impound"
-            self.MySQL.ExecQuery("AutoImpoundVehicles", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `garage` = @garage WHERE `id` = @id", {
-                ['@garage'] = v.garage,
-                ['@id'] = v.id
-            })
-        elseif v.parking_spot == nil then
-            -- 4 later cause not bothered enough now
-            -- check if veh is actually parked in the spot and the until date is still valid.
-            -- else imound the mfk
+        if v.state == 0 and v.parking_spot == nil then
+            v.garage = self.Config.DefaultImpound
+            v.state = 1
+            v.depotprice = 0
+            -- redundant, but just to be sure
+            v.parking_spot = nil
+
+            if autoImpoundVehicles == "" then
+                autoImpoundVehicles = tostring(v.id)
+            else
+                autoImpoundVehicles = autoImpoundVehicles .. ", " .. v.id
+            end
+        elseif v.parking_spot ~= nil then
+            if garage.ParkingSpots then
+                local settings = garage.Settings
+                local spot = self.Functions.GetSpotFromGarageId(v.garage, v.parking_spot)
+                if spot then
+                    -- spot["until"] is 1729461600000.0
+                    local convertedUntil = os.date("%Y-%m-%d %H:%M:%S", spot["until"] / 1000)
+                    print(convertedUntil, spot["until"], os.date("%Y-%m-%d %H:%M:%S"))
+                    if spot["until"] < os.date("%Y-%m-%d %H:%M:%S") then
+                        v.garage = self.Config.DefaultImpound
+                        v.state = 1
+                        v.depotprice = 0
+                        v.parking_spot = nil
+
+                        if autoImpoundVehicles == "" then
+                            autoImpoundVehicles = tostring(v.id)
+                        else
+                            autoImpoundVehicles = autoImpoundVehicles .. ", " .. v.id
+                        end
+                    else
+                        Debug("AutoImpoundVehicles: [^3WARN^0] Parking spot is still valid for vehicle: " .. v.id)
+                    end
+                else
+                    Debug("AutoImpoundVehicles: [^1FATAL^0] No spot found for vehicle: " .. v.id)
+                end
+            end
         end
 
         ::continue::
@@ -119,6 +165,14 @@ function ZTH.Functions.AutoImpountVehicles(self)
     if setStateVehIds ~= "" then
         Debug("AutoImpoundVehicles - Setting state to 1 for vehicles: " .. setStateVehIds)
         self.MySQL.ExecQuery("AutoStateToOne", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `state` = 1 WHERE `id` in (" .. setStateVehIds .. ")")
+    end
+
+    if autoImpoundVehicles ~= "" then
+        Debug("AutoImpoundVehicles - Impounding vehicles: " .. autoImpoundVehicles)
+        self.MySQL.ExecQuery("AutoImpoundVehicles", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `garage` = @garage, `state` = 1, `depotprice` = 0, `parking_spot` = NULL WHERE `id` in (@id)", {
+            ['@garage'] = self.Config.DefaultImpound,
+            ['@id'] = autoImpoundVehicles
+        })
     end
 end
 

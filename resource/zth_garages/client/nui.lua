@@ -3,7 +3,6 @@ ZTH.NUI = {}
 ZTH.NUI.Open = function(data)
     Debug("Opening NUI with data: " .. DumpTable(data))
     SetNuiFocus(true, true)
-    print("sending data to nui")
     SendNUIMessage({ action = "open", data = data })
 end
 

@@ -64,11 +64,10 @@ const RootComponent = () => {
         setScreen("list");
         if (data.isImpound) {
           setTitle(T("TITLE_IMPOUND"));
-          setImpoundData(data.impound);
         } else {
           setTitle(T("TITLE_TAKE_VEHICLE"));
-          setVehicles(data.vehicles);
         }
+        setVehicles(data.vehicles);
         setShowManage(false);
         break;
     }

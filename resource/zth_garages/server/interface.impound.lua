@@ -7,7 +7,7 @@ ZTH.Tunnel.Interface.GetImpoundVehicleList = function(id)
     local impoundedVehicles = {}
     for _, v in pairs(ZTH.Cache.PlayerVehicles) do
         for impound, _ in pairs(ZTH.Config.Impounds) do
-            if v.citizenid == citizenid and v.garage == impound then
+            if v.citizenid == citizenid and v.garage == impound and v.state == 1 then
                 local data = ZTH.Functions.ParseVehicle(v)
 
                 table.insert(impoundedVehicles, {
@@ -74,15 +74,17 @@ ZTH.Tunnel.Interface.ImpoundVehicle = function(plate, data)
         if v.plate == plate then
             v.garage = data.garage
             v.depotprice = impoundAmound
-            v.state = 0
+            v.state = 1
             v.depotdescription = data.description
+            v.parking_spot = nil
 
-            ZTH.MySQL.ExecQuery("ImpoundVehicle", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `garage` = @garage, `state` = @state, `depotprice` = @depotprice, `depotdescription` = @depotdescription WHERE `id` = @id", {
+            ZTH.MySQL.ExecQuery("ImpoundVehicle", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `garage` = @garage, `state` = @state, `depotprice` = @depotprice, `depotdescription` = @depotdescription, `parking_spot` = @parkingSpot WHERE `id` = @id", {
                 ['@garage'] = v.garage,
                 ['@state'] = v.state,
                 ['@depotprice'] = v.depotprice,
                 ['@depotdescription'] = v.depotdescription,
-                ['@id'] = v.id
+                ['@id'] = v.id,
+                ["@parkingSpot"] = v.parking_spot
             })
 
             return true
@@ -96,6 +98,21 @@ ZTH.Tunnel.Interface.GetVehicleFromCache = function(plate)
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
         if v.plate == plate then
             return v
+        end
+    end
+
+    return false
+end
+
+ZTH.Tunnel.Interface.UpdateVehicleState = function(id, state)
+    for k, v in pairs(ZTH.Cache.PlayerVehicles) do
+        if v.id == id then
+            v.state = state
+            ZTH.MySQL.ExecQuery("UpdateVehicleState", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `state` = @state WHERE `id` = @id", {
+                ['@state'] = v.state,
+                ['@id'] = v.id
+            })
+            return true
         end
     end
 

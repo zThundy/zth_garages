@@ -102,13 +102,18 @@ end
 function ZTH.Functions.ImpoundVehicle(self, data)
     Debug("ImpoundVehicle: " .. json.encode(data))
 
-    local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+    local ped = PlayerPedId()
+    local vehicle = GetVehiclePedIsIn(ped, false)
     local plate = GetVehicleNumberPlateText(vehicle)
 
     if self.Tunnel.Interface.ImpoundVehicle(plate, data) then
         self.Core.Functions.Notify("You have impounded the vehicle", "success")
-        DeleteEntity(vehicle)
         self.NUI.Close()
+        
+        -- walk out of the vehicle
+        TaskLeaveVehicle(ped, vehicle, 0)
+        Citizen.Wait(2000)
+        self.Core.Functions.DeleteVehicle(vehicle)
     else
         self.Core.Functions.Notify("You do not have enough money", "error")
     end
