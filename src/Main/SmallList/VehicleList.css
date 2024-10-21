@@ -44,7 +44,7 @@
 }
 
 .VehicleList_rightAlign {
-  width: 100%;
+  width: fit-content;
   display: flex;
   align-items: center;
   justify-content: right;
@@ -72,12 +72,16 @@
   width: 4rem !important;
   height: 4rem !important;
   border-radius: 50% !important;
-  background-color: var(--mui-palette-primary-main) !important;
 }
 
 .VehicleList_takeButton img {
   width: 2.2rem;
   height: 2.2rem;
+  color: white;
+}
+
+.VehicleList_takeButton svg {
+  font-size: 2.2rem;
   color: white;
 }
 

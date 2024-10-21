@@ -1,11 +1,16 @@
 
+function MakeIdFromVector3(vector)
+    return vector.x .. "_" .. vector.y .. "_" .. vector.z
+end
+
 function CreateBlip(data)
     if not data then return Debug("CreateBlip: [^1FATAL^0] data is required") end
     if not data.name then return Debug("CreateBlip: [^1FATAL^0] data.name is required") end
     if not data.pos then return Debug("CreateBlip: [^1FATAL^0] data.pos is required in " .. data.name) end
 
     for k, v in pairs(ZTH.Blips) do
-        if v.data.id == data.name .. "_" .. v.blip then
+        if v.data.id == data.name .. "_" .. v.blip .. "_" .. MakeIdFromVector3(data.pos) then
+            Debug("CreateBlip: Removing existing blip " .. data.name .. " with id " .. v.data.id)
             RemoveBlip(v.blip)
             table.remove(ZTH.Blips, k)
         end
@@ -23,13 +28,15 @@ function CreateBlip(data)
     SetBlipScale(blip, data.scale)
     SetBlipColour(blip, data.color)
     SetBlipAsShortRange(blip, data.shortRange)
-    
+
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentString(data.name)
     EndTextCommandSetBlipName(blip)
     
-    data.id = data.name .. "_" .. blip
+    data.id = data.name .. "_" .. blip .. "_" .. MakeIdFromVector3(data.pos)
     table.insert(ZTH.Blips, { blip = blip, data = data })
+
+    DumpTable(ZTH.Blips)
     return blip
 end
 

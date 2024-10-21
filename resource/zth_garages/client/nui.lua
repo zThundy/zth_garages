@@ -24,6 +24,11 @@ ZTH.NUI.RegisterNUICallback("close", function(data, cb)
     cb({ message = "ok" })
 end)
 
+ZTH.NUI.RegisterNUICallback("payFee", function(data, cb)
+    ZTH.Functions.TakeImpoundedVehicle(ZTH, data)
+    cb({ message = "ok" })
+end)
+
 ZTH.NUI.RegisterNUICallback("take", function(data, cb)
     ZTH.Functions.TakeVehicle(ZTH, data)
     cb({ message = "ok" })

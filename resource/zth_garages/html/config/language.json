@@ -38,14 +38,25 @@
         "ID": "ID Parcheggio",
         "FROM_DATE": "Dal",
         "TO_DATE": "Al",
+        "TITLE": "Titolo",
         "PARKING_OCCUPIED": "Parcheggi occupati",
         "PARKING_AVAILABLE": "Parcheggi disponibili",
         "SELL_PARKING": "Vendi parcheggio per",
+        "IMPOUND_VEHICLE_DESCRIPTION": "Descrizione del sequestro",
+        "IMPOUND_DESCRIPTION": "Inserisci una descrizione",
+        "IMPOUND_VEHICLE_MONEY": "Quantità di denaro da pagare",
+        "IMPOUND_VEHICLE_MONEY_VALUE": "Valore",
+        "IMPOUND_VEHICLE_IMPOUND": "Sequestra veicolo",
+        "IMPOUND_VEHICLE_NO_DESCRIPTION": "Nessuna descrizione fornita",
+        "IMPOUND_PAYAMOUNT": "Paga $%s per dissequestrare il veicolo",
+        "PAY_IMPOUND_FEE": "Paga la tassa di sequestro",
 
         "TITLE_BUY_PARKING": "Acquista parcheggio",
         "TITLE_BUY_SPOT": "Acquista posto auto",
         "TITLE_MANAGE_VEHICLES": "Gestisci veicoli",
-        "TITLE_TAKE_VEHICLE": "Prendi veicolo"
+        "TITLE_TAKE_VEHICLE": "Prendi veicolo",
+        "TITLE_IMPOUND_ADD_VEHICLE": "Sequestra veicolo",
+        "TITLE_IMPOUND": "Veicoli sequestrati"
     },
     "EN": {
         "NAME": "Name",
@@ -86,13 +97,24 @@
         "ID": "Parking ID",
         "FROM_DATE": "From",
         "TO_DATE": "To",
+        "TITLE": "Title",
         "PARKING_OCCUPIED": "Parking occupied",
         "PARKING_AVAILABLE": "Parking available",
         "SELL_PARKING": "Sell parking for",
+        "IMPOUND_VEHICLE_DESCRIPTION": "Impound description",
+        "IMPOUND_DESCRIPTION": "Enter a description",
+        "IMPOUND_VEHICLE_MONEY": "Amount of money to pay",
+        "IMPOUND_VEHICLE_MONEY_VALUE": "Value",
+        "IMPOUND_VEHICLE_IMPOUND": "Impound vehicle",
+        "IMPOUND_VEHICLE_NO_DESCRIPTION": "No description provided",
+        "IMPOUND_PAYAMOUNT": "Pay $%s to unimpound the vehicle",
+        "PAY_IMPOUND_FEE": "Pay impound fee",
 
         "TITLE_BUY_PARKING": "Buy parking",
         "TITLE_BUY_SPOT": "Buy spot",
         "TITLE_MANAGE_VEHICLES": "Manage vehicles",
-        "TITLE_TAKE_VEHICLE": "Take vehicle"
+        "TITLE_TAKE_VEHICLE": "Take vehicle",
+        "TITLE_IMPOUND_ADD_VEHICLE": "Impound Vehicle",
+        "TITLE_IMPOUND": "Impounded Vehicles"
     }
 }

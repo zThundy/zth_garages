@@ -76,15 +76,23 @@ function ZTH.Functions.FullUpdateCache(self)
 end
 
 function ZTH.Functions.AutoImpountVehicles(self)
+    local setStateVehIds = ""
+
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
         local garage = self.Config.Garages[v.garage]
         if garage and garage.Settings then
             local jobSettings = garage.Settings.JobSettings
             if jobSettings then
                 if not jobSettings.impoundVehicles then
-                    if string.sub(v.plate, 1, string.len(jobSettings.platePrefix)) == jobSettings.platePrefix then
+                    if string.sub(v.plate, 1, string.len(jobSettings.platePrefix)) == jobSettings.platePrefix and v.state ~= 1 then
                         v.state = 1
-                        self.MySQL.ExecQuery("AutoStateToOne", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `state` = 1 WHERE `id` = @id", { ['@id'] = v.id })
+                        -- create a string for the query like v.id in (1, 2, 3).
+                        -- if it's the last one, don't add a comma
+                        if setStateVehIds == "" then
+                            setStateVehIds = tostring(v.id)
+                        else
+                            setStateVehIds = setStateVehIds .. ", " .. v.id
+                        end
                         goto continue
                     end
                 end
@@ -104,6 +112,11 @@ function ZTH.Functions.AutoImpountVehicles(self)
         end
 
         ::continue::
+    end
+
+    if setStateVehIds ~= "" then
+        Debug("AutoImpoundVehicles - Setting state to 1 for vehicles: " .. setStateVehIds)
+        self.MySQL.ExecQuery("AutoStateToOne", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `state` = 1 WHERE `id` in (" .. setStateVehIds .. ")")
     end
 end
 
@@ -134,6 +147,15 @@ function ZTH.Functions.ParseVehicle(data)
     data.fuelLevel = fuelLevel
     data.engineLevel = engineLevel
     data.bodyLevel = bodyLevel
+    data.depotprice = tonumber(data.depotprice)
+    if type(data.depotprice) ~= "number" then data.depotprice = ZTH.Config.DefaultImpoundValue end
+
+    for k, v in pairs(ZTH.Config.Impounds) do
+        if data.garage == k then
+            data.isImpounded = true
+            break
+        end
+    end
 
     return data
 end

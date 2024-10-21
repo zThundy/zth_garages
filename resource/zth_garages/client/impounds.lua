@@ -16,7 +16,7 @@ function ZTH.Functions.InitImpounds(self)
             impound.ImpoundZone.onEnter = function() self.Functions.onEnter(self, "ImpoundZone", k, impound) end
             impound.ImpoundZone.onExit = function() self.Functions.onExit(self, "ImpoundZone", k, impound) end
             CreateMarker("ImpoundZone", impound.ImpoundZone)
-            ClearSpawnPoint(impound.pos)
+            ClearSpawnPoint(impound.ImpoundZone.pos)
         end
 
         impound.TakeVehicleImpound.action = function() self.Functions.ImpoundAction(self, "TakeVehicleImpound", k, impound) end
@@ -30,7 +30,17 @@ function ZTH.Functions.InitImpounds(self)
 end
 
 function ZTH.Functions.ImpoundAction(self, type, id, impound)
+    Debug("ImpoundAction: " .. type .. " " .. id)
 
+    if type == "TakeVehicleImpound" then
+        self.Tunnel.Interface.UpdateVehiclesCacheForUser()
+        local garageData = self.Tunnel.Interface.GetImpoundVehicleList(id)
+        self.NUI.Open({ screen = "list", garageData = { vehicles = garageData, isImpound = true } })
+    end
+end
+
+function ZTH.Functions.TakeImpoundedVehicle(self, car)
+    Debug("TakeImpoundedVehicle: " .. json.encode(car))
 end
 
 function ZTH.Functions.onEnter(self, type, id, impound)

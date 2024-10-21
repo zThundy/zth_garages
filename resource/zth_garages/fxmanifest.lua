@@ -47,6 +47,7 @@ server_scripts {
     
     "server/functions.lua",
     "server/interface.lua",
+    "server/interface.impound.lua",
     "server/main.lua",
 }
 

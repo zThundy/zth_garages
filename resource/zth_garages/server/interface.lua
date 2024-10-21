@@ -69,6 +69,7 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
             v.status = {}
             v.state = 1
             v.mods = data.mods
+            v.depotprice = data.depotprice
             
             ZTH.MySQL.ExecQuery("UpdateVehicle", MySQL.Sync.execute, 
                 [[
@@ -82,6 +83,7 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
                         `engine` = @engine,
                         `status` = @status,
                         `mods` = @mods,
+                        `depotprice` = @depotprice,
                         `state` = 1
                     WHERE
                         `plate` = @plate AND `citizenid` = @citizenid
@@ -94,6 +96,7 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
                 ['@engine'] = data.engine,
                 ['@status'] = json.encode({}),
                 ['@mods'] = data.mods,
+                ["@depotprice"] = data.depotprice,
                 ['@plate'] = data.plate,
                 ['@citizenid'] = citizenid
             })
@@ -214,7 +217,9 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
                     fuelLevel = data.fuelLevel,
                     engineLevel = data.engineLevel,
                     bodyLevel = data.bodyLevel,
-                    mods = data.mods
+                    mods = data.mods,
+                    isImpounded = data.isImpounded,
+                    impoundAmount = data.depotprice
                 })
             end
         else
@@ -232,7 +237,9 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
                         fuelLevel = data.fuelLevel,
                         engineLevel = data.engineLevel,
                         bodyLevel = data.bodyLevel,
-                        mods = data.mods
+                        mods = data.mods,
+                        isImpounded = data.isImpounded,
+                        impoundAmount = data.depotprice
                     })
                 elseif v.citizenid == Player.PlayerData.job.name .. ":" .. Player.PlayerData.job.grade.level then
                     table.insert(vehicles, {
@@ -244,7 +251,9 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
                         fuelLevel = data.fuelLevel,
                         engineLevel = data.engineLevel,
                         bodyLevel = data.bodyLevel,
-                        mods = data.mods
+                        mods = data.mods,
+                        isImpounded = data.isImpounded,
+                        impoundAmount = data.depotprice
                     })
                 end
             end
@@ -563,7 +572,6 @@ ZTH.Tunnel.Interface.BuyVehicles = function(toBuy, totalAmount)
         return false
     end
 
-    print(account, totalAmount)
     if account >= totalAmount then
         if ZTH.Config.AccountScript == "qb-bossmenu" then
             expors["qb-bossmenu"]:RemoveMoney(foundJob, totalAmount)

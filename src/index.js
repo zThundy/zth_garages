@@ -60,7 +60,10 @@ const RootComponent = () => {
         break;
       default:
         setScreen("list");
-        setTitle(T("TITLE_TAKE_VEHICLE"));
+        if (data.isImpound)
+          setTitle(T("TITLE_TAKE_VEHICLE"));
+        else
+          setTitle(T("TITLE_IMPOUND"));
         setVehicles(data.vehicles);
         setShowManage(false);
         break;
@@ -158,6 +161,10 @@ const RootComponent = () => {
       api.post("impoundVehicle", data);
     })
 
+    api.registerEvent("payFee", data => {
+      api.post("payFee", data);
+    })
+
     window.addEventListener('message', handleNuiCallback)
     window.addEventListener('keydown', (e) => {
       if ('Escape'.includes(e.code)) {
@@ -181,7 +188,7 @@ const RootComponent = () => {
           engineLevel: Math.floor(Math.random() * 100),
           bodyLevel: Math.floor(Math.random() * 100),
           isImpounded: Math.random() > 0.5,
-          impoundAmount: Math.floor(Math.random() * 10000),
+          impoundAmount: Math.floor(Math.random() * 10000000000),
         })
       }
       let vehicles = []
