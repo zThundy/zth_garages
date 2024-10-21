@@ -27,6 +27,7 @@ shared_scripts {
 	"config.main.lua",
     "config.garages.lua",
     "config.impounds.lua",
+    "config.language.lua",
 
 	"lib/utils.lua",
     "lib/timeouts.lua",

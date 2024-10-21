@@ -1,9 +1,16 @@
 ZTH.NUI = {}
 
 ZTH.NUI.Open = function(data)
-    Debug("Opening NUI with data: " .. json.encode(data))
+    Debug("Opening NUI with data: " .. DumpTable(data))
     SetNuiFocus(true, true)
+    print("sending data to nui")
     SendNUIMessage({ action = "open", data = data })
+end
+
+ZTH.NUI.OpenSpecific = function(data)
+    Debug("Opening custom NUI screen with data " .. DumpTable(data))
+    SetNuiFocus(true, true)
+    SendNUIMessage(data)
 end
 
 ZTH.NUI.Close = function()
@@ -14,7 +21,7 @@ end
 
 ZTH.NUI.RegisterNUICallback = function(name, cb)
     RegisterNUICallback("html/" .. name, function(data, _cb)
-        Debug("Received NUI callback: " .. name .. " with data: " .. json.encode(data))
+        Debug("Received NUI callback: " .. name .. " with data: " .. DumpTable(data))
         cb(data, _cb)
     end)
 end
@@ -24,8 +31,13 @@ ZTH.NUI.RegisterNUICallback("close", function(data, cb)
     cb({ message = "ok" })
 end)
 
+ZTH.NUI.RegisterNUICallback("impoundVehicle", function(data, cb)
+    ZTH.Functions.ImpoundVehicle(ZTH, data)
+    cb({ message = "ok" })
+end)
+
 ZTH.NUI.RegisterNUICallback("payFee", function(data, cb)
-    ZTH.Functions.TakeImpoundedVehicle(ZTH, data)
+    ZTH.Functions.TakeImpoundedVehicle(ZTH, data.car)
     cb({ message = "ok" })
 end)
 

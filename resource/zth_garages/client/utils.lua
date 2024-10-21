@@ -154,8 +154,8 @@ function SpawnVehicle(model, cb, coords, isnetworked, teleportInto)
     SetVehicleNeedsToBeHotwired(veh, false)
     SetVehRadioStation(veh, 'OFF')
     SetVehicleFuelLevel(veh, 100.0)
-    SetModelAsNoLongerNeeded(model)
     SetVehicleOnGroundProperly(veh)
+    SetModelAsNoLongerNeeded(model)
     if teleportInto then TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1) end
     if cb then cb(veh) end
 end

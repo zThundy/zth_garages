@@ -14,6 +14,8 @@ function ZTH.Functions.Init()
     local initTable = {
         "ALTER TABLE `player_vehicles` ADD IF NOT EXISTS `parking_spot` VARCHAR(255) DEFAULT NULL;",
         "ALTER TABLE `player_vehicles` ADD IF NOT EXISTS `parking_date` DATETIME DEFAULT CURRENT_TIMESTAMP;",
+        "ALTER TABLE `player_vehicles` ADD IF NOT EXISTS `depotdescription` VARCHAR(500) DEFAULT NULL;",
+
         [[
             CREATE TABLE IF NOT EXISTS `garages` (
                 `user_id` VARCHAR(255) NOT NULL,

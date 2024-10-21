@@ -169,7 +169,7 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
                 data.users = self.Tunnel.Interface.GetGarageUsers(id)
                 data.levels = self.Tunnel.Interface.GetGarageLevels(id)
 
-                SendNUIMessage({ action = "show-manage", value = garageData.canManage, data = data })
+                self.NUI.OpenSpecific({ action = "show-manage", value = garageData.canManage, data = data })
             end
         end
 
@@ -199,8 +199,7 @@ function ZTH.Functions.BuySpot(self, data)
         addTimeout(nil, self.Config.TimeoutBetweenInteractions)
 
         self.Core.Functions.Notify("Spot bought", 'success', 5000)
-        self.Functions.RegisterZones(self)
-        self.Functions.InitializeGarages(self)
+        self.Functions.Init()
         self.NUI.Close()
     else
         self.Core.Functions.Notify("You can't buy this spot", 'error', 5000)
@@ -313,8 +312,7 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
             TaskLeaveVehicle(ped, vehicle, 0)
             Citizen.Wait(2000)
             self.Core.Functions.DeleteVehicle(vehicle)
-            self.Functions.RegisterZones(self)
-            self.Functions.InitializeGarages(self)
+            self.Functions.Init()
         else
             return self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
         end
@@ -401,8 +399,7 @@ function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
         local coords = vector4(vehCoords.x, vehCoords.y, vehCoords.z, vehicleData.spot_config.heading)
         ZTH.Tunnel.Interface.SetParkedVehicleState(vehicleData, 0)
         DeleteVehicle(vehicle)
-        ZTH.Functions.RegisterZones(ZTH)
-        ZTH.Functions.InitializeGarages(ZTH)
+        ZTH.Functions.Init()
         SpawnVehicle(vehicleData.model, function(veh)
             SetVehicleNumberPlateText(veh, vehicleData.plate)
             SetVehicleFuelLevel(veh, vehicleData.fuel)

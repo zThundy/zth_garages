@@ -30,17 +30,88 @@ function ZTH.Functions.InitImpounds(self)
 end
 
 function ZTH.Functions.ImpoundAction(self, type, id, impound)
+    if hasTimeout() then return end
+    addTimeout(nil, self.Config.TimeoutBetweenInteractions)
+
     Debug("ImpoundAction: " .. type .. " " .. id)
+    local Settings = self.Config.Impounds[id].Settings
 
     if type == "TakeVehicleImpound" then
         self.Tunnel.Interface.UpdateVehiclesCacheForUser()
-        local garageData = self.Tunnel.Interface.GetImpoundVehicleList(id)
-        self.NUI.Open({ screen = "list", garageData = { vehicles = garageData, isImpound = true } })
+        local vehicles = self.Tunnel.Interface.GetImpoundVehicleList(id)
+        self.NUI.Open({ screen = "list", garageData = { vehicles = vehicles, isImpound = true } })
+    end
+
+    if type == "ImpoundZone" then
+        if not IsPedDriving() then
+            self.Core.Functions.Notify("You are not in a vehicle", "error")
+            return
+        end
+
+        local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+        local plate = GetVehicleNumberPlateText(vehicle)
+        local vehData = self.Tunnel.Interface.GetVehicleFromCache(plate)
+        if not vehData then
+            self.Core.Functions.Notify("You can't impound this vehicle", "error")
+            return
+        end
+
+        local defaultDescription = ""
+        if Settings.defaultDescription then defaultDescription = Settings.defaultDescription end
+
+        self.NUI.Open({
+            screen = "impound-add",
+            garageData = {
+                plate = vehData.plate,
+                garage = id,
+                description = defaultDescription,
+                money = Settings.defaultPrice,
+                name = Settings.displayName,
+                vehicle = vehData
+            }
+        })
     end
 end
 
 function ZTH.Functions.TakeImpoundedVehicle(self, car)
     Debug("TakeImpoundedVehicle: " .. json.encode(car))
+
+    if type(car.mods) == "string" then car.mods = json.decode(car.mods) end
+    local coords = self.Config.Impounds[car.garage].SpawnVehicleImpound.pos
+    local heading = self.Config.Impounds[car.garage].SpawnVehicleImpound.heading
+
+    if self.Tunnel.Interface.OwnsCar(car.garage, car.plate) then
+        if self.Tunnel.Interface.PayImpound(car) then
+            self.NUI.Close()
+            car.modelHash = GetHashKey(car.model)
+            SpawnVehicle(car.modelHash, function(vehicle)
+                SetVehicleNumberPlateText(vehicle, car.plate)
+                self.Core.Functions.Notify("You have taken your vehicle out of the impound", "success")
+                SetVehicleEngineOn(vehicle, true, true, true)
+                self.Core.Functions.SetVehicleProperties(vehicle, car.mods)
+                self.Tunnel.Interface.UpdateVehicleState(car.id, 0)
+            end, vec4(coords.x, coords.y, coords.z, heading), true, true)
+        else
+            self.Core.Functions.Notify("You do not have enough money", "error")
+        end
+    else
+        self.Core.Functions.Notify("You do not own this vehicle", "error")
+    end
+end
+
+function ZTH.Functions.ImpoundVehicle(self, data)
+    Debug("ImpoundVehicle: " .. json.encode(data))
+
+    local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+    local plate = GetVehicleNumberPlateText(vehicle)
+
+    if self.Tunnel.Interface.ImpoundVehicle(plate, data) then
+        self.Core.Functions.Notify("You have impounded the vehicle", "success")
+        DeleteEntity(vehicle)
+        self.NUI.Close()
+    else
+        self.Core.Functions.Notify("You do not have enough money", "error")
+    end
 end
 
 function ZTH.Functions.onEnter(self, type, id, impound)

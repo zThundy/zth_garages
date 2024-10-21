@@ -57,14 +57,18 @@ const RootComponent = () => {
       case "impound-add":
         setTitle(T("TITLE_IMPOUND_ADD_VEHICLE"));
         setScreen("impound-add");
+        setImpoundData(data);
+        setShowManage(false);
         break;
       default:
         setScreen("list");
-        if (data.isImpound)
-          setTitle(T("TITLE_TAKE_VEHICLE"));
-        else
+        if (data.isImpound) {
           setTitle(T("TITLE_IMPOUND"));
-        setVehicles(data.vehicles);
+          setImpoundData(data.impound);
+        } else {
+          setTitle(T("TITLE_TAKE_VEHICLE"));
+          setVehicles(data.vehicles);
+        }
         setShowManage(false);
         break;
     }

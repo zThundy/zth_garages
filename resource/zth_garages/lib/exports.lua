@@ -8,5 +8,5 @@ Citizen.CreateThread(function()
     else
         exports("IsInImpound", function(id) return ZTH.Config.Impounds[id].isInImpound end)
     end
-    Debug("[ZTH Garages] Exports loaded")
+    Debug("Exports loaded")
 end)

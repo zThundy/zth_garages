@@ -8,8 +8,8 @@ import { useRef, useState } from "react";
 
 function ImpoundVehicle({ impoundData }) {
   const inputRef = useRef(null);
-  const [description, setDescription] = useState(impoundData.description || "");
-  const [money, setMoney] = useState(impoundData.money || 0);
+  let [description, setDescription] = useState(impoundData.description || "");
+  let [money, setMoney] = useState(impoundData.money || 0);
 
   return (
     <div className={"ImpoundVehicle_Container"}>
@@ -69,11 +69,12 @@ function ImpoundVehicle({ impoundData }) {
           className={"ImpoundVehicle_Button"}
           variant="contained"
           onClick={() => {
-            if (description === "") description = T("IMPOUND_VEHICLE_NO_DESCRIPTION");
+            let desc = description.trim();
+            if (desc === "") desc = T("IMPOUND_VEHICLE_NO_DESCRIPTION");
             // if the money is 0 return
             if (money === 0) return;
             // send the impound data to the server
-            impoundData.description = description;
+            impoundData.description = desc;
             impoundData.money = money;
             api.callEvent("impoundVehicle", impoundData);
           }}
