@@ -1,25 +1,23 @@
 ZTH.Functions = {}
 
+
 function ZTH.Functions.RegisterZones(self)
-    Debug("Unregistering all markers")
-    for _, v in pairs(self.Zones) do
-        TriggerEvent("gridsystem:unregisterMarker", v.data.name)
-    end
+    UnregisterAllMarkers()
 
     Debug("Registering all markers")
     for i, garages in pairs(self.Config.Garages) do
+        if not garages.Settings then Debug("Settings is missing for garage " .. i) goto skip end
+        
         Debug("Registering zone " .. i)
-
-        local Settins = garages["Settings"]
-        if Settins.blip then
-            CreateBlip(Settins.blip)
+        local Settings = garages.Settings
+        if Settings.blip then
+            if Settings.center then Settings.blip.pos = Settings.center end
+            CreateBlip(Settings.blip)
         else
             Debug("No blip found for garage " .. i .. ", skipping")
         end
-
-        if self.Functions.RegisterZonesForJob(self, i, garages) then goto skip end
         
-        if not Settins.JobSettings then
+        if not self.Functions.RegisterZonesForJob(self, i, garages) then
             for _type, garage in pairs(garages) do
                 if _type == "Settings" then goto continue end
                 if _type == "SpawnVehicle" then goto continue end
@@ -41,10 +39,12 @@ end
 
 function ZTH.Functions.RegisterZonesForJob(self, i, garages)
     local found = false
-    local Settings = garages["Settings"]
+    local Settings = garages.Settings
+    
     if Settings.JobSettings then
         Debug("Registering job zone " .. i)
         if Settings.JobSettings.blip then
+            if Settings.center then Settings.JobSettings.blip.pos = Settings.center end
             CreateBlip(Settings.blip)
         else
             Debug("No blip found for job garage " .. i .. ", skipping")
@@ -443,4 +443,5 @@ function ZTH.Functions.Init()
 
     ZTH.Functions.RegisterZones(ZTH)
     ZTH.Functions.InitializeGarages(ZTH)
+    ZTH.Functions.InitImpounds(ZTH)
 end

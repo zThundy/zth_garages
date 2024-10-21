@@ -26,9 +26,11 @@ ui_page "html/index.html"
 shared_scripts {
 	"config.main.lua",
     "config.garages.lua",
+    "config.impounds.lua",
 
 	"lib/utils.lua",
     "lib/timeouts.lua",
+    "lib/exports.lua",
 }
 
 client_scripts {

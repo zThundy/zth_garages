@@ -1,8 +1,8 @@
 
 function CreateBlip(data)
-    if not data then return Debug("CreateBlip: data is required") end
-    if not data.pos then return Debug("CreateBlip: data.pos is required") end
-    if not data.name then return Debug("CreateBlip: data.name is required") end
+    if not data then return Debug("CreateBlip: [^1FATAL^0] data is required") end
+    if not data.name then return Debug("CreateBlip: [^1FATAL^0] data.name is required") end
+    if not data.pos then return Debug("CreateBlip: [^1FATAL^0] data.pos is required in " .. data.name) end
 
     for k, v in pairs(ZTH.Blips) do
         if v.data.id == data.name .. "_" .. v.blip then
@@ -11,12 +11,18 @@ function CreateBlip(data)
         end
     end
 
+    if not data.sprite then Debug("CreateBlip: [^3WARN^0] data.sprite is missing in " .. data.name .. ", using default 357") data.sprite = 357 end
+    if not data.display then Debug("CreateBlip: [^3WARN^0] data.display is missing in " .. data.name .. ", using default 4") data.display = 4 end
+    if not data.scale then Debug("CreateBlip: [^3WARN^0] data.scale is missing in " .. data.name .. ", using default 1.0") data.scale = 1.0 end
+    if not data.color then Debug("CreateBlip: [^3WARN^0] data.color is missing in " .. data.name .. ", using default 1") data.color = 1 end
+    if not data.shortRange then Debug("CreateBlip: [^3WARN^0] data.shortRange is missing in " .. data.name .. ", using default false") data.shortRange = false end
+
     local blip = AddBlipForCoord(data.pos.x, data.pos.y, data.pos.z)
-    SetBlipSprite(blip, data.sprite or 357)
-    SetBlipDisplay(blip, data.display or 4)
-    SetBlipScale(blip, data.scale or 1.0)
-    SetBlipColour(blip, data.color or 1)
-    SetBlipAsShortRange(blip, data.shortRange or true)
+    SetBlipSprite(blip, data.sprite)
+    SetBlipDisplay(blip, data.display)
+    SetBlipScale(blip, data.scale)
+    SetBlipColour(blip, data.color)
+    SetBlipAsShortRange(blip, data.shortRange)
     
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentString(data.name)
@@ -27,9 +33,21 @@ function CreateBlip(data)
     return blip
 end
 
+function UnregisterAllMarkers()
+    Debug("Unregistering all markers")
+    for _, v in pairs(ZTH.Zones) do
+        TriggerEvent("gridsystem:unregisterMarker", v.data.name)
+    end
+end
+
 function CreateMarker(_type, data)
     local GlobalConfig = ZTH.Config.Markers[_type]
-    if not GlobalConfig then return Debug("CreateMarker: GlobalConfig is required for marker " .. _type) end
+    if not GlobalConfig then return Debug("CreateMarker: [^1FATAL^0] GlobalConfig is required for marker " .. _type) end
+    if not data.pos then return Debug("CreateMarker: [^1FATAL^0] data.pos is required for marker " .. _type) end
+    if not data.action then return Debug("CreateMarker: [^1FATAL^0] data.action is required for marker " .. _type) end
+    
+    if not data.onEnter then Debug("CreateMarker: [^3WARN^0] onEnter function not found in " .. _type .. ", creating anyway and skipping...") end
+    if not data.onExit then Debug("CreateMarker: [^3WARN^0] onExit function not found in " .. _type .. ", creating anyway and skipping...") end
 
     if not data.scale then data.scale = GlobalConfig.scale end
     if not data.msg then data.msg = GlobalConfig.msg end
@@ -40,9 +58,6 @@ function CreateMarker(_type, data)
     if not data.type then data.type = GlobalConfig.type end
     if not data.color then data.color = GlobalConfig.color end
     if not data.name then data.name = _type end
-    
-    if not data.pos then return Debug("CreateMarker: data.pos is required for marker " .. _type) end
-    if not data.action then return Debug("CreateMarker: data.action is required for marker " .. _type) end
     
     local pos = data.pos
     if data.type == 1 then pos = vec3(data.pos.x, data.pos.y, data.pos.z - 1.0) end
@@ -59,7 +74,9 @@ function CreateMarker(_type, data)
         type = data.type,
         color = data.color,
         name = data.name,
-        action = data.action
+        action = data.action,
+        onEnter = data.onEnter,
+        onExit = data.onExit,
     })
 end
 
