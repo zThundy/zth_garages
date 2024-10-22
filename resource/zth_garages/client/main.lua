@@ -100,3 +100,7 @@ RegisterNetEvent("kok", function(a)
 	local veh = GetVehiclePedIsIn(PlayerPedId(), false)
 	SetVehicleNumberPlateText(veh, a)
 end)
+
+RegisterNetEvent("zth_garages:client:refreshGarage", function(id)
+	ZTH.Functions.RefreshGarage(ZTH, id)
+end)

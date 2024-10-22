@@ -15,6 +15,7 @@ function ZTH.Functions.Init()
         "ALTER TABLE `player_vehicles` ADD IF NOT EXISTS `parking_spot` VARCHAR(255) DEFAULT NULL;",
         "ALTER TABLE `player_vehicles` ADD IF NOT EXISTS `parking_date` DATETIME DEFAULT CURRENT_TIMESTAMP;",
         "ALTER TABLE `player_vehicles` ADD IF NOT EXISTS `depotdescription` VARCHAR(500) DEFAULT NULL;",
+        "ALTER TABLE `player_vehicles` ADD IF NOT EXISTS `depotprice` INT(11) DEFAULT '0';",
 
         [[
             CREATE TABLE IF NOT EXISTS `garages` (
@@ -40,21 +41,6 @@ function ZTH.Functions.Init()
     }
 
     ZTH.MySQL.ExecQuery("Create table if not exists and alter", MySQL.transaction.await, initTable)
-
-    -- insert all the garages from config.garages.lua in the garages table
-    for garage, data in pairs(ZTH.Config.Garages) do
-        -- check if the garage is already in the database
-        local result = ZTH.MySQL.ExecQuery("Init - Check if garage exists", MySQL.Sync.fetchScalar, "SELECT COUNT(*) FROM `garages` WHERE `garage_id` = @garage_id", {
-            ['@garage_id'] = garage
-        })
-
-        if result == 0 then
-            ZTH.MySQL.ExecQuery("Init - Insert garage", MySQL.Sync.execute, "INSERT INTO `garages` (`user_id`, `garage_id`) VALUES (@user_id, @garage_id)", {
-                ['@user_id'] = "0",
-                ['@garage_id'] = garage
-            })
-        end
-    end
 
     ZTH.Cache = {}
     ZTH.Cache.Garages = {}
@@ -172,9 +158,8 @@ function ZTH.Functions.AutoImpountVehicles(self)
 
     if autoImpoundVehicles ~= "" then
         Debug("AutoImpoundVehicles - Impounding vehicles: " .. autoImpoundVehicles)
-        self.MySQL.ExecQuery("AutoImpoundVehicles", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `garage` = @garage, `state` = 1, `depotprice` = 0, `parking_spot` = NULL WHERE `id` in (@id)", {
-            ['@garage'] = self.Config.DefaultImpound,
-            ['@id'] = autoImpoundVehicles
+        self.MySQL.ExecQuery("AutoImpoundVehicles", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `garage` = @garage, `state` = 1, `depotprice` = 0, `parking_spot` = NULL WHERE `id` in (" .. autoImpoundVehicles .. ")", {
+            ['@garage'] = self.Config.DefaultImpound
         })
     end
 end
@@ -204,12 +189,13 @@ function ZTH.Functions.AutoRemoveParkingSpots(self)
     self.Functions.UpdateSingleCache(self, "garage_spots")
 end
 
-function ZTH.Functions.GetGarageFromCahce(id)
+function ZTH.Functions.GetGarageFromCache(id)
     for k, v in pairs(ZTH.Cache.Garages) do
         if tostring(v.garage_id) == tostring(id) then
             return v
         end
     end
+    return {}
 end
 
 function ZTH.Functions.ParseVehicle(data)

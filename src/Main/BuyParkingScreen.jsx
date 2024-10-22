@@ -7,6 +7,8 @@ import { pad } from '../lib/utils';
 import { T } from '../lib/language';
 import config from '../lib/config';
 
+import { api } from "../index";
+
 function BuyParkingScreen({ parkingData }) {
   const computeText = () => {
     const html = []
@@ -53,6 +55,9 @@ function BuyParkingScreen({ parkingData }) {
         variant="contained"
         color="primary"
         className={"BuyParkingScreen_buyButton"}
+        onClick={() => {
+          api.callEvent("property-buy", parkingData)
+        }}
       >{T("BUY_FOR", pad(parkingData.managementPrice))}</Button>
     </div>
   )

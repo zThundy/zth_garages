@@ -8,6 +8,10 @@ ZTH.Tunnel.Interface.RequestReady = function()
     return ZTH.IsReady
 end
 
+ZTH.Tunnel.Interface.TellClientsToRefreshGarage = function(id)
+    TriggerClientEvent("zth_garages:client:refreshGarage", -1, id)
+end
+
 ZTH.Tunnel.Interface.OwnsCar = function(garage, plate)
     local Player = ZTH.Core.Functions.GetPlayer(source)
     if not Player then return end
@@ -101,6 +105,10 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
                 ["@depotprice"] = data.depotprice,
                 ['@plate'] = data.plate
             })
+
+            if ZTH.Config.IsAdvancedParkingInstalled then
+                exports["AdvancedParking"]:DeleteVehicleUsingData(nil, nil, data.plate, false)
+            end
         else
             Debug("DepositVehicle: Player does not own the vehicle " .. data.plate .. " " .. v.fakeCitizenId .. " " .. v.citizenid)
         end
@@ -143,6 +151,35 @@ ZTH.Tunnel.Interface.IsOwnerOfGarage = function(id)
         end
     end
     return false
+end
+
+ZTH.Tunnel.Interface.IsGarageOwned = function(id)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenid = Player.PlayerData.citizenid
+
+    for k, v in pairs(ZTH.Cache.Garages) do
+        if v.garage_id == id then
+            return true
+        end
+    end
+    return false
+end
+
+ZTH.Tunnel.Interface.CanBuyGarage = function(id)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenid = Player.PlayerData.citizenid
+
+    local isBought = true
+    for k, v in pairs(ZTH.Cache.Garages) do
+        if id == v.garage_id then
+            isBought = false
+            break
+        end
+    end
+
+    return isBought
 end
 
 ZTH.Tunnel.Interface.GetOwnParkedVehicles = function(id, citizenid)
@@ -371,7 +408,11 @@ ZTH.Tunnel.Interface.GetManagementGarageData = function(id)
         table.insert(occupiedSlots, v.id)
     end
 
-    local garageData = ZTH.Functions.GetGarageFromCahce(id)
+    local garageData = ZTH.Functions.GetGarageFromCache(id)
+    if not garageData then
+        garageData.balance = 0
+        garageData.total_earnings = 0
+    end
 
     return {
         id = id,
@@ -382,8 +423,8 @@ ZTH.Tunnel.Interface.GetManagementGarageData = function(id)
         spots = #configSpots,
         spotsData = spots,
         name = config.displayName,
-        balance = garageData.balance,
-        totEarning = garageData.total_earnings
+        balance = garageData.balance or 0,
+        totEarning = garageData.total_earnings or 0
     }
 end
 
@@ -464,7 +505,7 @@ ZTH.Tunnel.Interface.BuySpot = function(data)
             ['@player_name'] = Player.PlayerData.charinfo.firstname .. " " .. Player.PlayerData.charinfo.lastname
         })
 
-        local garage = ZTH.Functions.GetGarageFromCahce(data.parkingId)
+        local garage = ZTH.Functions.GetGarageFromCache(data.parkingId)
         garage.total_earnings = garage.total_earnings + amountToRemove
         garage.balance = garage.balance + amountToRemove
 
@@ -493,7 +534,7 @@ ZTH.Tunnel.Interface.BalanceAction = function(data)
     
     if data.type == "deposit" then
         if Player.Functions.RemoveMoney("cash", data.amount) then
-            local garage = ZTH.Functions.GetGarageFromCahce(data.id)
+            local garage = ZTH.Functions.GetGarageFromCache(data.id)
             garage.balance = garage.balance + data.amount
             ZTH.MySQL.ExecQuery("BalanceAction", MySQL.Sync.execute, "UPDATE `garages` SET `balance` = @balance WHERE `garage_id` = @garage_id AND user_id = @user_id", {
                 ['@balance'] = garage.balance,
@@ -503,7 +544,7 @@ ZTH.Tunnel.Interface.BalanceAction = function(data)
             return true
         end
     elseif data.type == "withdraw" then
-        local garage = ZTH.Functions.GetGarageFromCahce(data.id)
+        local garage = ZTH.Functions.GetGarageFromCache(data.id)
         if garage.balance >= data.amount then
             garage.balance = garage.balance - data.amount
             ZTH.MySQL.ExecQuery("BalanceAction", MySQL.Sync.execute, "UPDATE `garages` SET `balance` = @balance WHERE `garage_id` = @garage_id AND user_id = @user_id", {
@@ -523,7 +564,7 @@ ZTH.Tunnel.Interface.GetBalance = function(id)
     if not Player then return end
     local citizenid = Player.PlayerData.citizenid
 
-    local garage = ZTH.Functions.GetGarageFromCahce(id)
+    local garage = ZTH.Functions.GetGarageFromCache(id)
     return garage.balance
 end
 
@@ -656,6 +697,46 @@ ZTH.Tunnel.Interface.SellParking = function(data)
     local Player = ZTH.Core.Functions.GetPlayer(source)
     if not Player then return end
     local citizenid = Player.PlayerData.citizenid
+end
 
+ZTH.Tunnel.Interface.CanAffordGarage = function(data)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
 
+    local hasFullAmount = false
+    local neededAmount = data.managementPrice
+    if type(neededAmount) ~= "number" then neededAmount = tonumber(neededAmount) end
+    local cashAmount = Player.Functions.GetMoney("cash")
+    local bankAmount = Player.Functions.GetMoney("bank")
+    if cashAmount + bankAmount < neededAmount then return false end
+
+    -- remove money from cash, then from bank if cash is not enough
+    if cashAmount >= neededAmount then
+        hasFullAmount = true
+        Player.Functions.RemoveMoney("cash", neededAmount)
+    end
+
+    if not hasFullAmount then
+        Player.Functions.RemoveMoney("bank", neededAmount - cashAmount)
+        Player.Functions.RemoveMoney("cash", cashAmount)
+        hasFullAmount = true
+    end
+
+    if hasFullAmount then
+        ZTH.MySQL.ExecQuery("CanAffordGarage - Bought Garage", MySQL.Sync.execute, "INSERT INTO `garages` (`garage_id`, `user_id`, `balance`, `total_earnings`) VALUES (@garage_id, @user_id, @balance, @total_earnings)", {
+            ['@garage_id'] = data.id,
+            ['@user_id'] = Player.PlayerData.citizenid,
+            ['@balance'] = 0,
+            ['@total_earnings'] = 0
+        })
+
+        table.insert(ZTH.Cache.Garages, {
+            garage_id = data.id,
+            user_id = Player.PlayerData.citizenid,
+            balance = 0,
+            total_earnings = 0
+        })
+    end
+
+    return hasFullAmount
 end

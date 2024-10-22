@@ -80,3 +80,13 @@ ZTH.NUI.RegisterNUICallback("sellParking", function(data, cb)
     ZTH.Tunnel.Interface.SellParking(data.pData)
     cb({ message = "ok" })
 end)
+
+ZTH.NUI.RegisterNUICallback("propertyBuy", function(data, cb)
+    if ZTH.Tunnel.Interface.CanAffordGarage(data) then
+        ZTH.Core.Functions.Notify("You have bought the garage", "success")
+        ZTH.NUI.Close()
+    else
+        ZTH.Core.Functions.Notify("You do not have enough money", "error")
+    end
+    cb({ message = "ok" })
+end)

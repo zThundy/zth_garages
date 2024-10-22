@@ -98,34 +98,6 @@ ZTH.Config.Garages = {
                 pos = vec3(267.65, -328.95, 44.92),
                 heading = 65.64
             },
-            {
-                pos = vec3(269.19, -325.93, 44.92),
-                heading = 65.64
-            },
-            {
-                pos = vec3(270.38, -322.57, 44.92),
-                heading = 65.64
-            },
-            {
-                pos = vec3(271.55, -319.41, 44.92),
-                heading = 65.64
-            },
-            {
-                pos = vec3(282.3, -323.4, 44.92),
-                heading = 248.52
-            },
-            {
-                pos = vec3(281.38, -326.8, 44.92),
-                heading = 244.76
-            },
-            {
-                pos = vec3(279.84, -330.07, 44.92),
-                heading = 244.76
-            },
-            {
-                pos = vec3(279.0, -333.6, 44.92),
-                heading = 244.76
-            }
         }
     },
     ["garage_2"] = {
@@ -158,7 +130,7 @@ ZTH.Config.Garages = {
             type = 1,
         },
     },
-    ["garage_3"] = {
+    ["garage_centrale"] = {
         Settings = {
             pricePerDay = 200,
             displayName = "Sfascio",

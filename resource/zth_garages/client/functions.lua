@@ -89,6 +89,8 @@ function ZTH.Functions.InitializeGarages(self)
             if vehicle.state == 1 then
                 local pos = garage["ParkingSpots"][vehicle.id].pos
                 local heading = garage["ParkingSpots"][vehicle.id].heading
+                if not heading then heading = pos.w end
+                if not heading then Debug("Heading not found for vehicle " .. vehicle.plate .. " at " .. id .. " spot " .. vehicle.id) goto continue end
                 local coords = vector4(pos.x, pos.y, pos.z, heading)
                 
                 SpawnVehicle(vehicle.model, function(veh)
@@ -140,11 +142,15 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
                 return self.Core.Functions.Notify("You can't manage a garage while driving", 'error', 5000)
             end
 
-            if self.Tunnel.Interface.IsOwnerOfGarage(id) then
-                local managementTable = self.Tunnel.Interface.GetManagementGarageData(id)
-                self.NUI.Open({ screen = "garage-manage", garageData = managementTable })
+            local managementTable = self.Tunnel.Interface.GetManagementGarageData(id)
+            if self.Tunnel.Interface.CanBuyGarage(id) then
+                self.NUI.Open({ screen = "property-buy", garageData = managementTable })
             else
-                return self.Core.Functions.Notify("You are not the owner of this garage", 'error', 5000)
+                if self.Tunnel.Interface.IsOwnerOfGarage(id) then
+                    self.NUI.Open({ screen = "garage-manage", garageData = managementTable })
+                else
+                    return self.Core.Functions.Notify("You are not the owner of this garage", 'error', 5000)
+                end
             end
         end
 
@@ -177,6 +183,10 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
         end
 
         if _type == "BuySpot" then
+            if not self.Tunnel.Interface.IsGarageOwned(id) then
+                return self.Core.Functions.Notify("You can't buy a spot in a garage since there is no owner", 'error', 5000)
+            end
+
             if IsPedDriving() then
                 return self.Core.Functions.Notify("You can't buy a spot while driving", 'error', 5000)
             end
@@ -281,7 +291,8 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
     local garageSettings = self.Config.Garages[id].Settings
     local drivingType = IsPedDriving()
     local vehicle = GetVehiclePedIsIn(ped, false)
-    local plate = self.Core.Functions.GetPlate(vehicle)
+    -- local plate = self.Core.Functions.GetPlate(vehicle)
+    local plate = GetVehicleNumberPlateText(vehicle)
 
     if not drivingType then
         return self.Core.Functions.Notify("You are not in a vehicle", 'error', 5000)
@@ -315,19 +326,23 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
             local totalFuel = exports[self.Config.FuelResource]:GetFuel(vehicle)
 
             local mods = self.Core.Functions.GetVehicleProperties(vehicle)
-            self.Tunnel.Interface.DepositVehicle(id, spotid, {
+            local toDepositData = {
                 body = bodyDamage,
                 fuel = totalFuel,
                 engine = engineDamage,
                 plate = plate,
                 mods = json.encode(mods),
-            })
+            }
 
             -- walk out of the vehicle
             TaskLeaveVehicle(ped, vehicle, 0)
             Citizen.Wait(2000)
-            self.Core.Functions.DeleteVehicle(vehicle)
-            self.Functions.Init()
+            -- self.Functions.Init()
+            self.Tunnel.Interface.DepositVehicle(id, spotid, toDepositData)
+            self.Tunnel.Interface.TellClientsToRefreshGarage(id)
+            -- self.Core.Functions.DeleteVehicle(vehicle)
+            if self.Config.IsAdvancedParkingInstalled then exports["AdvancedParking"]:DeleteVehicle(vehicle, false) end
+            if DoesEntityExist(vehicle) then DeleteEntity(vehicle) end
         else
             return self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
         end
@@ -354,18 +369,21 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
             local totalFuel = exports[self.Config.FuelResource]:GetFuel(vehicle)
 
             local mods = self.Core.Functions.GetVehicleProperties(vehicle)
-            self.Tunnel.Interface.DepositVehicle(id, spotid, {
+            local toDepositData = {
                 body = bodyDamage,
                 fuel = totalFuel,
                 engine = engineDamage,
                 plate = plate,
                 mods = json.encode(mods),
-            })
+            }
 
             -- walk out of the vehicle
             TaskLeaveVehicle(ped, vehicle, 0)
             Citizen.Wait(2000)
-            self.Core.Functions.DeleteVehicle(vehicle)
+            self.Tunnel.Interface.DepositVehicle(id, spotid, toDepositData)
+            -- self.Core.Functions.DeleteVehicle(vehicle)
+            if self.Config.IsAdvancedParkingInstalled then exports["AdvancedParking"]:DeleteVehicle(vehicle, false) end
+            if DoesEntityExist(vehicle) then DeleteEntity(vehicle) end
         else
             return self.Core.Functions.Notify("You don't own this car", 'error', 5000)
         end
@@ -378,6 +396,8 @@ function ZTH.Functions.TakeVehicle(self, _data)
     local data = _data.car
     local ped = PlayerPedId()
     local spawnCoords = self.Config.Garages[data.garage].SpawnVehicle
+    if not spawnCoords.heading then spawnCoords.heading = spawnCoords.pos.w end
+    if not spawnCoords.heading then Debug("Heading not found for vehicle " .. data.plate .. " at " .. data.garage) return end
     local coords = vector4(spawnCoords.pos.x, spawnCoords.pos.y, spawnCoords.pos.z, spawnCoords.heading)
     -- check if the spawnpoint is free
     if not IsSpawnPointFree(coords, 5.0) then
@@ -414,17 +434,28 @@ function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
     local vehicleData = ZTH.Tunnel.Interface.GetParkedVehicleData(mods.plate)
 
     if vehicleData then
+        if not vehicleData.spot_config.heading then vehicleData.spot_config.heading = vehicleData.spot_config.pos.w end
+        if not vehicleData.spot_config.heading then Debug("Heading not found for vehicle " .. vehicleData.plate .. " at " .. vehicleData.garage_id) return end
+        local ped = PlayerPedId()
         local garage_id = vehicleData.garage_id
         local vehCoords = GetEntityCoords(vehicle)
-        local coords = vector4(vehCoords.x, vehCoords.y, vehCoords.z, vehicleData.spot_config.heading)
         ZTH.Tunnel.Interface.SetParkedVehicleState(vehicleData, 0)
-        DeleteVehicle(vehicle)
-        ZTH.Functions.Init()
+        local coords = vector4(vehCoords.x, vehCoords.y, vehCoords.z, vehicleData.spot_config.heading)
+        -- self.Core.Functions.DeleteVehicle(vehicle)
+        if ZTH.Config.IsAdvancedParkingInstalled then exports["AdvancedParking"]:DeleteVehicle(vehicle, false) end
+        if DoesEntityExist(vehicle) then DeleteEntity(vehicle) end
+        ZTH.Tunnel.Interface.TellClientsToRefreshGarage(garage_id)
+        -- ZTH.Functions.Init()
+        DoScreenFadeOut(100)
+        SetEntityVisible(ped, false)
+        Citizen.Wait(1500)
+        SetEntityVisible(ped, true)
+        DoScreenFadeIn(100)
         SpawnVehicle(vehicleData.model, function(veh)
             SetVehicleNumberPlateText(veh, vehicleData.plate)
             -- fuel --
             SetVehicleFuelLevel(veh, vehicleData.fuel)
-            exports[self.Config.FuelResource]:SetFuel(veh, vehicleData.fuel)
+            exports[ZTH.Config.FuelResource]:SetFuel(veh, vehicleData.fuel)
             ----------
             SetVehicleEngineHealth(veh, vehicleData.engine)
             SetVehicleBodyHealth(veh, vehicleData.body)
@@ -464,4 +495,11 @@ function ZTH.Functions.Init()
     ZTH.Functions.RegisterZones(ZTH)
     ZTH.Functions.InitializeGarages(ZTH)
     ZTH.Functions.InitImpounds(ZTH)
+end
+
+function ZTH.Functions.RefreshGarage(self, id)
+    Debug("Refreshing garage " .. id .. " vehicles")
+    self.Functions.UnloadVehicles(id)
+    self.Functions.RegisterZones(self)
+    self.Functions.InitializeGarages(self)
 end

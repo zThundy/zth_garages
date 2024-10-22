@@ -48,6 +48,7 @@ const RootComponent = () => {
       case "property-buy":
         setTitle(T("TITLE_BUY_PARKING"));
         setScreen("property-buy");
+        setParkingData(data);
         break;
       case "garage-manage":
         setScreen("garage-manage");
@@ -170,6 +171,10 @@ const RootComponent = () => {
 
     api.registerEvent("sellParking", (data) => {
       api.post("sellParking", data);
+    })
+
+    api.registerEvent("property-buy", (data) => {
+      api.post("propertyBuy", data);
     })
 
     window.addEventListener('message', handleNuiCallback)

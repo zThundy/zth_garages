@@ -13,7 +13,8 @@ ZTH.Config.CoreFunction = function()
 end
 ZTH.Config.Core = ZTH.Config.CoreFunction()
 
-ZTH.Config.FuelResource = 'LegacyFuel' -- supports any that has a GetFuel() and SetFuel() export
+ZTH.Config.FuelResource = 'cdn-fuel' -- supports any that has a GetFuel() and SetFuel() export
+ZTH.Config.IsAdvancedParkingInstalled = GetResourceState("AdvancedParking") == "started"
 
 ZTH.Config.CoreExport = function()
     if ZTH.Config.Core == "ESX" then
