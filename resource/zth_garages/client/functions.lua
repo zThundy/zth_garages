@@ -1,11 +1,13 @@
 ZTH.Functions = {}
 
 
-function ZTH.Functions.RegisterZones(self)
+function ZTH.Functions.RegisterZones(self, id)
     UnregisterAllMarkers()
 
     Debug("Registering all markers")
     for i, garages in pairs(self.Config.Garages) do
+        if id and i ~= id then goto skip end
+
         if not garages.Settings then Debug("Settings is missing for garage " .. i) goto skip end
         
         Debug("Registering zone " .. i)
@@ -75,8 +77,9 @@ function ZTH.Functions.RegisterZonesForJob(self, i, garages)
     return found
 end
 
-function ZTH.Functions.InitializeGarages(self)
+function ZTH.Functions.InitializeGarages(self, _id)
     for id, garage in pairs(self.Config.Garages) do
+        if _id and _id ~= id then goto continue end
         if self.CloseGarage ~= id then goto continue end
         if not garage["ParkingSpots"] then goto continue end
         local spots = self.Tunnel.Interface.GetManagementGarageSpots(id)
@@ -139,7 +142,7 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
 
         if _type == "Manage" then
             if IsPedDriving() then
-                return self.Core.Functions.Notify("You can't manage a garage while driving", 'error', 5000)
+                return self.Core.Functions.Notify(L("ERROR_MANAGE_GARAGE"), 'error', 5000)
             end
 
             local managementTable = self.Tunnel.Interface.GetManagementGarageData(id)
@@ -149,14 +152,14 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
                 if self.Tunnel.Interface.IsOwnerOfGarage(id) then
                     self.NUI.Open({ screen = "garage-manage", garageData = managementTable })
                 else
-                    return self.Core.Functions.Notify("You are not the owner of this garage", 'error', 5000)
+                    return self.Core.Functions.Notify(L("ERROR_NOT_OWNER"), 'error', 5000)
                 end
             end
         end
 
         if _type == "TakeVehicle" then
             if IsPedDriving() then
-                return self.Core.Functions.Notify("You can't take a vehicle while driving", 'error', 5000)
+                return self.Core.Functions.Notify(L("ERROR_CANT_TAKE_WHILE_DRIVING"), 'error', 5000)
             end
 
             self.Tunnel.Interface.UpdateVehiclesCacheForUser()
@@ -184,11 +187,11 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
 
         if _type == "BuySpot" then
             if not self.Tunnel.Interface.IsGarageOwned(id) then
-                return self.Core.Functions.Notify("You can't buy a spot in a garage since there is no owner", 'error', 5000)
+                return self.Core.Functions.Notify(L("ERROR_BUY_SPOT_NO_OWNER"), 'error', 5000)
             end
 
             if IsPedDriving() then
-                return self.Core.Functions.Notify("You can't buy a spot while driving", 'error', 5000)
+                return self.Core.Functions.Notify(L("ERROR_CANT_BUY_SPOT_WHILE_DRIVING"), 'error', 5000)
             end
 
             local managementTable = self.Tunnel.Interface.GetManagementGarageData(id)
@@ -204,18 +207,18 @@ end
 function ZTH.Functions.BuySpot(self, data)
     if not data.canBuy then
         -- todo: add debug serverside with client data???
-        return self.Core.Functions.Notify("You can't buy this spot", 'error', 5000)
+        return self.Core.Functions.Notify(L("ERROR_CANT_BUY_SPOT"), 'error', 5000)
     end
 
     if self.Tunnel.Interface.BuySpot(data) then
         if hasTimeout() then return end
         addTimeout(nil, self.Config.TimeoutBetweenInteractions)
 
-        self.Core.Functions.Notify("Spot bought", 'success', 5000)
+        self.Core.Functions.Notify(L("SUCCESS_BUY_SPOT"), 'success', 5000)
         self.Functions.Init()
         self.NUI.Close()
     else
-        self.Core.Functions.Notify("You can't buy this spot", 'error', 5000)
+        self.Core.Functions.Notify(L("ERROR_CANT_BUY_SPOT"), 'error', 5000)
     end
 end
 
@@ -280,9 +283,9 @@ function ZTH.Functions.BuyVehicles(self, data)
     end
 
     if self.Tunnel.Interface.BuyVehicles(toBuy, totalPrice) then
-        self.Core.Functions.Notify("Vehicles bought! You have spent $" .. totalPrice, 'success', 5000)
+        self.Core.Functions.Notify(L("SUCCESS_VEHICLES_BOUGHT", totalPrice), 'success', 5000)
     else
-        self.Core.Functions.Notify("Your company does not have enough money or is not enabled to buy these vehicles", 'error', 5000)
+        self.Core.Functions.Notify(L("ERROR_COMPANY_NO_MONEY"), 'error', 5000)
     end
 end
 
@@ -295,12 +298,12 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
     local plate = GetVehicleNumberPlateText(vehicle)
 
     if not drivingType then
-        return self.Core.Functions.Notify("You are not in a vehicle", 'error', 5000)
+        return self.Core.Functions.Notify(L("ERROR_NOT_IN_VEHICLE"), 'error', 5000)
     end
 
     if garageSettings.parkingType then
         if not garageSettings.parkingType[drivingType] then
-            return self.Core.Functions.Notify("You can't deposit this vehicle here", 'error', 5000)
+            return self.Core.Functions.Notify(L("ERROR_CANT_DEPOSIT_HERE"), 'error', 5000)
         end
     end
 
@@ -309,7 +312,7 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
             local _garageSettings = _garage.Settings
             if string.sub(plate, 1, string.len(_garageSettings.JobSettings.platePrefix)) == _garageSettings.JobSettings.platePrefix then
                 if id ~= _id then
-                    return self.Core.Functions.Notify("You can't deposit this car here", 'error', 5000)
+                    return self.Core.Functions.Notify(L("ERROR_CANT_DEPOSIT_HERE"), 'error', 5000)
                 end
             end
         end
@@ -344,19 +347,19 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
             if self.Config.IsAdvancedParkingInstalled then exports["AdvancedParking"]:DeleteVehicle(vehicle, false) end
             if DoesEntityExist(vehicle) then DeleteEntity(vehicle) end
         else
-            return self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
+            return self.Core.Functions.Notify(L("ERROR_CANT_DEPOSIT_HERE"), 'error', 5000)
         end
     elseif not spotid then
         ZTH.Tunnel.Interface.UpdateVehiclesCacheForUser()
 
         if garageSettings.JobSettings then
             if self.PlayerData.job.name ~= garageSettings.JobSettings.job then
-                return self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
+                return self.Core.Functions.Notify(L("ERROR_CANT_DEPOSIT_HERE"), 'error', 5000)
             end
             
             -- check if the plate starts with the plate prefix
             if string.sub(plate, 1, string.len(garageSettings.JobSettings.platePrefix)) ~= garageSettings.JobSettings.platePrefix then
-                return self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
+                return self.Core.Functions.Notify(L("ERROR_CANT_DEPOSIT_HERE"), 'error', 5000)
             end
         end
 
@@ -385,10 +388,10 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
             if self.Config.IsAdvancedParkingInstalled then exports["AdvancedParking"]:DeleteVehicle(vehicle, false) end
             if DoesEntityExist(vehicle) then DeleteEntity(vehicle) end
         else
-            return self.Core.Functions.Notify("You don't own this car", 'error', 5000)
+            return self.Core.Functions.Notify(L("ERROR_NOT_OWN_CAR"), 'error', 5000)
         end
     else
-        return self.Core.Functions.Notify("You can't deposit here", 'error', 5000)
+        return self.Core.Functions.Notify(L("ERROR_CANT_DEPOSIT_HERE"), 'error', 5000)
     end
 end
 
@@ -401,7 +404,7 @@ function ZTH.Functions.TakeVehicle(self, _data)
     local coords = vector4(spawnCoords.pos.x, spawnCoords.pos.y, spawnCoords.pos.z, spawnCoords.heading)
     -- check if the spawnpoint is free
     if not IsSpawnPointFree(coords, 5.0) then
-        return self.Core.Functions.Notify("The spawnpoint is not free", 'error', 5000)
+        return self.Core.Functions.Notify(L("ERROR_SPAWNPOINT_NOT_FREE"), 'error', 5000)
     end
 
     if type(data.mods) == "string" then
@@ -422,10 +425,10 @@ function ZTH.Functions.TakeVehicle(self, _data)
             SetVehicleBodyHealth(vehicle, data.bodyLevel)
             if data.mods and data.mods.plate then self.Core.Functions.SetVehicleProperties(vehicle, data.mods) end
             TriggerEvent('vehiclekeys:client:SetOwner', data.plate)
-            self.Core.Functions.Notify("Vehicle taken from the garage", 'success', 5000)
+            self.Core.Functions.Notify(L("SUCCESS_VEHICLE_TAKEN_OUT"), 'success', 5000)
         end, coords, true, true)
     else
-        return self.Core.Functions.Notify("You can't take this vehicle", 'error', 5000)
+        return self.Core.Functions.Notify(L("ERROR_CANT_TAKE_VEHICLE"), 'error', 5000)
     end
 end
 
@@ -461,7 +464,7 @@ function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
             SetVehicleBodyHealth(veh, vehicleData.body)
             ZTH.Core.Functions.SetVehicleProperties(veh, vehicleData.mods)
             TriggerEvent('vehiclekeys:client:SetOwner', mods.plate)
-            ZTH.Core.Functions.Notify("Vehicle taken from the garage", 'success', 5000)
+            ZTH.Core.Functions.Notify(L("SUCCESS_VEHICLE_TAKEN_OUT"), 'success', 5000)
         end, coords, true, true)
     else
         Debug("EnteredVehicle: Vehicle data not found, ignoring...")
@@ -500,6 +503,6 @@ end
 function ZTH.Functions.RefreshGarage(self, id)
     Debug("Refreshing garage " .. id .. " vehicles")
     self.Functions.UnloadVehicles(id)
-    self.Functions.RegisterZones(self)
-    self.Functions.InitializeGarages(self)
+    self.Functions.RegisterZones(self, id)
+    self.Functions.InitializeGarages(self, id)
 end

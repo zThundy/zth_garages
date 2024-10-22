@@ -44,7 +44,7 @@ function ZTH.Functions.ImpoundAction(self, type, id, impound)
 
     if type == "ImpoundZone" then
         if not IsPedDriving() then
-            self.Core.Functions.Notify("You are not in a vehicle", "error")
+            self.Core.Functions.Notify(L("ERROR_NOT_IN_VEHICLE"), "error")
             return
         end
 
@@ -52,7 +52,7 @@ function ZTH.Functions.ImpoundAction(self, type, id, impound)
         local plate = GetVehicleNumberPlateText(vehicle)
         local vehData = self.Tunnel.Interface.GetVehicleFromCache(plate)
         if not vehData then
-            self.Core.Functions.Notify("You can't impound this vehicle", "error")
+            self.Core.Functions.Notify(L("ERROR_CANT_IMPUND"), "error")
             return
         end
 
@@ -86,16 +86,16 @@ function ZTH.Functions.TakeImpoundedVehicle(self, car)
             car.modelHash = GetHashKey(car.model)
             SpawnVehicle(car.modelHash, function(vehicle)
                 SetVehicleNumberPlateText(vehicle, car.plate)
-                self.Core.Functions.Notify("You have taken your vehicle out of the impound", "success")
+                self.Core.Functions.Notify(L("SUCCESS_VEHICLE_TAKEN_FROM_IMPOUND"), "success")
                 SetVehicleEngineOn(vehicle, true, true, true)
                 self.Core.Functions.SetVehicleProperties(vehicle, car.mods)
                 self.Tunnel.Interface.UpdateVehicleState(car.id, 0)
             end, vec4(coords.x, coords.y, coords.z, heading), true, true)
         else
-            self.Core.Functions.Notify("You do not have enough money", "error")
+            self.Core.Functions.Notify(L("ERROR_NO_MONEY"), "error")
         end
     else
-        self.Core.Functions.Notify("You do not own this vehicle", "error")
+        self.Core.Functions.Notify(L("ERROR_NO_MONEY"), "error")
     end
 end
 
@@ -107,7 +107,7 @@ function ZTH.Functions.ImpoundVehicle(self, data)
     local plate = GetVehicleNumberPlateText(vehicle)
 
     if self.Tunnel.Interface.ImpoundVehicle(plate, data) then
-        self.Core.Functions.Notify("You have impounded the vehicle", "success")
+        self.Core.Functions.Notify(L("SUCCESS_VEHICLE_IMPOUND"), "success")
         self.NUI.Close()
         
         -- walk out of the vehicle
@@ -115,7 +115,7 @@ function ZTH.Functions.ImpoundVehicle(self, data)
         Citizen.Wait(2000)
         self.Core.Functions.DeleteVehicle(vehicle)
     else
-        self.Core.Functions.Notify("You do not have enough money", "error")
+        self.Core.Functions.Notify(L("ERROR_NO_MONEY"), "error")
     end
 end
 

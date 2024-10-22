@@ -68,6 +68,7 @@ function CreateMarker(_type, data)
     
     local pos = data.pos
     if data.type == 1 then pos = vec3(data.pos.x, data.pos.y, data.pos.z - 1.0) end
+    pos = vec3(pos.x, pos.y, pos.z)
     table.insert(ZTH.Zones, { data = data, action = data.action })
     TriggerEvent('gridsystem:registerMarker', {
         id = data.name,
@@ -192,4 +193,12 @@ function IsPedDriving()
         end
     end
     return type
+end
+
+function L(key, ...)
+    if ZTH.Locale[Config.Locale] and ZTH.Locale[Config.Locale][key] then
+        return string.format(ZTH.Locale[Config.Locale][key], ...)
+    else
+        return key
+    end
 end
