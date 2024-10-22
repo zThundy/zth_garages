@@ -45,8 +45,8 @@ ZTH.Config.Impounds = {
             pos = vec3(395.15, -1640.29, 29.29),
         },
         SpawnVehicleImpound = {
-            pos = vec3(401.53, -1632.84, 29.29),
-            heading = 306.71,
+            pos = vec3(412.26, -1640.65, 28.64),
+            heading = 356.7,
         }
     },
 }

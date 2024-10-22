@@ -75,6 +75,7 @@ function ZTH.Functions.FullUpdateCache(self)
     TriggerClientEvent("zth_garages:client:Init", -1)
 
     ZTH.Functions.AutoImpountVehicles(self)
+    ZTH.Functions.AutoRemoveParkingSpots(self)
 end
 
 function ZTH.Functions.GetSpotFromGarageId(garageId, spotId)
@@ -94,6 +95,11 @@ function ZTH.Functions.AutoImpountVehicles(self)
 
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
         local garage = self.Config.Garages[v.garage]
+        if not garage and not self.Config.Impounds[v.garage] then
+            Debug("AutoImpoundVehicles: [^1FATAL^0] No garage and not impound found for vehicle: " .. v.id)
+            goto continue
+        end
+
         if not garage then
             Debug("AutoImpoundVehicles: [^1FATAL^0] No garage found for vehicle: " .. v.id)
             goto continue
@@ -132,31 +138,28 @@ function ZTH.Functions.AutoImpountVehicles(self)
                 autoImpoundVehicles = autoImpoundVehicles .. ", " .. v.id
             end
         elseif v.parking_spot ~= nil then
-            if garage.ParkingSpots then
-                local settings = garage.Settings
-                local spot = self.Functions.GetSpotFromGarageId(v.garage, v.parking_spot)
-                if spot then
-                    -- spot["until"] is 1729461600000.0
-                    local convertedUntil = os.date("%Y-%m-%d %H:%M:%S", spot["until"] / 1000)
-                    print(convertedUntil, spot["until"], os.date("%Y-%m-%d %H:%M:%S"))
-                    if spot["until"] < os.date("%Y-%m-%d %H:%M:%S") then
-                        v.garage = self.Config.DefaultImpound
-                        v.state = 1
-                        v.depotprice = 0
-                        v.parking_spot = nil
+            -- if garage.ParkingSpots then
+            --     local settings = garage.Settings
+            --     local spot = self.Functions.GetSpotFromGarageId(v.garage, v.parking_spot)
+            --     if spot then
+            --         if ConditionalDates(math.floor(spot["until"] / 1000), os.time()) then
+            --             v.garage = self.Config.DefaultImpound
+            --             v.state = 1
+            --             v.depotprice = 0
+            --             v.parking_spot = nil
 
-                        if autoImpoundVehicles == "" then
-                            autoImpoundVehicles = tostring(v.id)
-                        else
-                            autoImpoundVehicles = autoImpoundVehicles .. ", " .. v.id
-                        end
-                    else
-                        Debug("AutoImpoundVehicles: [^3WARN^0] Parking spot is still valid for vehicle: " .. v.id)
-                    end
-                else
-                    Debug("AutoImpoundVehicles: [^1FATAL^0] No spot found for vehicle: " .. v.id)
-                end
-            end
+            --             if autoImpoundVehicles == "" then
+            --                 autoImpoundVehicles = tostring(v.id)
+            --             else
+            --                 autoImpoundVehicles = autoImpoundVehicles .. ", " .. v.id
+            --             end
+            --         else
+            --             Debug("AutoImpoundVehicles: [^3WARN^0] Parking spot is still valid for vehicle: " .. v.id)
+            --         end
+            --     else
+            --         Debug("AutoImpoundVehicles: [^1FATAL^0] No spot found for vehicle: " .. v.id)
+            --     end
+            -- end
         end
 
         ::continue::
@@ -173,6 +176,16 @@ function ZTH.Functions.AutoImpountVehicles(self)
             ['@garage'] = self.Config.DefaultImpound,
             ['@id'] = autoImpoundVehicles
         })
+    end
+end
+
+function ZTH.Functions.AutoRemoveParkingSpots(self)
+    for _, spot in pairs(self.Cache.GarageSpots) do
+        if ConditionalDates(math.floor(spot["until"] / 1000), os.time()) then
+            Debug("AutoRemoveParkingSpots: Removing parking spot: " .. spot.spot_id)
+        else
+            Debug("AutoImpoundVehicles: [^3WARN^0] Parking spot " .. spot.spot_id .. " is still valid")
+        end
     end
 end
 

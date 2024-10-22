@@ -204,6 +204,41 @@ function MakeRandomNumber(length)
     return table_concat(random_string)
 end
 
+function ConditionalDates(date1, date2)
+    -- get imput two os.time(), convert them to os.date and compare the single elements of the date
+    local d1 = os.date("*t", date1)
+    local d2 = os.date("*t", date2)
+
+    print(d1.year, d1.month, d1.day, d1.hour, d1.min, d1.sec)
+    print(d2.year, d2.month, d2.day, d2.hour, d2.min, d2.sec)
+
+    if d1.year > d2.year then
+        print("d1.year > d2.year")
+        if d1.month > d2.month then
+            print("d1.month > d2.month")
+            if d1.day > d2.day then
+                print("d1.day > d2.day")
+                if d1.hour > d2.hour then
+                    print("d1.hour > d2.hour")
+                    if d1.min > d2.min then
+                        print("d1.min > d2.min")
+                        if d1.sec > d2.sec then
+                            print("d1.sec > d2.sec")
+                            return true
+                        end
+                        return false
+                    end
+                    return false
+                end
+                return false
+            end
+            return false
+        end
+        return false
+    end
+    return false
+end
+
 
 local Luaoop = module("zth_garages", "lib/Luaoop")
 class = Luaoop.class

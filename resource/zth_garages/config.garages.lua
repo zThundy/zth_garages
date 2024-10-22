@@ -157,6 +157,36 @@ ZTH.Config.Garages = {
             type = 1,
         },
     },
+    ["garage_3"] = {
+        Settings = {
+            pricePerDay = 200,
+            displayName = "Sfascio",
+            managementPrice = 1000000,
+            sellPrice = 5000,
+            blip = {
+                pos = vec3(289.15, -342.04, 44.92),
+                sprite = 357,
+                color = 1,
+                display = 4,
+                scale = 1.0,
+                name = "Sfascio",
+                shortRange = false,
+            }
+        },
+        -- TakeVehicle = {
+        --     pos = vec3(215.04, -805.87, 30.81),
+        -- },
+        SpawnVehicle = {
+            pos = vec3(212.5, -797.84, 30.86),
+            heading = 158.56,
+        },
+        Deposit = {
+            pos = vec3(212.3, -798.61, 30.88),
+            scale = vec3(3.0, 3.0, 1.0),
+            msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
+            type = 1,
+        },
+    },
     ["garage_police"] = {
         Settings = {
             pricePerDay = 0,
