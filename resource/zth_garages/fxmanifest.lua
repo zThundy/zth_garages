@@ -37,9 +37,10 @@ shared_scripts {
 client_scripts {
     "client/functions.lua",
     "client/impounds.lua",
-
+    
     "client/main.lua",
     "client/utils.lua",
+    "client/camera.lua",
     "client/nui.lua",
 }
 
@@ -48,6 +49,7 @@ server_scripts {
     
     "server/functions.lua",
     "server/interface.lua",
+    
     "server/interface.impound.lua",
     "server/main.lua",
 }

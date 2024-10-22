@@ -209,21 +209,25 @@ function ConditionalDates(date1, date2)
     local d1 = os.date("*t", date1)
     local d2 = os.date("*t", date2)
 
-    print(d1.year, d1.month, d1.day, d1.hour, d1.min, d1.sec)
-    print(d2.year, d2.month, d2.day, d2.hour, d2.min, d2.sec)
+    if type(d1.year) ~= "number" then d1.year = tonumber(d1.year) end
+    if type(d2.year) ~= "number" then d2.year = tonumber(d2.year) end
+    if type(d1.month) ~= "number" then d1.month = tonumber(d1.month) end
+    if type(d2.month) ~= "number" then d2.month = tonumber(d2.month) end
+    if type(d1.day) ~= "number" then d1.day = tonumber(d1.day) end
+    if type(d2.day) ~= "number" then d2.day = tonumber(d2.day) end
+    if type(d1.hour) ~= "number" then d1.hour = tonumber(d1.hour) end
+    if type(d2.hour) ~= "number" then d2.hour = tonumber(d2.hour) end
+    if type(d1.min) ~= "number" then d1.min = tonumber(d1.min) end
+    if type(d2.min) ~= "number" then d2.min = tonumber(d2.min) end
+    if type(d1.sec) ~= "number" then d1.sec = tonumber(d1.sec) end
+    if type(d2.sec) ~= "number" then d2.sec = tonumber(d2.sec) end
 
-    if d1.year > d2.year then
-        print("d1.year > d2.year")
-        if d1.month > d2.month then
-            print("d1.month > d2.month")
-            if d1.day > d2.day then
-                print("d1.day > d2.day")
-                if d1.hour > d2.hour then
-                    print("d1.hour > d2.hour")
-                    if d1.min > d2.min then
-                        print("d1.min > d2.min")
-                        if d1.sec > d2.sec then
-                            print("d1.sec > d2.sec")
+    if d1.year >= d2.year then
+        if d1.month >= d2.month then
+            if d1.day >= d2.day then
+                if d1.hour >= d2.hour then
+                    if d1.min >= d2.min then
+                        if d1.sec >= d2.sec then
                             return true
                         end
                         return false

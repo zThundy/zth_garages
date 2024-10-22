@@ -39,7 +39,7 @@ ZTH.Tunnel.Interface.CanDeposit = function(garage, spot, plate)
                 if v.user_id == citizenid then
                     Debug("CanDeposit: Player owns the spot")
                     -- check if v.until is passed, if so, return false
-                    if v["until"] ~= nil and os.time() > v["until"] then
+                    if ConditionalDates(os.time(), math.floor(v["until"] / 1000)) then
                         Debug("CanDeposit: Spot is expired")
                         return false
                     end
@@ -56,9 +56,11 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
     local Player = ZTH.Core.Functions.GetPlayer(source)
     if not Player then return end
     local citizenid = Player.PlayerData.citizenid
-
+    
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
-        if v.plate == data.plate and v.citizenid == citizenid then
+        v.fakeCitizenId = ""
+
+        if v.plate == data.plate and (v.citizenid == citizenid or Player.PlayerData.job.name .. ":" .. Player.PlayerData.job.grade.level) then
             v.mods = json.decode(data.mods)
             v.garage = garage
             v.parking_spot = spot
@@ -86,7 +88,7 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
                         `depotprice` = @depotprice,
                         `state` = 1
                     WHERE
-                        `plate` = @plate AND `citizenid` = @citizenid
+                        `plate` = @plate
                 ]]
             , {
                 ['@garage'] = garage,
@@ -97,9 +99,10 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
                 ['@status'] = json.encode({}),
                 ['@mods'] = data.mods,
                 ["@depotprice"] = data.depotprice,
-                ['@plate'] = data.plate,
-                ['@citizenid'] = citizenid
+                ['@plate'] = data.plate
             })
+        else
+            Debug("DepositVehicle: Player does not own the vehicle " .. data.plate .. " " .. v.fakeCitizenId .. " " .. v.citizenid)
         end
     end
 end
@@ -207,7 +210,6 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
         if not isJobGarage then
             if v.garage == id and v.citizenid == citizenId and v.state == 1 then
                 local data = ZTH.Functions.ParseVehicle(v)
-
                 table.insert(vehicles, {
                     id = data.id,
                     garage = id,
@@ -225,7 +227,7 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
         else
             local settings = garageSettings.JobSettings
             -- get all plates that begin with settings.platePrefix
-            if v.garage == id and v.state == 1 then
+            if v.garage == id and (v.state == 1 or not settings.shouldCheckForState) then
                 local data = ZTH.Functions.ParseVehicle(v)
                 if string.sub(v.plate, 1, string.len(settings.platePrefix)) == settings.platePrefix and v.citizenid == citizenId then
                     table.insert(vehicles, {
@@ -270,15 +272,35 @@ ZTH.Tunnel.Interface.TakeVehicle = function(plate, id)
     local Player = ZTH.Core.Functions.GetPlayer(source)
     if not Player then return end
     local citizenId = Player.PlayerData.citizenid
-    
+
+    local garageSettings = ZTH.Config.Garages[id]["Settings"]
+    if not garageSettings then return false end
+
     if not ZTH.Tunnel.Interface.OwnsCar(id, plate) then return false end
 
-    ZTH.MySQL.ExecQuery("TakeVehicle", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `state` = 0 WHERE `plate` = @plate AND `citizenid` = @citizenid AND `garage` = @garage", {
-        ['@plate'] = plate,
-        ['@citizenid'] = citizenId,
-        ['@garage'] = id
-    })
-    return true
+    for _, v in pairs(ZTH.Cache.PlayerVehicles) do
+        if v.plate == plate and v.garage == id then
+            if garageSettings.JobSettings then
+                local platePrefix = garageSettings.JobSettings.platePrefix
+                if string.sub(plate, 1, string.len(platePrefix)) == platePrefix then
+                    v.state = 0
+                    ZTH.MySQL.ExecQuery("TakeVehicle - JobSettings", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `state` = 0 WHERE `plate` = @plate AND `garage` = @garage", {
+                        ['@plate'] = plate,
+                        ['@garage'] = id
+                    })
+                    return true
+                end
+            end
+
+            v.state = 0
+            ZTH.MySQL.ExecQuery("TakeVehicle", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `state` = 0 WHERE `plate` = @plate AND `citizenid` = @citizenid AND `garage` = @garage", {
+                ['@plate'] = plate,
+                ['@citizenid'] = citizenId,
+                ['@garage'] = id
+            })
+            return true
+        end
+    end
 end
 
 ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
@@ -400,10 +422,9 @@ ZTH.Tunnel.Interface.SetParkedVehicleState = function(vehData, state)
             Debug("SetParkedVehicleState: Setting state to " .. state .. " for " .. vehData.plate)
             v.state = state
             
-            ZTH.MySQL.ExecQuery("SetParkedVehicleState", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `state` = @state WHERE `plate` = @plate AND `citizenid` = @citizenid", {
+            ZTH.MySQL.ExecQuery("SetParkedVehicleState", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `state` = @state WHERE `plate` = @plate", {
                 ['@state'] = state,
-                ['@plate'] = vehData.plate,
-                ['@citizenid'] = citizenid
+                ['@plate'] = vehData.plate
             })
             break
         end
@@ -551,15 +572,7 @@ ZTH.Tunnel.Interface.GetGarageUsers = function(id)
 end
 
 ZTH.Tunnel.Interface.BuyVehicles = function(toBuy, totalAmount)
-    local foundJob = false
-    for _, v in pairs(toBuy) do
-        print(json.encode(v))
-        if v.job then
-            foundJob = v.job
-            if type(v.job) == "object" then foundJob = v.job.name end
-            break
-        end
-    end
+    local foundJob = toBuy[1].job
 
     local account = 0
     if foundJob then
@@ -637,4 +650,12 @@ ZTH.Tunnel.Interface.BuyVehicles = function(toBuy, totalAmount)
     end
 
     return false
+end
+
+ZTH.Tunnel.Interface.SellParking = function(data)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenid = Player.PlayerData.citizenid
+
+
 end

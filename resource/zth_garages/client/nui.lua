@@ -72,7 +72,11 @@ ZTH.NUI.RegisterNUICallback("changeSpot", function(data, cb)
 end)
 
 ZTH.NUI.RegisterNUICallback("saveData", function(data, cb)
-    print("saveData", json.encode(data, { indent = true }))
     ZTH.Functions.BuyVehicles(ZTH, data)
+    cb({ message = "ok" })
+end)
+
+ZTH.NUI.RegisterNUICallback("sellParking", function(data, cb)
+    ZTH.Tunnel.Interface.SellParking(data.pData)
     cb({ message = "ok" })
 end)

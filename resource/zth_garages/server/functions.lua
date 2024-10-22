@@ -69,13 +69,13 @@ function ZTH.Functions.FullUpdateCache(self)
     self.Cache.PlayerVehicles   =   self.MySQL.ExecQuery("Init - Get all player vehicles", MySQL.Sync.fetchAll, "SELECT * FROM `player_vehicles`")
     self.Cache.Players          =   self.MySQL.ExecQuery("Init - Get all players", MySQL.Sync.fetchAll, "SELECT * FROM `players`")
 
+    ZTH.Functions.AutoImpountVehicles(self)
+    ZTH.Functions.AutoRemoveParkingSpots(self)
+
     -- set ready
     ZTH.IsReady = true
     -- this is sent for restart of the resource
     TriggerClientEvent("zth_garages:client:Init", -1)
-
-    ZTH.Functions.AutoImpountVehicles(self)
-    ZTH.Functions.AutoRemoveParkingSpots(self)
 end
 
 function ZTH.Functions.GetSpotFromGarageId(garageId, spotId)
@@ -180,13 +180,28 @@ function ZTH.Functions.AutoImpountVehicles(self)
 end
 
 function ZTH.Functions.AutoRemoveParkingSpots(self)
-    for _, spot in pairs(self.Cache.GarageSpots) do
-        if ConditionalDates(math.floor(spot["until"] / 1000), os.time()) then
-            Debug("AutoRemoveParkingSpots: Removing parking spot: " .. spot.spot_id)
+    for id, spot in pairs(self.Cache.GarageSpots) do
+        if ConditionalDates(os.time(), math.floor(spot["until"] / 1000)) then
+            Debug("AutoRemoveParkingSpots: [^2SUCCESS^0] Removing parking spot: " .. spot.spot_id)
+            self.MySQL.ExecQuery("AutoRemoveParkingSpots", MySQL.Sync.execute, "DELETE FROM `garages_spots` WHERE `spot_id` = @spot_id", {
+                ['@spot_id'] = spot.spot_id
+            })
+            
+            for k, v in pairs(self.Cache.PlayerVehicles) do
+                if v.parking_spot == spot.spot_id then
+                    v.parking_spot = nil
+                    Debug("AutoRemoveParkingSpots: [^2SUCCESS^0] Removing parking spot from vehicle: " .. v.id)
+                    self.MySQL.ExecQuery("AutoRemoveParkingSpots", MySQL.Sync.execute, "UPDATE `player_vehicles` SET `parking_spot` = NULL WHERE `id` = @id", {
+                        ['@id'] = v.id
+                    })
+                end
+            end
         else
-            Debug("AutoImpoundVehicles: [^3WARN^0] Parking spot " .. spot.spot_id .. " is still valid")
+            Debug("AutoRemoveParkingSpots: [^3WARN^0] Parking spot " .. spot.spot_id .. " is still valid")
         end
     end
+
+    self.Functions.UpdateSingleCache(self, "garage_spots")
 end
 
 function ZTH.Functions.GetGarageFromCahce(id)

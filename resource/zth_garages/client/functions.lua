@@ -96,7 +96,10 @@ function ZTH.Functions.InitializeGarages(self)
                     SetVehicleOnGroundProperly(veh)
                     FreezeEntityPosition(veh, true)
                     SetEntityInvincible(veh, true)
+                    -- fuel --
                     SetVehicleFuelLevel(veh, vehicle.fuel)
+                    exports[self.Config.FuelResource]:SetFuel(veh, vehicle.fuel)
+                    ----------
                     SetVehicleEngineHealth(veh, vehicle.engine)
                     SetVehicleBodyHealth(veh, vehicle.body)
                     SetVehicleNumberPlateText(veh, vehicle.plate)
@@ -252,7 +255,7 @@ function ZTH.Functions.BuyVehicles(self, data)
                     citizenid = officer.id,
                     model = v.model,
                     price = v.price,
-                    job = officer.job,
+                    job = officer.job.name,
                     hash = hash,
                     garage = officer.garage,
                     platePrefix = platePrefix,
@@ -277,6 +280,9 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
     local ped = PlayerPedId()
     local garageSettings = self.Config.Garages[id].Settings
     local drivingType = IsPedDriving()
+    local vehicle = GetVehiclePedIsIn(ped, false)
+    local plate = self.Core.Functions.GetPlate(vehicle)
+
     if not drivingType then
         return self.Core.Functions.Notify("You are not in a vehicle", 'error', 5000)
     end
@@ -287,8 +293,17 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
         end
     end
 
-    local vehicle = GetVehiclePedIsIn(ped, false)
-    local plate = self.Core.Functions.GetPlate(vehicle)
+    for _id, _garage in pairs(self.Config.Garages) do
+        if _garage.Settings and _garage.Settings.JobSettings then
+            local _garageSettings = _garage.Settings
+            if string.sub(plate, 1, string.len(_garageSettings.JobSettings.platePrefix)) == _garageSettings.JobSettings.platePrefix then
+                if id ~= _id then
+                    return self.Core.Functions.Notify("You can't deposit this car here", 'error', 5000)
+                end
+            end
+        end
+    end
+
     -- means that this is a private parking spot
     if spotid then
         if self.Tunnel.Interface.CanDeposit(id, spotid, plate) then
@@ -375,12 +390,17 @@ function ZTH.Functions.TakeVehicle(self, _data)
     
     if self.Tunnel.Interface.TakeVehicle(data.plate, data.garage) then
         SpawnVehicle(data.model, function(vehicle)
+            data.engineLevel = data.engineLevel * 10.0
+            data.bodyLevel = data.bodyLevel * 10.0
             ZTH.NUI.Close()
             SetVehicleNumberPlateText(vehicle, data.plate)
-            SetVehicleFuelLevel(vehicle, data.fuel)
-            SetVehicleEngineHealth(vehicle, data.engine)
-            SetVehicleBodyHealth(vehicle, data.body)
-            self.Core.Functions.SetVehicleProperties(vehicle, data.mods)
+            -- fuel --
+            SetVehicleFuelLevel(vehicle, data.fuelLevel)
+            exports[self.Config.FuelResource]:SetFuel(vehicle, data.fuelLevel)
+            ----------
+            SetVehicleEngineHealth(vehicle, data.engineLevel)
+            SetVehicleBodyHealth(vehicle, data.bodyLevel)
+            if data.mods and data.mods.plate then self.Core.Functions.SetVehicleProperties(vehicle, data.mods) end
             TriggerEvent('vehiclekeys:client:SetOwner', data.plate)
             self.Core.Functions.Notify("Vehicle taken from the garage", 'success', 5000)
         end, coords, true, true)
@@ -402,7 +422,10 @@ function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
         ZTH.Functions.Init()
         SpawnVehicle(vehicleData.model, function(veh)
             SetVehicleNumberPlateText(veh, vehicleData.plate)
+            -- fuel --
             SetVehicleFuelLevel(veh, vehicleData.fuel)
+            exports[self.Config.FuelResource]:SetFuel(veh, vehicleData.fuel)
+            ----------
             SetVehicleEngineHealth(veh, vehicleData.engine)
             SetVehicleBodyHealth(veh, vehicleData.body)
             ZTH.Core.Functions.SetVehicleProperties(veh, vehicleData.mods)

@@ -191,7 +191,9 @@ function ManageParkingScreen({ parkingData }) {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => {}}
+                onClick={() => {
+                  api.callEvent("sellParking", { pData: pData })
+                }}
               >
                 ${pData.sellPrice}
               </Button>

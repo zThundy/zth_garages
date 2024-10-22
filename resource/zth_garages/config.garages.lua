@@ -53,7 +53,8 @@ ZTH.Config.Garages = {
         Settings = {
             parkingType = {
                 ["car"] = true,
-                ["taxi"] = true
+                ["taxi"] = true,
+                ["police"] = true
             },
             autoImpoundOnExpire = true,
             pricePerDay = 200,
@@ -173,19 +174,19 @@ ZTH.Config.Garages = {
                 shortRange = false,
             }
         },
-        -- TakeVehicle = {
-        --     pos = vec3(215.04, -805.87, 30.81),
-        -- },
+        TakeVehicle = {
+            pos = vec3(215.04, -805.87, 30.81),
+        },
         SpawnVehicle = {
             pos = vec3(212.5, -797.84, 30.86),
             heading = 158.56,
         },
-        Deposit = {
-            pos = vec3(212.3, -798.61, 30.88),
-            scale = vec3(3.0, 3.0, 1.0),
-            msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
-            type = 1,
-        },
+        -- Deposit = {
+        --     pos = vec3(212.3, -798.61, 30.88),
+        --     scale = vec3(3.0, 3.0, 1.0),
+        --     msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
+        --     type = 1,
+        -- },
     },
     ["garage_police"] = {
         Settings = {
@@ -194,12 +195,19 @@ ZTH.Config.Garages = {
             managementPrice = 0,
             sellPrice = 0,
             JobSettings = {
+                -- lol
                 job = "police",
+                -- lol
                 platePrefix = "LSPD",
+                -- if it should impound police vehicles on resource restart
                 impoundVehicles = false,
+                -- if taking grade assigned vehicle, it should check the state or not to take another one
+                shouldCheckForState = true,
+                -- when to show the manage wheel for the garage
                 manageGrades = {
                     [4] = true
                 },
+                -- lol
                 lists = {
                     cars = {
                         {model = "police", label = "Police Cruiser", price = 5000},
