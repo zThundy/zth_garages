@@ -196,8 +196,8 @@ function IsPedDriving()
 end
 
 function L(key, ...)
-    if ZTH.Locale[Config.Locale] and ZTH.Locale[Config.Locale][key] then
-        return string.format(ZTH.Locale[Config.Locale][key], ...)
+    if ZTH.Locale[key] then
+        return string.format(ZTH.Locale[key], ...)
     else
         return key
     end

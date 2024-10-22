@@ -207,7 +207,7 @@ end
 function ZTH.Functions.BuySpot(self, data)
     if not data.canBuy then
         -- todo: add debug serverside with client data???
-        return self.Core.Functions.Notify(L("ERROR_CANT_BUY_SPOT"), 'error', 5000)
+        return self.Core.Functions.Notify(L("ERROR_UNAVAILABLE_BUY_SPOT"), 'error', 5000)
     end
 
     if self.Tunnel.Interface.BuySpot(data) then
@@ -346,6 +346,7 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
             -- self.Core.Functions.DeleteVehicle(vehicle)
             if self.Config.IsAdvancedParkingInstalled then exports["AdvancedParking"]:DeleteVehicle(vehicle, false) end
             if DoesEntityExist(vehicle) then DeleteEntity(vehicle) end
+            self.Core.Functions.Notify(L("SUCCESS_VEHICLE_DEPOSITED"), 'success', 5000)
         else
             return self.Core.Functions.Notify(L("ERROR_CANT_DEPOSIT_HERE"), 'error', 5000)
         end
@@ -387,6 +388,7 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
             -- self.Core.Functions.DeleteVehicle(vehicle)
             if self.Config.IsAdvancedParkingInstalled then exports["AdvancedParking"]:DeleteVehicle(vehicle, false) end
             if DoesEntityExist(vehicle) then DeleteEntity(vehicle) end
+            self.Core.Functions.Notify(L("SUCCESS_VEHICLE_DEPOSITED"), 'success', 5000)
         else
             return self.Core.Functions.Notify(L("ERROR_NOT_OWN_CAR"), 'error', 5000)
         end
@@ -445,12 +447,12 @@ function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
         ZTH.Tunnel.Interface.SetParkedVehicleState(vehicleData, 0)
         local coords = vector4(vehCoords.x, vehCoords.y, vehCoords.z, vehicleData.spot_config.heading)
         -- self.Core.Functions.DeleteVehicle(vehicle)
+        DoScreenFadeOut(100)
+        SetEntityVisible(ped, false)
         if ZTH.Config.IsAdvancedParkingInstalled then exports["AdvancedParking"]:DeleteVehicle(vehicle, false) end
         if DoesEntityExist(vehicle) then DeleteEntity(vehicle) end
         ZTH.Tunnel.Interface.TellClientsToRefreshGarage(garage_id)
         -- ZTH.Functions.Init()
-        DoScreenFadeOut(100)
-        SetEntityVisible(ped, false)
         Citizen.Wait(1500)
         SetEntityVisible(ped, true)
         DoScreenFadeIn(100)
@@ -505,4 +507,5 @@ function ZTH.Functions.RefreshGarage(self, id)
     self.Functions.UnloadVehicles(id)
     self.Functions.RegisterZones(self, id)
     self.Functions.InitializeGarages(self, id)
+    self.Functions.InitImpounds(ZTH)
 end

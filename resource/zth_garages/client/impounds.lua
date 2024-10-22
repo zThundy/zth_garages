@@ -37,6 +37,11 @@ function ZTH.Functions.ImpoundAction(self, type, id, impound)
     local Settings = self.Config.Impounds[id].Settings
 
     if type == "TakeVehicleImpound" then
+        if IsPedDriving() then
+            self.Core.Functions.Notify(L("ERROR_CANT_OPEN_IMPOUND_WHILE_DRIVING"), "error")
+            return
+        end
+
         self.Tunnel.Interface.UpdateVehiclesCacheForUser()
         local vehicles = self.Tunnel.Interface.GetImpoundVehicleList(id)
         self.NUI.Open({ screen = "list", garageData = { vehicles = vehicles, isImpound = true } })
