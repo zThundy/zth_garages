@@ -223,18 +223,12 @@ function ConditionalDates(date1, date2)
     if type(d2.sec) ~= "number" then d2.sec = tonumber(d2.sec) end
 
     if d1.year >= d2.year then
+        Debug("Year is greater or equal " .. d1.year .. " >= " .. d2.year)
         if d1.month >= d2.month then
+            Debug("Month is greater or equal " .. d1.month .. " >= " .. d2.month)
             if d1.day >= d2.day then
-                if d1.hour >= d2.hour then
-                    if d1.min >= d2.min then
-                        if d1.sec >= d2.sec then
-                            return true
-                        end
-                        return false
-                    end
-                    return false
-                end
-                return false
+                Debug("Day is greater or equal " .. d1.day .. " >= " .. d2.day)
+                return true
             end
             return false
         end

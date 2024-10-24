@@ -62,8 +62,6 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
     local citizenid = Player.PlayerData.citizenid
     
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
-        v.fakeCitizenId = ""
-
         if v.plate == data.plate and (v.citizenid == citizenid or Player.PlayerData.job.name .. ":" .. Player.PlayerData.job.grade.level) then
             v.mods = json.decode(data.mods)
             v.garage = garage
@@ -110,7 +108,7 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
                 exports["AdvancedParking"]:DeleteVehicleUsingData(nil, nil, data.plate, false)
             end
         else
-            Debug("DepositVehicle: Player does not own the vehicle " .. data.plate .. " " .. v.fakeCitizenId .. " " .. v.citizenid)
+            Debug("DepositVehicle: Player does not own the vehicle or is not driving it. Plate: " .. data.plate .. ". CID: " .. v.citizenid)
         end
     end
 end

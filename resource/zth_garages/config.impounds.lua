@@ -19,7 +19,7 @@ ZTH.Config.Markers["TakeVehicleImpound"] = {
     color = { r = 255, g = 0, b = 0 },
 }
 
-ZTH.Config.DefaultImpoundValue = 50000
+ZTH.Config.DefaultImpoundValue = 5000
 ZTH.Config.DefaultImpound = "impound_police"
 ZTH.Config.Impounds = {
     ["impound"] = {
