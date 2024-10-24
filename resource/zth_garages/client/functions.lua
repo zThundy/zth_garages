@@ -1,7 +1,8 @@
 ZTH.Functions = {}
 
-
 function ZTH.Functions.RegisterZones(self, id)
+    UnregisterAllMarkers(id)
+    
     Debug("Registering all markers")
     for i, garages in pairs(self.Config.Garages) do
         if id and i ~= id then goto skip end
@@ -78,8 +79,6 @@ function ZTH.Functions.RegisterZonesForJob(self, i, garages)
 end
 
 function ZTH.Functions.InitializeGarages(self, _id)
-    UnregisterAllMarkers(_id)
-
     for id, garage in pairs(self.Config.Garages) do
         if _id and _id ~= id then goto continue end
         if self.CloseGarage ~= id then goto continue end
