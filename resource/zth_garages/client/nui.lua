@@ -21,14 +21,14 @@ end
 ZTH.NUI.RegisterNUICallback = function(name, cb)
     RegisterNUICallback("html/" .. name, function(data, _cb)
         if hasTimeout() then return end
-        addTimeout(nil, self.Config.TimeoutBetweenInteractions)
-        
+        addTimeout(nil, ZTH.Config.TimeoutBetweenInteractions)
+
         Debug("Received NUI callback: " .. name .. " with data: " .. DumpTable(data))
         cb(data, _cb)
     end)
 end
 
-ZTH.NUI.RegisterNUICallback("close", function(data, cb)
+RegisterNUICallback("html/close", function(data, cb)
     SetNuiFocus(false, false)
     cb({ message = "ok" })
 end)
