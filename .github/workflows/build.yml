@@ -78,11 +78,19 @@ jobs:
             - This release contains the latest version of the React frontend app.
             - This release contains the latest version of full lua script.
 
-      - name: Upload Resource Folder
-        uses: actions/upload-artifact@v4
+      # - name: Upload Resource Folder
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: zth_garages
+      #     path: ./resource/
+
+      - name: Upload Release
+        uses: actions/upload-release-asset@v1
         with:
-          name: zth_garages
-          path: ./resource/
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./resource/
+          asset_name: zth_garages
+          asset_content_type: application/zip
 
   update-readme:
     runs-on: ubuntu-latest
