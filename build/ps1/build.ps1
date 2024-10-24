@@ -4,4 +4,3 @@ $versionHeader = "## $version"
 $nextVersionHeader = "## "
 $changelog = $changelogContent -split $versionHeader, 2 | Select-Object -Last 1
 $changelog = $changelog -split $nextVersionHeader, 2 | Select-Object -First 1
-echo "changelog=$changelog" >> $ENV:GITHUB_OUTPUT
