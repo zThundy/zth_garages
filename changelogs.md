@@ -1,6 +1,6 @@
 ## 0.1.0
 
-First release of `zth_garages`
+First release of zth_garages
 
 - Initial publish
 - Lua section
