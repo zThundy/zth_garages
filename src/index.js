@@ -40,36 +40,36 @@ const RootComponent = () => {
   const HandleScreen = (action, data) => {
     switch (action) {
       case "garage-buy":
+        setParkingData(data);
+        setShowManage(false);
         setTitle(T("TITLE_BUY_SPOT"));
         setScreen("garage-buy");
-        setParkingData(data);
-        setShowManage(false);
         break;
       case "property-buy":
+        setParkingData(data);
         setTitle(T("TITLE_BUY_PARKING"));
         setScreen("property-buy");
-        setParkingData(data);
         break;
       case "garage-manage":
-        setScreen("garage-manage");
-        setParkingData(data);
         setShowManage(false);
+        setParkingData(data);
+        setScreen("garage-manage");
         break;
       case "impound-add":
+        setShowManage(false);
+        setImpoundData(data);
         setTitle(T("TITLE_IMPOUND_ADD_VEHICLE"));
         setScreen("impound-add");
-        setImpoundData(data);
-        setShowManage(false);
         break;
       default:
+        setShowManage(false);
+        setVehicles(data.vehicles);
         setScreen("list");
         if (data.isImpound) {
           setTitle(T("TITLE_IMPOUND"));
         } else {
           setTitle(T("TITLE_TAKE_VEHICLE"));
         }
-        setVehicles(data.vehicles);
-        setShowManage(false);
         break;
     }
   }

@@ -20,6 +20,8 @@ First release of zth_garages
 # Changelogs
 
 - Fixes to impound system
+- Added default impund depotprice value
+- Fixed bug on opening manage NUI
 
 # New features
 
