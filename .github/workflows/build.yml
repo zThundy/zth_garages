@@ -94,6 +94,14 @@ jobs:
           $changelog = $changelog -replace "`r`n", "`n"   # Normalize newlines
           $changelog = $changelog -replace "`n", "%0A"    # Escape newlines for GitHub Actions
           echo "changelog=$changelog" >> $env:GITHUB_OUTPUT
+        
+      - name: Transform changelog to markdown
+        id: transform_changelog
+        shell: pwsh
+        run: |
+          $changelog = "${{ steps.extract_changelogs.outputs.changelog }}"
+          $changelog = $changelog -replace "%0A", "`n"  # Replace escaped newlines with actual newlines
+          echo "changelog=$changelog" >> $env:GITHUB_OUTPUT
 
       - name: Create GitHub Release
         id: create_release
@@ -103,7 +111,8 @@ jobs:
           release_name: Release v${{ steps.extract_react_version.outputs.release_version }}
           draft: false
           prerelease: ${{ steps.check_pre_release.outputs.is_prerelease }}
-          body: ${{ steps.extract_changelogs.outputs.changelog }}
+          body: |
+            ${{ steps.transform_changelog.outputs.changelog }}
 
       - name: Zip Resource Folder
         run: Compress-Archive -Path ./resource/zth_garages/ -DestinationPath ./resource/zth_garages.zip
