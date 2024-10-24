@@ -148,6 +148,7 @@ function ManageParkingScreen({ parkingData }) {
                 <tbody>
                 {
                   pData.spotsData.map((slot, index) => {
+                    if (!slot) return null
                     return (
                       <tr key={index} style={{
                         backgroundColor: index % 2 === 0 ? 'rgba(80, 80, 80, 0.1)' : 'rgba(80, 80, 80, 0.2)'
