@@ -91,7 +91,9 @@ jobs:
           $changelog = $changelog -split $nextVersionHeader, 2 | Select-Object -First 1
           echo "Changelog extracted"
           echo $changelog
-          # echo "changelog=$changelog" >> $ENV:GITHUB_OUTPUT
+          $changelog = $changelog -replace "`r`n", "`n"   # Normalize newlines
+          $changelog = $changelog -replace "`n", "%0A"    # Escape newlines for GitHub Actions
+          echo "changelog=$changelog" >> $env:GITHUB_OUTPUT
 
       - name: Create GitHub Release
         id: create_release
