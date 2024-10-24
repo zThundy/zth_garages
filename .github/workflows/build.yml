@@ -83,13 +83,7 @@ jobs:
         shell: pwsh
         run: |
           $version = "${{ steps.extract_react_version.outputs.release_version }}"
-          $changelogFile = "changelogs.md"
-          $changelogContent = Get-Content -Path $changelogFile -Raw
-          $versionHeader = "## $version"
-          $nextVersionHeader = "## "
-          $changelog = $changelogContent -split $versionHeader, 2 | Select-Object -Last 1
-          $changelog = $changelog -split $nextVersionHeader, 2 | Select-Object -First 1
-          echo "changelog=$changelog" >> $ENV:GITHUB_OUTPUT
+          .\.github\build.ps1
 
       - name: Create GitHub Release
         id: create_release
