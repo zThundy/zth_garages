@@ -79,7 +79,7 @@ jobs:
             - This release contains the latest version of full lua script.
 
       - name: Upload Resource Folder
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: zth_garages
           path: ./resource/
