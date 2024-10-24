@@ -22,6 +22,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@v3
@@ -47,24 +52,7 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Install dependencies for the React frontend
-        shell: pwsh
-        run: npm install
-        working-directory: ./
-
-      - name: Build Electron App
-        id: build-react
-        shell: pwsh
-        working-directory: ./
-        run: |
-          npm run build
-
-      - name: Extract echo version from package.json
+      - name: Extract version from package.json
         id: extract_react_version
         shell: pwsh
         run: |
