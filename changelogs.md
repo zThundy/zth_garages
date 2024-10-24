@@ -1,4 +1,4 @@
-## version 0.1.0
+## 0.1.0
 
 First release of `zth_garages`
 
@@ -15,4 +15,4 @@ First release of `zth_garages`
 - Auto impound of cars
 - Secure communication between client and server with scrambling id tunneling
 
-## version 0.1.1
+## 0.1.1
