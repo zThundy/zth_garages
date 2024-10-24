@@ -209,10 +209,10 @@ function ZTH.Functions.BuySpot(self, data)
         return self.Core.Functions.Notify(L("ERROR_UNAVAILABLE_BUY_SPOT"), 'error', 5000)
     end
 
+    if hasTimeout() then return end
+    addTimeout(nil, self.Config.TimeoutBetweenInteractions)
+    
     if self.Tunnel.Interface.BuySpot(data) then
-        if hasTimeout() then return end
-        addTimeout(nil, self.Config.TimeoutBetweenInteractions)
-
         self.Core.Functions.Notify(L("SUCCESS_BUY_SPOT"), 'success', 5000)
         self.Functions.Init()
         self.NUI.Close()
@@ -472,6 +472,28 @@ function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
     end
 end
 
+function ZTH.Functions.SpawnCarOnSpot(self, parkingData, spotData)
+    local spotConfig = spotData.config
+    local garage_id = spotData.garage_id
+
+    self.Tunnel.Interface.SetParkedVehicleState({ plate = spotData.plate }, 0)
+    local heading = spotConfig.heading
+    if not heading then heading = spotConfig.pos.w end
+    local coords = vector4(spotConfig.pos.x, spotConfig.pos.y, spotConfig.pos.z, heading)
+    local hash = GetHashKey(spotData.model)
+    SpawnVehicle(hash, function(veh)
+        SetVehicleNumberPlateText(veh, spotData.plate)
+        -- fuel --
+        SetVehicleFuelLevel(veh, spotData.fuel)
+        exports[ZTH.Config.FuelResource]:SetFuel(veh, spotData.fuel)
+        ----------
+        SetVehicleEngineHealth(veh, spotData.engine)
+        SetVehicleBodyHealth(veh, spotData.body)
+        self.Core.Functions.SetVehicleProperties(veh, spotData.mods)
+        TriggerEvent(self.Config.Events.SetVehicleOwner, spotData.plate)
+    end, coords, true, false)
+end
+
 function ZTH.Functions.LeftVehicle(vehicle, seat, vehDisplay)
     -- print("Left vehicle", vehicle, seat, vehDisplay)
 end
@@ -495,6 +517,10 @@ function ZTH.Functions.Init()
     ZTH.IsReady = ZTH.Tunnel.Interface.RequestReady()
     while not ZTH.IsReady do Wait(1000) end
     ZTH.PlayerData = ZTH.Core.Functions.GetPlayerData()
+    while not ZTH.PlayerData.job do
+        ZTH.PlayerData = ZTH.Core.Functions.GetPlayerData()
+        Wait(1000)
+    end
 
     ZTH.Functions.RegisterZones(ZTH)
     ZTH.Functions.InitializeGarages(ZTH)
@@ -504,7 +530,7 @@ end
 function ZTH.Functions.RefreshGarage(self, id)
     Debug("Refreshing garage " .. id .. " vehicles")
     self.Functions.UnloadVehicles(id)
-    self.Functions.RegisterZones(self, id)
-    self.Functions.InitializeGarages(self, id)
-    self.Functions.InitImpounds(self)
+    self.Functions.RegisterZones(ZTH, id)
+    self.Functions.InitializeGarages(ZTH, id)
+    self.Functions.InitImpounds(ZTH)
 end

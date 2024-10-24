@@ -143,6 +143,7 @@ function ManageParkingScreen({ parkingData }) {
                     <th>{T("PLATE")}</th>
                     <th>{T("FROM_DATE")}</th>
                     <th>{T("TO_DATE")}</th>
+                    <th>{T("ACTIONS")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -158,6 +159,38 @@ function ManageParkingScreen({ parkingData }) {
                         <td>{slot.plate}</td>
                         <td>{formatDate(slot.fromDate)}</td>
                         <td>{formatDate(slot.toDate)}</td>
+                        <td>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "2rem",
+                              justifyContent: "center"
+                            }}
+                          >
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => api.callEvent("manageGarageButton", {
+                              action: "revoke",
+                              slot: slot,
+                              pData: pData
+                            })}
+                          >
+                            {T("REVOKE_SPOT")}
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => api.callEvent("manageGarageButton", {
+                              action: "renew",
+                              slot: slot,
+                              pData: pData
+                            })}
+                          >
+                            {T("RENEW_SPOT")}
+                          </Button>
+                          </div>
+                        </td>
                       </tr>
                     )
                   })

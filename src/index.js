@@ -177,6 +177,10 @@ const RootComponent = () => {
       api.post("propertyBuy", data);
     })
 
+    api.registerEvent("manageGarageButton", (data) => {
+      api.post("manageGarageButton", data);
+    })
+
     window.addEventListener('message', handleNuiCallback)
     window.addEventListener('keydown', (e) => {
       if ('Escape'.includes(e.code)) {

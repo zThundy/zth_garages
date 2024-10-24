@@ -237,6 +237,13 @@ function ConditionalDates(date1, date2)
     return false
 end
 
+function L(key, ...)
+    if ZTH.Locale[key] then
+        return string.format(ZTH.Locale[key], ...)
+    else
+        return key
+    end
+end
 
 local Luaoop = module("zth_garages", "lib/Luaoop")
 class = Luaoop.class

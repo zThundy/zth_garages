@@ -707,6 +707,8 @@ ZTH.Tunnel.Interface.SellParking = function(data)
     local Player = ZTH.Core.Functions.GetPlayer(source)
     if not Player then return end
     local citizenid = Player.PlayerData.citizenid
+
+    return false
 end
 
 ZTH.Tunnel.Interface.CanAffordGarage = function(data)
@@ -749,4 +751,53 @@ ZTH.Tunnel.Interface.CanAffordGarage = function(data)
     end
 
     return hasFullAmount
+end
+
+ZTH.Tunnel.Interface.ManageGarageButton = function(data)
+    local action = data.action
+    local spot = data.slot
+    local pData = data.pData
+    local _source = source
+
+    Debug("ManageGarageButton: " .. action .. " for spot " .. spot.id .. " in garage " .. spot.garage_id)
+    if action == "revoke" then
+        for k, v in pairs(ZTH.Cache.GarageSpots) do
+            if v.spot_id == spot.id and v.garage_id == spot.garage_id then
+                Debug("ManageGarageButton: Revoking spot " .. spot.id .. " in garage " .. spot.garage_id)
+                table.remove(ZTH.Cache.GarageSpots, k)
+
+                ZTH.MySQL.ExecQuery("ManageGarageButton - Revoke", MySQL.Sync.execute, "DELETE FROM `garages_spots` WHERE `spot_id` = @spot_id AND `garage_id` = @garage_id", {
+                    ['@spot_id'] = spot.id,
+                    ['@garage_id'] = spot.garage_id
+                })
+
+                ZTH.Tunnel.Interface.TellClientsToRefreshGarage(spot.garage_id)
+                TriggerClientEvent(ZTH.Config.Events.SpawnCarOnSpot, _source, pData, spot)
+                return true
+            end
+        end
+    elseif action == "renew" then
+        -- renew spot for 1 day
+        local current_date = math.floor(spot.toDate / 1000)
+        local until_time = current_date + 86400
+        local until_date = os.date("%Y-%m-%d %H:%M:%S", until_time)
+        
+        for k, v in pairs(ZTH.Cache.GarageSpots) do
+            if v.spot_id == spot.id and v.garage_id == spot.garage_id then
+                Debug("ManageGarageButton: Renewing spot " .. spot.id .. " in garage " .. spot.garage_id)
+                v["until"] = until_time * 1000
+                ZTH.MySQL.ExecQuery("ManageGarageButton - Renew", MySQL.Sync.execute, "UPDATE `garages_spots` SET `until` = @until WHERE `spot_id` = @spot_id AND `garage_id` = @garage_id", {
+                    ['@until'] = until_date,
+                    ['@spot_id'] = spot.id,
+                    ['@garage_id'] = spot.garage_id
+                })
+
+                -- maybe not needed ??
+                -- ZTH.Tunnel.Interface.TellClientsToRefreshGarage(spot.garage_id)
+                return true
+            end
+        end
+    end
+
+    return false
 end

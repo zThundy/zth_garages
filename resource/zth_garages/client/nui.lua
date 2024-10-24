@@ -46,11 +46,11 @@ ZTH.NUI.RegisterNUICallback("take", function(data, cb)
 end)
 
 ZTH.NUI.RegisterNUICallback("money", function(data, cb)
-    local errorMessage = "The balance in the garage is not enough"
-    local message = "You have withdrawn $" .. data.amount
+    local errorMessage = L("ERROR_BALANCE_NOT_ENOUGH")
+    local message = L("SUCCESS_WITHDAW", data.amount)
     if data.type == "deposit" then
-        errorMessage = "You do not have enough money"
-        message = "You have deposited $" .. data.amount
+        errorMessage = L("ERROR_NO_MONEY")
+        message = L("SUCCESS_DEPOSIT", data.amount)
     end
 
     if ZTH.Tunnel.Interface.BalanceAction(data) then
@@ -77,16 +77,33 @@ ZTH.NUI.RegisterNUICallback("saveData", function(data, cb)
 end)
 
 ZTH.NUI.RegisterNUICallback("sellParking", function(data, cb)
-    ZTH.Tunnel.Interface.SellParking(data.pData)
+    if ZTH.Tunnel.Interface.SellParking(data.pData) then
+        ZTH.Core.Functions.Notify(L("SUCCESS_SELL_PARKING"), "success")
+        ZTH.NUI.Close()
+    else
+        ZTH.Core.Functions.Notify(L("GENERIC_ERROR"), "error")
+    end
     cb({ message = "ok" })
 end)
 
 ZTH.NUI.RegisterNUICallback("propertyBuy", function(data, cb)
     if ZTH.Tunnel.Interface.CanAffordGarage(data) then
-        ZTH.Core.Functions.Notify("You have bought the garage", "success")
+        ZTH.Core.Functions.Notify(L("SUCCESS_BUY_GARAGE"), "success")
         ZTH.NUI.Close()
     else
-        ZTH.Core.Functions.Notify("You do not have enough money", "error")
+        ZTH.Core.Functions.Notify(L("GENERIC_ERROR"), "error")
+    end
+    cb({ message = "ok" })
+end)
+
+ZTH.NUI.RegisterNUICallback("manageGarageButton", function(data, cb)
+    if ZTH.Tunnel.Interface.ManageGarageButton(data) then
+        ZTH.NUI.Close()
+        if data.action == "revoke" then
+            ZTH.Core.Functions.Notify(L("SUCCESS_REVOKED_SPOT"), "success")
+        elseif data.action == "renew" then
+            ZTH.Core.Functions.Notify(L("SUCCESS_RENEWED_SPOT"), "success")
+        end
     end
     cb({ message = "ok" })
 end)

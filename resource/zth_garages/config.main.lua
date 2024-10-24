@@ -52,6 +52,7 @@ ZTH.Config.Events.SetVehicleOwner = 'vehiclekeys:client:SetOwner'
 ZTH.Config.Events.SharedUpdated = "QBCore:Client:SharedUpdate"
 ZTH.Config.Events.ResourceInit = "zth_garages:client:Init"
 ZTH.Config.Events.RefreshGarages = "zth_garages:client:refreshGarage"
+ZTH.Config.Events.SpawnCarOnSpot = "zth_garages:client:spawnCarOnSpot"
 
 ZTH.Config.Shared = {}
 ZTH.Config.Shared.Jobs = ZTH.Core.Shared.Jobs

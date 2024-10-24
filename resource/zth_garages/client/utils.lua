@@ -198,11 +198,3 @@ function IsPedDriving()
     end
     return type
 end
-
-function L(key, ...)
-    if ZTH.Locale[key] then
-        return string.format(ZTH.Locale[key], ...)
-    else
-        return key
-    end
-end

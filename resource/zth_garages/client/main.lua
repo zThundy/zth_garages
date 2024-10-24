@@ -16,6 +16,7 @@ AddEventHandler(ZTH.Config.Events.PlayerLoaded, function() ZTH.Functions.Init() 
 RegisterNetEvent(ZTH.Config.Events.PlayerSetJob, function(job) ZTH.Functions.Init() end)
 AddEventHandler(ZTH.Config.Events.SharedUpdated, function(data) ZTH.Config.Shared = data end)
 RegisterNetEvent(ZTH.Config.Events.RefreshGarages, function(id) ZTH.Functions.RefreshGarage(ZTH, id) end)
+RegisterNetEvent(ZTH.Config.Events.SpawnCarOnSpot, function(pData, spot) ZTH.Functions.SpawnCarOnSpot(ZTH, pData, spot) end)
 
 -- Enter / Leave vehicle thread
 Citizen.CreateThread(function()
@@ -64,6 +65,8 @@ end)
 -- check if vehicles are actually at coords
 Citizen.CreateThread(function()
 	while not ZTH.IsReady do Wait(1000) end
+	while not ZTH.PlayerData do Wait(1000) end
+	while not ZTH.PlayerData.citizenid do Wait(1000) end
 
 	while true do
 		if not ZTH.CloseGarage then
