@@ -400,7 +400,12 @@ ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
 
         ::continue::
     end
-    return spots
+
+    local recomputedSpots = {}
+    for k, v in pairs(spots) do
+        table.insert(recomputedSpots, v)
+    end
+    return recomputedSpots
 end
 
 ZTH.Tunnel.Interface.GetManagementGarageData = function(id)

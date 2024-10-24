@@ -32,7 +32,7 @@ const RootComponent = () => {
   const [parkingData, setParkingData] = useState({});
   const [showManage, setShowManage] = useState(false);
   const [vehicles, setVehicles] = useState([]);
-  const [screen, setScreen] = useState('list');
+  const [screen, setScreen] = useState('garage-manage');
   const [title, setTitle] = useState(T("UNKNOWN"));
   const [manageData, setManageData] = useState({});
   const [impoundData, setImpoundData] = useState({});
@@ -40,8 +40,8 @@ const RootComponent = () => {
   const HandleScreen = (action, data) => {
     switch (action) {
       case "garage-buy":
-        setParkingData(data);
         setShowManage(false);
+        setParkingData(data);
         setTitle(T("TITLE_BUY_SPOT"));
         setScreen("garage-buy");
         break;
