@@ -208,9 +208,6 @@ function ZTH.Functions.BuySpot(self, data)
         -- todo: add debug serverside with client data???
         return self.Core.Functions.Notify(L("ERROR_UNAVAILABLE_BUY_SPOT"), 'error', 5000)
     end
-
-    if hasTimeout() then return end
-    addTimeout(nil, self.Config.TimeoutBetweenInteractions)
     
     if self.Tunnel.Interface.BuySpot(data) then
         self.Core.Functions.Notify(L("SUCCESS_BUY_SPOT"), 'success', 5000)
@@ -222,8 +219,6 @@ function ZTH.Functions.BuySpot(self, data)
 end
 
 function ZTH.Functions.BuyVehicles(self, data)
-    if hasTimeout() then return end
-    addTimeout(nil, self.Config.TimeoutBetweenInteractions)
     self.NUI.Close()
 
     local toBuy = {}

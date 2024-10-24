@@ -20,6 +20,9 @@ end
 
 ZTH.NUI.RegisterNUICallback = function(name, cb)
     RegisterNUICallback("html/" .. name, function(data, _cb)
+        if hasTimeout() then return end
+        addTimeout(nil, self.Config.TimeoutBetweenInteractions)
+        
         Debug("Received NUI callback: " .. name .. " with data: " .. DumpTable(data))
         cb(data, _cb)
     end)
