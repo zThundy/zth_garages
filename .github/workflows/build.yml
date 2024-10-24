@@ -83,7 +83,7 @@ jobs:
         shell: pwsh
         run: |
           $version = "${{ steps.extract_react_version.outputs.release_version }}"
-          .\.github\build.ps1
+          .\build\build.ps1
 
       - name: Create GitHub Release
         id: create_release
