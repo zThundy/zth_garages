@@ -16,9 +16,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "prebuild": "node pre-build.js",
+    "prebuild": "node build/pre-build.js",
     "build": "npm run prebuild && npm run build-internal && npm run postbuild",
-    "postbuild": "node post-build.js",
+    "postbuild": "node build/post-build.js",
     "start": "react-scripts start",
     "build-internal": "react-scripts build",
     "test": "react-scripts test",
