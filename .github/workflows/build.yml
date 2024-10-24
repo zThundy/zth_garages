@@ -84,6 +84,7 @@ jobs:
         run: |
           $version = "${{ steps.extract_react_version.outputs.release_version }}"
           .\build\ps1\build.ps1
+          echo $changelog
           echo "changelog=$changelog" >> $ENV:GITHUB_OUTPUT
 
       - name: Create GitHub Release
