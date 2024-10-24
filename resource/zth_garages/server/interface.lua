@@ -498,7 +498,7 @@ ZTH.Tunnel.Interface.BuySpot = function(data)
             garage_id = tostring(data.parkingId),
             user_id = citizenid,
             date = os.time(),
-            ["until"] = until_time,
+            ["until"] = until_time * 1000,
             player_name = Player.PlayerData.charinfo.firstname .. " " .. Player.PlayerData.charinfo.lastname
         })
 

@@ -205,6 +205,7 @@ function MakeRandomNumber(length)
 end
 
 function ConditionalDates(date1, date2)
+    Debug("Parsing dates " .. date1 .. " and " .. date2)
     -- get imput two os.time(), convert them to os.date and compare the single elements of the date
     local d1 = os.date("*t", date1)
     local d2 = os.date("*t", date2)
