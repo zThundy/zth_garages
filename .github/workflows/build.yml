@@ -84,6 +84,9 @@ jobs:
       #     name: zth_garages
       #     path: ./resource/
 
+      - name: Zip Resource Folder
+        run: Compress-Archive -Path ./resource/ -DestinationPath ./resource/zth_garages.zip
+
       - name: Upload Release
         uses: actions/upload-release-asset@v1
         with:
