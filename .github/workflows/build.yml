@@ -95,7 +95,7 @@ jobs:
           $outputFile = "changelog.tmp.md"
           $changelog | Out-File -FilePath $outputFile
           # output to github action
-          echo "changelog=$outputFile" >> $ENV:GITHUB_OUTPUT 
+          echo "outputFile=$outputFile" >> $ENV:GITHUB_OUTPUT 
 
       - name: Create GitHub Release
         id: create_release
@@ -105,7 +105,7 @@ jobs:
           release_name: Release v${{ steps.extract_react_version.outputs.release_version }}
           draft: false
           prerelease: ${{ steps.check_pre_release.outputs.is_prerelease }}
-          body: ${{ steps.extract_changelogs.outputs.outputFile }}
+          body_path: ${{ steps.extract_changelogs.outputs.outputFile }}
 
       - name: Zip Resource Folder
         run: Compress-Archive -Path ./resource/zth_garages/ -DestinationPath ./resource/zth_garages.zip
