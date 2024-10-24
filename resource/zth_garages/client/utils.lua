@@ -6,7 +6,7 @@ end
 function CreateBlip(data)
     if not data then return Debug("CreateBlip: [^1FATAL^0] data is required") end
     if not data.name then return Debug("CreateBlip: [^1FATAL^0] data.name is required") end
-    if not data.pos then return Debug("CreateBlip: [^1FATAL^0] data.pos is required in " .. data.name) end
+    if not data.pos then return Debug("CreateBlip: [^1FATAL^0] data.pos is required in " .. data.confId) end
 
     for k, v in pairs(ZTH.Blips) do
         if v.data.id == data.name .. "_" .. v.blip .. "_" .. MakeIdFromVector3(data.pos) then
@@ -16,11 +16,11 @@ function CreateBlip(data)
         end
     end
 
-    if not data.sprite then Debug("CreateBlip: [^3WARN^0] data.sprite is missing in " .. data.name .. ", using default 357") data.sprite = 357 end
-    if not data.display then Debug("CreateBlip: [^3WARN^0] data.display is missing in " .. data.name .. ", using default 4") data.display = 4 end
-    if not data.scale then Debug("CreateBlip: [^3WARN^0] data.scale is missing in " .. data.name .. ", using default 1.0") data.scale = 1.0 end
-    if not data.color then Debug("CreateBlip: [^3WARN^0] data.color is missing in " .. data.name .. ", using default 1") data.color = 1 end
-    if not data.shortRange then Debug("CreateBlip: [^3WARN^0] data.shortRange is missing in " .. data.name .. ", using default false") data.shortRange = false end
+    if not data.sprite then Debug("CreateBlip: [^3WARN^0] data.sprite is missing in " .. data.confId .. ", using default 357") data.sprite = 357 end
+    if not data.display then Debug("CreateBlip: [^3WARN^0] data.display is missing in " .. data.confId .. ", using default 4") data.display = 4 end
+    if not data.scale then Debug("CreateBlip: [^3WARN^0] data.scale is missing in " .. data.confId .. ", using default 1.0") data.scale = 1.0 end
+    if not data.color then Debug("CreateBlip: [^3WARN^0] data.color is missing in " .. data.confId .. ", using default 1") data.color = 1 end
+    if not data.shortRange then Debug("CreateBlip: [^3WARN^0] data.shortRange is missing in " .. data.confId .. ", using default false") data.shortRange = false end
 
     local blip = AddBlipForCoord(data.pos.x, data.pos.y, data.pos.z)
     SetBlipSprite(blip, data.sprite)
@@ -40,13 +40,6 @@ function CreateBlip(data)
     return blip
 end
 
-function UnregisterAllMarkers()
-    Debug("Unregistering all markers")
-    for _, v in pairs(ZTH.Zones) do
-        TriggerEvent("gridsystem:unregisterMarker", v.data.name)
-    end
-end
-
 function CreateMarker(_type, data)
     local GlobalConfig = ZTH.Config.Markers[_type]
     if not GlobalConfig then return Debug("CreateMarker: [^1FATAL^0] GlobalConfig is required for marker " .. _type) end
@@ -64,7 +57,8 @@ function CreateMarker(_type, data)
     if not data.show3D then data.show3D = GlobalConfig.show3D end
     if not data.type then data.type = GlobalConfig.type end
     if not data.color then data.color = GlobalConfig.color end
-    if not data.name then data.name = _type end
+    if not data.name then data.name = _type .. "_" .. MakeIdFromVector3(data.pos) end
+    Debug("CreateMarker: Creating marker " .. _type .. " with name " .. data.name)
     
     local pos = data.pos
     if data.type == 1 then pos = vec3(data.pos.x, data.pos.y, data.pos.z - 1.0) end
@@ -86,6 +80,16 @@ function CreateMarker(_type, data)
         onEnter = data.onEnter,
         onExit = data.onExit,
     })
+end
+
+function UnregisterAllMarkers(id)
+    for _, v in pairs(ZTH.Zones) do
+        -- check if id is defined and if v.data.name contains id
+        if id and not string.find(v.data.name, id) then goto contine end
+        Debug("Unregistering marker " .. v.data.name .. ". Passed id is " .. Conditional(id, id, "nil"))
+        TriggerEvent("gridsystem:unregisterMarker", v.data.name)
+        ::contine::
+    end
 end
 
 function ClearSpawnPoint(coords)

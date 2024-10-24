@@ -11,10 +11,11 @@ ZTH.Tunnel.Interface = ZTH.Tunnel.getInterface("zth_garages", "zth_garages_t", "
 
 Citizen.CreateThread(ZTH.Functions.Init)
 
-RegisterNetEvent("zth_garages:client:Init", function() ZTH.IsReady = true end)
-AddEventHandler("QBCore:Client:OnPlayerLoaded", function() ZTH.Functions.Init() end)
-RegisterNetEvent("QBCore:Client:OnJobUpdate", function(job) ZTH.Functions.Init() end)
-AddEventHandler("QBCore:Client:SharedUpdate", function(data) ZTH.Config.Shared = data end)
+RegisterNetEvent(ZTH.Config.Events.ResourceInit, function() ZTH.IsReady = true end)
+AddEventHandler(ZTH.Config.Events.PlayerLoaded, function() ZTH.Functions.Init() end)
+RegisterNetEvent(ZTH.Config.Events.PlayerSetJob, function(job) ZTH.Functions.Init() end)
+AddEventHandler(ZTH.Config.Events.SharedUpdated, function(data) ZTH.Config.Shared = data end)
+RegisterNetEvent(ZTH.Config.Events.RefreshGarages, function(id) ZTH.Functions.RefreshGarage(ZTH, id) end)
 
 -- Enter / Leave vehicle thread
 Citizen.CreateThread(function()
@@ -74,7 +75,7 @@ Citizen.CreateThread(function()
 
 					if dst < garage.Settings.renderDistance then
 						ZTH.CloseGarage = id
-						ZTH.Functions.Init()
+						ZTH.Functions.RefreshGarage(ZTH, ZTH.CloseGarage)
 						Debug("Closest found! Now is " .. tostring(ZTH.CloseGarage))
 						break
 					end
@@ -94,13 +95,4 @@ Citizen.CreateThread(function()
 		end
 		Citizen.Wait(1000)
 	end
-end)
-
-RegisterNetEvent("kok", function(a)
-	local veh = GetVehiclePedIsIn(PlayerPedId(), false)
-	SetVehicleNumberPlateText(veh, a)
-end)
-
-RegisterNetEvent("zth_garages:client:refreshGarage", function(id)
-	ZTH.Functions.RefreshGarage(ZTH, id)
 end)

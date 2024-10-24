@@ -15,6 +15,7 @@ ZTH.Config.Language = {
         ["ERROR_COMPANY_NO_MONEY"] = "La tua azienda non ha abbastanza soldi o non è abilitata ad acquistare questi veicoli",
         ["ERROR_CANT_TAKE_VEHICLE"] = "Non puoi prendere questo veicolo",
         ["ERROR_NO_MONEY"] = "Non hai abbastanza soldi",
+        ["ERROR_NOT_JOB"] = "Non hai il lavoro giusto per eseguire questa azione",
         ["ERROR_CANT_OPEN_IMPOUND_WHILE_DRIVING"] = "Non puoi aprire l'impound mentre guidi",
         ["SUCCESS_BUY_SPOT"] = "Hai acquistato con successo un posto",
         ["SUCCESS_VEHICLES_BOUGHT"] = "Veicoli acquistati! Hai speso $%s",
@@ -39,6 +40,7 @@ ZTH.Config.Language = {
         ["ERROR_COMPANY_NO_MONEY"] = "Your company does not have enough money or is not enabled to buy these vehicles",
         ["ERROR_CANT_TAKE_VEHICLE"] = "You can't take this vehicle out",
         ["ERROR_NO_MONEY"] = "You don't have enough money",
+        ["ERROR_NOT_JOB"] = "You don't have the right job to perform this action",
         ["ERROR_CANT_OPEN_IMPOUND_WHILE_DRIVING"] = "You can't open the impound while driving",
         ["SUCCESS_BUY_SPOT"] = "You have successfully bought a spot",
         ["SUCCESS_VEHICLES_BOUGHT"] = "Vehicles bought! You have spent $%s",
@@ -49,5 +51,5 @@ ZTH.Config.Language = {
     }
 }
 
-ZTH.Language = "it"
+ZTH.Language = "en"
 ZTH.Locale = ZTH.Config.Language[ZTH.Language]

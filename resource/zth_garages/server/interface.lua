@@ -9,7 +9,7 @@ ZTH.Tunnel.Interface.RequestReady = function()
 end
 
 ZTH.Tunnel.Interface.TellClientsToRefreshGarage = function(id)
-    TriggerClientEvent("zth_garages:client:refreshGarage", -1, id)
+    TriggerClientEvent(ZTH.Config.Events.RefreshGarages, -1, id)
 end
 
 ZTH.Tunnel.Interface.OwnsCar = function(garage, plate)
@@ -120,6 +120,7 @@ ZTH.Tunnel.Interface.GetParkedVehicleData = function(plate)
     if not Player then return end
     local citizenid = Player.PlayerData.citizenid
 
+    Debug("GetParkedVehicleData: Getting data for " .. plate .. " " .. citizenid)
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
         if v.plate == plate and v.citizenid == citizenid and v.state == 1 then
             if v.parking_spot == nil then return false end

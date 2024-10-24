@@ -20,12 +20,17 @@ ZTH.Config.Markers["TakeVehicleImpound"] = {
 }
 
 ZTH.Config.DefaultImpoundValue = 50000
-ZTH.Config.DefaultImpound = "impound"
+ZTH.Config.DefaultImpound = "impound_police"
 ZTH.Config.Impounds = {
     ["impound"] = {
         Settings = {
-            defaultPrice = 5000,
-            defaultDescription = "",
+            job = "police",
+            -- if to show the blip in map, even if the player is not in the job
+            alwaysShowBlip = true,
+            -- if to show the take vehicle option even if the player is not in the job
+            alwaysShowTakeVehicle = false,
+            defaultPrice = 50000,
+            defaultDescription = "Nessuna descrizione fornita",
             displayName = "Impound",
             blip = {
                 sprite = 67,
@@ -47,6 +52,23 @@ ZTH.Config.Impounds = {
         SpawnVehicleImpound = {
             pos = vec3(412.26, -1640.65, 28.64),
             heading = 356.7,
+        }
+    },
+    ["impound_police"] = {
+        Settings = {
+            -- if to show the blip in map, even if the player is not in the job
+            alwaysShowBlip = true,
+            -- if to show the take vehicle option even if the player is not in the job
+            alwaysShowTakeVehicle = true,
+            defaultPrice = 50000,
+            defaultDescription = "Nessuna descrizione fornita",
+            displayName = "Impound Police",
+        },
+        TakeVehicleImpound = {
+            pos = vec3(386.36, -1615.32, 29.29),
+        },
+        SpawnVehicleImpound = {
+            pos = vec4(394.1, -1617.85, 28.66, 318.38),
         }
     },
 }

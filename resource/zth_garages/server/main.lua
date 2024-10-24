@@ -1,10 +1,8 @@
 Citizen.CreateThread(ZTH.Functions.Init)
 
-RegisterCommand("kok", function(source, args)
-    TriggerClientEvent("kok", source, args[1])
-end)
+-- AddEventHandler(ZTH.Config.Events.PlayerLogoutServer, function() ZTH.IsReady = false end)
 
-AddEventHandler("QBCore:Server:OnJobUpdate", function(job)
+AddEventHandler(ZTH.Config.Events.PlayerSetJobServer, function(job)
     for _, v in pairs(ZTH.Cache.Players) do
         if v.job == job then
             v.job = job
@@ -14,7 +12,7 @@ AddEventHandler("QBCore:Server:OnJobUpdate", function(job)
     end
 end)
 
-AddEventHandler('QBCore:Server:PlayerLoaded', function(Player)
+AddEventHandler(ZTH.Config.Events.PlayerLoadedServer, function(Player)
     local result = MySQL.Sync.fetchAll("SELECT * FROM `players` WHERE `citizenid` = @citizenid", { ['@citizenid'] = Player.PlayerData.citizenid })
     if result[1] then
         -- check if the player already exists in the cache

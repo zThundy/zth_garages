@@ -61,7 +61,7 @@ function ZTH.Functions.FullUpdateCache(self)
     -- set ready
     ZTH.IsReady = true
     -- this is sent for restart of the resource
-    TriggerClientEvent("zth_garages:client:Init", -1)
+    TriggerClientEvent(ZTH.Config.Events.ResourceInit, -1)
 end
 
 function ZTH.Functions.GetSpotFromGarageId(garageId, spotId)
@@ -81,32 +81,30 @@ function ZTH.Functions.AutoImpountVehicles(self)
 
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
         local garage = self.Config.Garages[v.garage]
-        if not garage and not self.Config.Impounds[v.garage] then
+        local impound = self.Config.Impounds[v.garage]
+        if not garage and not impound then
             Debug("AutoImpoundVehicles: [^1FATAL^0] No garage and not impound found for vehicle: " .. v.id)
             goto continue
         end
 
-        if not garage then
-            Debug("AutoImpoundVehicles: [^1FATAL^0] No garage found for vehicle: " .. v.id)
-            goto continue
-        end
-
-        if not garage.Settings then
+        if garage and not garage.Settings then
             Debug("AutoImpoundVehicles: [^1FATAL^0] No settings found for garage: " .. v.garage)
             goto continue
         end
 
-        local jobSettings = garage.Settings.JobSettings
-        if jobSettings then
-            if not jobSettings.impoundVehicles then
-                if string.sub(v.plate, 1, string.len(jobSettings.platePrefix)) == jobSettings.platePrefix and v.state ~= 1 then
-                    v.state = 1
-                    if setStateVehIds == "" then
-                        setStateVehIds = tostring(v.id)
-                    else
-                        setStateVehIds = setStateVehIds .. ", " .. v.id
+        if garage and garage.Settings then
+            local jobSettings = garage.Settings.JobSettings
+            if jobSettings then
+                if not jobSettings.impoundVehicles then
+                    if string.sub(v.plate, 1, string.len(jobSettings.platePrefix)) == jobSettings.platePrefix and v.state ~= 1 then
+                        v.state = 1
+                        if setStateVehIds == "" then
+                            setStateVehIds = tostring(v.id)
+                        else
+                            setStateVehIds = setStateVehIds .. ", " .. v.id
+                        end
+                        goto continue
                     end
-                    goto continue
                 end
             end
         end

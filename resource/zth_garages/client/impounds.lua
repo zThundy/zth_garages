@@ -1,33 +1,3 @@
-function ZTH.Functions.InitImpounds(self)
-    local impounds = self.Config.Impounds
-
-    for k, impound in pairs(impounds) do
-        if not impound.Settings then Debug("Settings is missing for impound " .. k) goto continue end
-        if not impound.ImpoundZone then Debug("ImpoundZone is missing for impound " .. k) goto continue end
-        if not impound.TakeVehicleImpound then Debug("TakeVehicleImpound is missing for impound " .. k) goto continue end
-        if not impound.SpawnVehicleImpound then Debug("SpawnVehicleImpound is missing for impound " .. k) goto continue end
-
-        if impound.Settings.blip then
-            CreateBlip(impound.Settings.blip)
-        end
-
-        if impound.ImpoundZone.show then
-            impound.ImpoundZone.action = function() self.Functions.ImpoundAction(self, "ImpoundZone", k, impound) end
-            impound.ImpoundZone.onEnter = function() self.Functions.onEnter(self, "ImpoundZone", k, impound) end
-            impound.ImpoundZone.onExit = function() self.Functions.onExit(self, "ImpoundZone", k, impound) end
-            CreateMarker("ImpoundZone", impound.ImpoundZone)
-            ClearSpawnPoint(impound.ImpoundZone.pos)
-        end
-
-        impound.TakeVehicleImpound.action = function() self.Functions.ImpoundAction(self, "TakeVehicleImpound", k, impound) end
-        impound.TakeVehicleImpound.onEnter = function() self.Functions.onEnter(self, "TakeVehicleImpound", k, impound) end
-        impound.TakeVehicleImpound.onExit = function() self.Functions.onExit(self, "TakeVehicleImpound", k, impound) end
-        CreateMarker("TakeVehicleImpound", impound.TakeVehicleImpound)
-        ClearSpawnPoint(impound.TakeVehicleImpound.pos)
-
-        ::continue::
-    end
-end
 
 function ZTH.Functions.ImpoundAction(self, type, id, impound)
     if hasTimeout() then return end
@@ -37,6 +7,13 @@ function ZTH.Functions.ImpoundAction(self, type, id, impound)
     local Settings = self.Config.Impounds[id].Settings
 
     if type == "TakeVehicleImpound" then
+        if Settings.job then
+            if Settings.job ~= self.PlayerData.job.name then
+                self.Core.Functions.Notify(L("ERROR_NOT_JOB"), "error")
+                return
+            end
+        end
+
         if IsPedDriving() then
             self.Core.Functions.Notify(L("ERROR_CANT_OPEN_IMPOUND_WHILE_DRIVING"), "error")
             return
@@ -84,6 +61,7 @@ function ZTH.Functions.TakeImpoundedVehicle(self, car)
     if type(car.mods) == "string" then car.mods = json.decode(car.mods) end
     local coords = self.Config.Impounds[car.garage].SpawnVehicleImpound.pos
     local heading = self.Config.Impounds[car.garage].SpawnVehicleImpound.heading
+    if not heading then heading = coords.w end
 
     if self.Tunnel.Interface.OwnsCar(car.garage, car.plate) then
         if self.Tunnel.Interface.PayImpound(car) then
@@ -130,4 +108,55 @@ end
 
 function ZTH.Functions.onExit(self, type, id, impound)
     self.Config.Impounds[id].isInImpound = false
+end
+
+function ZTH.Functions.InitImpounds(self)
+local impounds = self.Config.Impounds
+local playerJob = self.PlayerData.job.name
+
+for k, impound in pairs(impounds) do
+    Debug("Registering impound zone " .. k)
+    if not impound.Settings then Debug("Settings is missing for impound " .. k) goto continue end
+    if not impound.TakeVehicleImpound then Debug("TakeVehicleImpound is missing for impound " .. k) goto continue end
+    if not impound.SpawnVehicleImpound then Debug("SpawnVehicleImpound is missing for impound " .. k) goto continue end
+
+    if impound.Settings.blip then
+        impound.Settings.blip.confId = k
+        if impound.Settings.job then
+            if impound.Settings.job == playerJob then
+                CreateBlip(impound.Settings.blip)
+            elseif impound.Settings.alwaysShowBlip then
+                CreateBlip(impound.Settings.blip)
+            end
+        else
+            CreateBlip(impound.Settings.blip)
+        end
+    end
+
+    if impound.Settings.job and impound.Settings.job ~= playerJob then
+        Debug("Impound " .. k .. " is not for this job")
+        if impound.Settings.alwaysShowTakeVehicle then
+            Debug("Showing take vehicle for impound " .. k .. " even if not in job")
+            goto takeVehicle
+        end
+        goto continue
+    end
+
+    if impound.ImpoundZone and impound.ImpoundZone.show then
+        impound.ImpoundZone.action = function() self.Functions.ImpoundAction(self, "ImpoundZone", k, impound) end
+        impound.ImpoundZone.onEnter = function() self.Functions.onEnter(self, "ImpoundZone", k, impound) end
+        impound.ImpoundZone.onExit = function() self.Functions.onExit(self, "ImpoundZone", k, impound) end
+        CreateMarker("ImpoundZone", impound.ImpoundZone)
+        ClearSpawnPoint(impound.ImpoundZone.pos)
+    end
+
+    ::takeVehicle::
+    impound.TakeVehicleImpound.action = function() self.Functions.ImpoundAction(self, "TakeVehicleImpound", k, impound) end
+    impound.TakeVehicleImpound.onEnter = function() self.Functions.onEnter(self, "TakeVehicleImpound", k, impound) end
+    impound.TakeVehicleImpound.onExit = function() self.Functions.onExit(self, "TakeVehicleImpound", k, impound) end
+    CreateMarker("TakeVehicleImpound", impound.TakeVehicleImpound)
+    ClearSpawnPoint(impound.TakeVehicleImpound.pos)
+
+    ::continue::
+end
 end

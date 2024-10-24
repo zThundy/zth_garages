@@ -2,8 +2,6 @@ ZTH.Functions = {}
 
 
 function ZTH.Functions.RegisterZones(self, id)
-    UnregisterAllMarkers()
-
     Debug("Registering all markers")
     for i, garages in pairs(self.Config.Garages) do
         if id and i ~= id then goto skip end
@@ -14,6 +12,7 @@ function ZTH.Functions.RegisterZones(self, id)
         local Settings = garages.Settings
         if Settings.blip then
             if Settings.center then Settings.blip.pos = Settings.center end
+            Settings.blip.confId = i
             CreateBlip(Settings.blip)
         else
             Debug("No blip found for garage " .. i .. ", skipping")
@@ -47,6 +46,7 @@ function ZTH.Functions.RegisterZonesForJob(self, i, garages)
         Debug("Registering job zone " .. i)
         if Settings.JobSettings.blip then
             if Settings.center then Settings.JobSettings.blip.pos = Settings.center end
+            Settings.blip.confId = i
             CreateBlip(Settings.blip)
         else
             Debug("No blip found for job garage " .. i .. ", skipping")
@@ -78,6 +78,8 @@ function ZTH.Functions.RegisterZonesForJob(self, i, garages)
 end
 
 function ZTH.Functions.InitializeGarages(self, _id)
+    UnregisterAllMarkers(_id)
+
     for id, garage in pairs(self.Config.Garages) do
         if _id and _id ~= id then goto continue end
         if self.CloseGarage ~= id then goto continue end
@@ -108,9 +110,7 @@ function ZTH.Functions.InitializeGarages(self, _id)
                     SetVehicleEngineHealth(veh, vehicle.engine)
                     SetVehicleBodyHealth(veh, vehicle.body)
                     SetVehicleNumberPlateText(veh, vehicle.plate)
-                    if vehicle.user_id ~= self.PlayerData.citizenid then
-                        SetVehicleDoorsLocked(veh, 2)
-                    end
+                    if vehicle.user_id ~= self.PlayerData.citizenid then SetVehicleDoorsLocked(veh, 2) end
                     self.Core.Functions.SetVehicleProperties(veh, vehicle.mods)
                 end, coords, false)
             else
@@ -426,7 +426,7 @@ function ZTH.Functions.TakeVehicle(self, _data)
             SetVehicleEngineHealth(vehicle, data.engineLevel)
             SetVehicleBodyHealth(vehicle, data.bodyLevel)
             if data.mods and data.mods.plate then self.Core.Functions.SetVehicleProperties(vehicle, data.mods) end
-            TriggerEvent('vehiclekeys:client:SetOwner', data.plate)
+            TriggerEvent(ZTH.Config.Events.SetVehicleOwner, data.plate)
             self.Core.Functions.Notify(L("SUCCESS_VEHICLE_TAKEN_OUT"), 'success', 5000)
         end, coords, true, true)
     else
@@ -465,7 +465,7 @@ function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
             SetVehicleEngineHealth(veh, vehicleData.engine)
             SetVehicleBodyHealth(veh, vehicleData.body)
             ZTH.Core.Functions.SetVehicleProperties(veh, vehicleData.mods)
-            TriggerEvent('vehiclekeys:client:SetOwner', mods.plate)
+            TriggerEvent(ZTH.Config.Events.SetVehicleOwner, mods.plate)
             ZTH.Core.Functions.Notify(L("SUCCESS_VEHICLE_TAKEN_OUT"), 'success', 5000)
         end, coords, true, true)
     else
@@ -507,5 +507,5 @@ function ZTH.Functions.RefreshGarage(self, id)
     self.Functions.UnloadVehicles(id)
     self.Functions.RegisterZones(self, id)
     self.Functions.InitializeGarages(self, id)
-    self.Functions.InitImpounds(ZTH)
+    self.Functions.InitImpounds(self)
 end
