@@ -22,6 +22,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+        - uses: actions/checkout@v4
+
+        - name: Cache node modules
+          id: cache-npm
+          uses: actions/cache@v3
+          env:
+            cache-name: cache-node-modules
+          with:
+            # npm cache files are stored in `~/.npm` on Linux/macOS
+            path: ~/.npm
+            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: |
+              ${{ runner.os }}-build-${{ env.cache-name }}-
+              ${{ runner.os }}-build-
+              ${{ runner.os }}-
+  
+        - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+          name: List the state of node modules
+          continue-on-error: true
+          run: npm list
+  
+        - name: Install dependencies
+          run: npm install
+  
+        - name: Build
+          run: npm run build
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -91,8 +118,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./resource/
-          asset_name: zth_garages
+          asset_path: ./resource/zth_garages.zip
+          asset_name: zth_garages.zip
           asset_content_type: application/zip
 
   update-readme:
