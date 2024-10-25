@@ -24,6 +24,8 @@ First release of `zth_garages`
 - Fixed bug on opening manage NUI
 - Fixed date conver bug (maybe?)
 - Fixed auto impound of vehicles with a parking spot
+- Fixed bug on Job garages that would prevend deposit and take of vehicles with a shorter plate
+- Fixed bug on Job garages where it would register all markers anyway, even if the job wasn't the right one
 
 # New features
 
@@ -32,3 +34,4 @@ First release of `zth_garages`
 - Added logic to manually add a day to the expiration date of a parking spot
 - Added some logic to sell and buy garages
 - Origen housing integration
+- Added camera to parking spots when buying
