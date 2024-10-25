@@ -122,28 +122,37 @@ function ZTH.Functions.AutoImpountVehicles(self)
                 autoImpoundVehicles = autoImpoundVehicles .. ", " .. v.id
             end
         elseif v.parking_spot ~= nil then
-            -- if garage.ParkingSpots then
-            --     local settings = garage.Settings
-            --     local spot = self.Functions.GetSpotFromGarageId(v.garage, v.parking_spot)
-            --     if spot then
-            --         if ConditionalDates(math.floor(spot["until"] / 1000), os.time()) then
-            --             v.garage = self.Config.DefaultImpound
-            --             v.state = 1
-            --             v.depotprice = 0
-            --             v.parking_spot = nil
+            if garage.ParkingSpots and garage.Settings.autoImpoundOnExpire then
+                local spot = self.Functions.GetSpotFromGarageId(v.garage, v.parking_spot)
+                if spot then
+                    if ConditionalDates(math.floor(spot["until"] / 1000), os.time()) then
+                        v.garage = self.Config.DefaultImpound
+                        v.state = 1
+                        v.depotprice = 0
+                        v.parking_spot = nil
 
-            --             if autoImpoundVehicles == "" then
-            --                 autoImpoundVehicles = tostring(v.id)
-            --             else
-            --                 autoImpoundVehicles = autoImpoundVehicles .. ", " .. v.id
-            --             end
-            --         else
-            --             Debug("AutoImpoundVehicles: [^3WARN^0] Parking spot is still valid for vehicle: " .. v.id)
-            --         end
-            --     else
-            --         Debug("AutoImpoundVehicles: [^1FATAL^0] No spot found for vehicle: " .. v.id)
-            --     end
-            -- end
+                        if autoImpoundVehicles == "" then
+                            autoImpoundVehicles = tostring(v.id)
+                        else
+                            autoImpoundVehicles = autoImpoundVehicles .. ", " .. v.id
+                        end
+                    else
+                        Debug("AutoImpoundVehicles: [^3WARN^0] Parking spot is still valid for vehicle: " .. v.id)
+                    end
+                else
+                    -- TODO: decide what to do here, for now, impound the vehicle
+                    v.garage = self.Config.DefaultImpound
+                    v.state = 1
+                    v.depotprice = 0
+                    v.parking_spot = nil
+                    if autoImpoundVehicles == "" then
+                        autoImpoundVehicles = tostring(v.id)
+                    else
+                        autoImpoundVehicles = autoImpoundVehicles .. ", " .. v.id
+                    end
+                    Debug("AutoImpoundVehicles: [^1FATAL^0] No spot found for vehicle: " .. v.id)
+                end
+            end
         end
 
         ::continue::
