@@ -63,20 +63,16 @@ function ZTH.Functions.TakeImpoundedVehicle(self, car)
     local heading = self.Config.Impounds[car.garage].SpawnVehicleImpound.heading
     if not heading then heading = coords.w end
 
-    if self.Tunnel.Interface.OwnsCar(car.garage, car.plate) then
-        if self.Tunnel.Interface.PayImpound(car) then
-            self.NUI.Close()
-            car.modelHash = GetHashKey(car.model)
-            SpawnVehicle(car.modelHash, function(vehicle)
-                SetVehicleNumberPlateText(vehicle, car.plate)
-                self.Core.Functions.Notify(L("SUCCESS_VEHICLE_TAKEN_FROM_IMPOUND"), "success")
-                SetVehicleEngineOn(vehicle, true, true, true)
-                self.Core.Functions.SetVehicleProperties(vehicle, car.mods)
-                self.Tunnel.Interface.UpdateVehicleState(car.id, 0)
-            end, vec4(coords.x, coords.y, coords.z, heading), true, true)
-        else
-            self.Core.Functions.Notify(L("ERROR_NO_MONEY"), "error")
-        end
+    if self.Tunnel.Interface.PayImpound(car) then
+        self.NUI.Close()
+        car.modelHash = GetHashKey(car.model)
+        SpawnVehicle(car.modelHash, function(vehicle)
+            SetVehicleNumberPlateText(vehicle, car.plate)
+            self.Core.Functions.Notify(L("SUCCESS_VEHICLE_TAKEN_FROM_IMPOUND"), "success")
+            SetVehicleEngineOn(vehicle, true, true, true)
+            self.Core.Functions.SetVehicleProperties(vehicle, car.mods)
+            self.Tunnel.Interface.UpdateVehicleState(car.id, 0)
+        end, vec4(coords.x, coords.y, coords.z, heading), true, true)
     else
         self.Core.Functions.Notify(L("ERROR_NO_MONEY"), "error")
     end

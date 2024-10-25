@@ -1,8 +1,15 @@
 
 ZTH.Tunnel.Interface.GetImpoundVehicleList = function(id)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenid = Player.PlayerData.citizenid
+
+    local Settings = ZTH.Config.Impounds[id].Settings
+    if not Settings then return Debug("Impound settings not found for " .. id) end
+
     local impoundedVehicles = {}
     for _, v in pairs(ZTH.Cache.PlayerVehicles) do
-        if v.garage == id and v.state == 1 then
+        if (v.citizenid == citizenid or (Settings.job and Settings.job == Player.PlayerData.job.name)) and v.garage == id and v.state == 1 then
             local data = ZTH.Functions.ParseVehicle(v)
 
             table.insert(impoundedVehicles, {

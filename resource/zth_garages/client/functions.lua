@@ -43,8 +43,9 @@ end
 function ZTH.Functions.RegisterZonesForJob(self, i, garages)
     local found = false
     local Settings = garages.Settings
-    
+
     if Settings.JobSettings then
+        found = true
         Debug("Registering job zone " .. i)
         if Settings.JobSettings.blip then
             if Settings.center then Settings.JobSettings.blip.pos = Settings.center end
@@ -60,12 +61,11 @@ function ZTH.Functions.RegisterZonesForJob(self, i, garages)
                     if _type == "Settings" then goto continue end
                     if _type == "SpawnVehicle" then goto continue end
                     if _type == "ParkingSpots" then goto continue end
-                    
+
                     garage.name = _type .. "_" .. i
                     garage.action = function() self.Functions.MarkerAction(self, _type, i) end
                     ClearSpawnPoint(garage.pos)
                     CreateMarker(_type, garage)
-                    found = true
 
                     ::continue::
                 end
@@ -193,7 +193,10 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
             if IsPedDriving() then
                 return self.Core.Functions.Notify(L("ERROR_CANT_BUY_SPOT_WHILE_DRIVING"), 'error', 5000)
             end
-
+            
+            -- spawn camera on first parking spot
+            local spot = self.Config.Garages[id].ParkingSpots[1]
+            self.Camera.MakeCamera(self, spot.pos, id)
             local managementTable = self.Tunnel.Interface.GetManagementGarageData(id)
             self.NUI.Open({ screen = "garage-buy", garageData = managementTable })
         end
@@ -359,7 +362,7 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
             end
         end
 
-        if self.Tunnel.Interface.OwnsCar(id, plate) then
+        if self.Tunnel.Interface.OwnsCar(plate) then
             local model = GetEntityModel(vehicle)
             local hash = GetHashKey(vehicle)
             

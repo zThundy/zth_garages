@@ -12,17 +12,21 @@ ZTH.Tunnel.Interface.TellClientsToRefreshGarage = function(id)
     TriggerClientEvent(ZTH.Config.Events.RefreshGarages, -1, id)
 end
 
-ZTH.Tunnel.Interface.OwnsCar = function(garage, plate)
+ZTH.Tunnel.Interface.OwnsCar = function(plate)
     local Player = ZTH.Core.Functions.GetPlayer(source)
     if not Player then return end
     local citizenid = Player.PlayerData.citizenid
-    
+
     ZTH.Functions.UpdateSingleCache(ZTH, "player_vehicles")
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
-        if v.plate == plate  then
+        plate = string.gsub(plate, "%s+", "")
+        v.plate = string.gsub(v.plate, "%s+", "")
+
+        if string.match(v.plate, plate) then
             if v.citizenid == citizenid then
                 return true
-            elseif v.citizenid == Player.PlayerData.job.name .. ":" .. Player.PlayerData.job.grade.level then
+            elseif string.match(v.license, Player.PlayerData.job.name .. ":" .. Player.PlayerData.job.grade.level) then
+            -- elseif v.license == Player.PlayerData.job.name .. ":" .. Player.PlayerData.job.grade.level then
                 return true
             end
         end
@@ -35,7 +39,7 @@ ZTH.Tunnel.Interface.CanDeposit = function(garage, spot, plate)
     if not Player then return end
     local citizenid = Player.PlayerData.citizenid
 
-    if ZTH.Tunnel.Interface.OwnsCar(garage, plate) then
+    if ZTH.Tunnel.Interface.OwnsCar(plate) then
         Debug("CanDeposit: Player owns the vehicle")
         for k, v in pairs(ZTH.Cache.GarageSpots) do
             if v.garage_id == garage and tonumber(v.spot_id) == tonumber(spot) then
@@ -62,7 +66,9 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
     local citizenid = Player.PlayerData.citizenid
     
     for k, v in pairs(ZTH.Cache.PlayerVehicles) do
-        if v.plate == data.plate and (v.citizenid == citizenid or Player.PlayerData.job.name .. ":" .. Player.PlayerData.job.grade.level) then
+        data.plate = string.gsub(data.plate, "%s+", "")
+
+        if string.match(v.plate, data.plate) and (v.citizenid == citizenid or v.license == Player.PlayerData.job.name .. ":" .. Player.PlayerData.job.grade.level) then
             v.mods = json.decode(data.mods)
             v.garage = garage
             v.parking_spot = spot
@@ -75,7 +81,7 @@ ZTH.Tunnel.Interface.DepositVehicle = function(garage, spot, data)
             v.mods = data.mods
             v.depotprice = data.depotprice
             
-            ZTH.MySQL.ExecQuery("UpdateVehicle", MySQL.Sync.execute, 
+            ZTH.MySQL.ExecQuery("UpdateVehicle - DepositVehicle", MySQL.Sync.execute, 
                 [[
                     UPDATE `player_vehicles`
                     SET
@@ -221,6 +227,7 @@ ZTH.Tunnel.Interface.GetOwnParkedVehicles = function(id, citizenid)
 end
 
 ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
+    Debug("GetParkedVehicleList: Getting parked vehicles for garage " .. id)
     local Player = ZTH.Core.Functions.GetPlayer(source)
     if not Player then return end
     local citizenId = Player.PlayerData.citizenid
@@ -265,34 +272,41 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
             -- get all plates that begin with settings.platePrefix
             if v.garage == id and (v.state == 1 or not settings.shouldCheckForState) then
                 local data = ZTH.Functions.ParseVehicle(v)
-                if string.sub(v.plate, 1, string.len(settings.platePrefix)) == settings.platePrefix and v.citizenid == citizenId then
-                    table.insert(vehicles, {
-                        id = data.id,
-                        garage = id,
-                        name = data.vehicle,
-                        model = data.vehicle,
-                        plate = data.plate,
-                        fuelLevel = data.fuelLevel,
-                        engineLevel = data.engineLevel,
-                        bodyLevel = data.bodyLevel,
-                        mods = data.mods,
-                        isImpounded = data.isImpounded,
-                        impoundAmount = data.depotprice
-                    })
-                elseif v.citizenid == Player.PlayerData.job.name .. ":" .. Player.PlayerData.job.grade.level then
-                    table.insert(vehicles, {
-                        id = data.id,
-                        garage = id,
-                        name = data.vehicle,
-                        model = data.vehicle,
-                        plate = data.plate,
-                        fuelLevel = data.fuelLevel,
-                        engineLevel = data.engineLevel,
-                        bodyLevel = data.bodyLevel,
-                        mods = data.mods,
-                        isImpounded = data.isImpounded,
-                        impoundAmount = data.depotprice
-                    })
+
+                if string.sub(v.plate, 1, string.len(settings.platePrefix)) == settings.platePrefix then
+                    Debug("GetParkedVehicleList: Plate " .. v.plate .. " matches prefix " .. settings.platePrefix)
+                    if v.citizenid == citizenId and not string.match(v.license, settings.job .. ":%d") then
+                        Debug("GetParkedVehicleList: Found plate " .. v.plate .. " for " .. v.citizenid)
+                        table.insert(vehicles, {
+                            id = data.id,
+                            garage = id,
+                            name = data.vehicle,
+                            model = data.vehicle,
+                            plate = data.plate,
+                            fuelLevel = data.fuelLevel,
+                            engineLevel = data.engineLevel,
+                            bodyLevel = data.bodyLevel,
+                            mods = data.mods,
+                            isImpounded = data.isImpounded,
+                            impoundAmount = data.depotprice
+                        })
+                    elseif string.match(v.license, settings.job .. ":%d") and v.license == Player.PlayerData.job.name .. ":" .. Player.PlayerData.job.grade.level then
+                        table.insert(vehicles, {
+                            id = data.id,
+                            garage = id,
+                            name = data.vehicle,
+                            model = data.vehicle,
+                            plate = data.plate,
+                            fuelLevel = data.fuelLevel,
+                            engineLevel = data.engineLevel,
+                            bodyLevel = data.bodyLevel,
+                            mods = data.mods,
+                            isImpounded = data.isImpounded,
+                            impoundAmount = data.depotprice
+                        })
+                    end
+                else
+                    Debug("GetParkedVehicleList: Plate " .. v.plate .. " does not match prefix " .. settings.platePrefix)
                 end
             end
         end
@@ -312,7 +326,7 @@ ZTH.Tunnel.Interface.TakeVehicle = function(plate, id)
     local garageSettings = ZTH.Config.Garages[id]["Settings"]
     if not garageSettings then return false end
 
-    if not ZTH.Tunnel.Interface.OwnsCar(id, plate) then return false end
+    if not ZTH.Tunnel.Interface.OwnsCar(plate) then return false end
 
     for _, v in pairs(ZTH.Cache.PlayerVehicles) do
         if v.plate == plate and v.garage == id then
@@ -594,6 +608,14 @@ ZTH.Tunnel.Interface.GetGarageLevels = function(id)
                     isboss = v.isboss or false
                 })
             end
+
+            -- order by grade level
+            table.sort(jobGrades, function(a, b)
+                a.grade = tonumber(a.grade)
+                b.grade = tonumber(b.grade)
+                return a.grade < b.grade
+            end)
+
             return jobGrades
         end
     end
@@ -623,25 +645,19 @@ ZTH.Tunnel.Interface.GetGarageUsers = function(id)
 end
 
 ZTH.Tunnel.Interface.BuyVehicles = function(toBuy, totalAmount)
+    local Player = ZTH.Core.Functions.GetPlayer(source)
+    if not Player then return end
+    local citizenid = Player.PlayerData.citizenid
+
     local foundJob = toBuy[1].job
+    Debug("BuyVehicles: Buying vehicles for " .. foundJob)
+    
+    if not foundJob then return false end
+    local account = GetAccountMoney(foundJob)
 
-    local account = 0
-    if foundJob then
-        if ZTH.Config.AccountScript == "qb-bossmenu" then
-            account = exports["qb-bossmenu"]:GetAccount(foundJob)
-        elseif ZTH.Config.AccountScript == "qb-banking" then
-            account = exports["qb-banking"]:GetAccountBalance(foundJob)
-        end
-    else
-        return false
-    end
-
+    Debug("BuyVehicles: Account: " .. account .. " Total: " .. totalAmount)
     if account >= totalAmount then
-        if ZTH.Config.AccountScript == "qb-bossmenu" then
-            expors["qb-bossmenu"]:RemoveMoney(foundJob, totalAmount)
-        elseif ZTH.Config.AccountScript == "qb-banking" then
-            exports['qb-banking']:RemoveMoney(foundJob, totalAmount, 'Car Purchase')
-        end
+        RemoveAccountMoney(foundJob, totalAmount)
 
         for _, v in pairs(toBuy) do
             local plateExists = false
@@ -656,11 +672,18 @@ ZTH.Tunnel.Interface.BuyVehicles = function(toBuy, totalAmount)
                 end
             until not plateExists
 
+            -- check if v.citizenid contains :
+            if string.find(v.citizenid, ":") then
+                v.license = v.citizenid
+                v.citizenid = citizenid
+            end
+
             -- insert in cache
             table.insert(ZTH.Cache.PlayerVehicles, {
                 plate = v.plate,
                 vehicle = v.model,
                 citizenid = v.citizenid,
+                license = v.license,
                 garage = v.garage,
                 hash = v.hash,
                 parking_spot = nil,

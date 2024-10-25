@@ -246,5 +246,43 @@ function L(key, ...)
     end
 end
 
+if SERVER then
+    function GetAccountMoney(account)
+        if ZTH.Config.AccountScript == "qb-bossmenu" then
+            return exports[ZTH.Config.AccountScript]:GetAccount(account)
+        elseif ZTH.Config.AccountScript == "qb-management" then
+            return exports[ZTH.Config.AccountScript]:GetAccount(account)
+        elseif ZTH.Config.AccountScript == "qb-banking" then
+            return exports[ZTH.Config.AccountScript]:GetAccountBalance(account)
+        elseif ZTH.Config.AccountScript == "esx_society" then
+            return exports[ZTH.Config.AccountScript]:GetAccount(account)
+        end
+    end
+
+    function AddAccountMoney(account, amount)
+        if ZTH.Config.AccountScript == "qb-bossmenu" then
+            return exports[ZTH.Config.AccountScript]:AddAccountMoney(account, amount)
+        elseif ZTH.Config.AccountScript == "qb-management" then
+            return exports[ZTH.Config.AccountScript]:AddAccountMoney(account, amount)
+        elseif ZTH.Config.AccountScript == "qb-banking" then
+            return exports[ZTH.Config.AccountScript]:AddAccountMoney(account, amount)
+        elseif ZTH.Config.AccountScript == "esx_society" then
+            return exports[ZTH.Config.AccountScript]:AddAccountMoney(account, amount)
+        end
+    end
+
+    function RemoveAccountMoney(account, amount)
+        if ZTH.Config.AccountScript == "qb-bossmenu" then
+            return exports[ZTH.Config.AccountScript]:RemoveMoney(account, amount)
+        elseif ZTH.Config.AccountScript == "qb-management" then
+            return exports[ZTH.Config.AccountScript]:RemoveMoney(account, amount)
+        elseif ZTH.Config.AccountScript == "qb-banking" then
+            return exports[ZTH.Config.AccountScript]:RemoveMoney(account, amount)
+        elseif ZTH.Config.AccountScript == "esx_society" then
+            return exports[ZTH.Config.AccountScript]:RemoveMoney(account, amount)
+        end
+    end
+end
+
 local Luaoop = module("zth_garages", "lib/Luaoop")
 class = Luaoop.class
