@@ -6,6 +6,7 @@ function ZTH.Camera.SpawnCamera(self)
     local camera = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
     SetCamActive(camera, true)
     RenderScriptCams(true, true, 1000, true, true)
+    SetCamParams(camera, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 1000, 0, 2, 1)
     self.Camera.Current = camera
     return camera
 end
@@ -28,8 +29,8 @@ end
 
 -- calculate camera position from the pos and heading of the vehicle
 function ZTH.Camera.CalculateCameraPosition(self, pos)
-    local offset = vector3(0, 0, 1.5)
-    local distance = 4.5
+    local offset = vector3(0, 0, 2.0)
+    local distance = 5.0
     local angle = pos.w * math.pi / 180
     local x = pos.x + distance * math.sin(angle)
     local y = pos.y - distance * math.cos(angle)
@@ -48,6 +49,6 @@ end
 
 function ZTH.Camera.UpdateCamera(self, pos)
     local cameraPos = self.Camera.CalculateCameraPosition(self, pos)
-    SetCamParams(self.Camera.Current, cameraPos.x, cameraPos.y, cameraPos.z, pos.x, pos.y, pos.z, 60.0, 200, 0, 2, 1)
+    SetCamParams(self.Camera.Current, cameraPos.x, cameraPos.y, cameraPos.z, pos.x, pos.y, pos.z, 90.0, 200, 0, 2, 1)
     PointCamAtCoord(self.Camera.Current, pos.x, pos.y, pos.z)
 end
