@@ -290,4 +290,48 @@ ZTH.Config.Garages = {
             type = 1,
         },
     },
+    ["garage_ambulance"] = {
+        Settings = {
+            pricePerDay = 0,
+            displayName = "Garage Ems",
+            managementPrice = 0,
+            sellPrice = 0,
+            JobSettings = {
+                -- lol
+                job = "ambulance",
+                -- lol
+                platePrefix = "EMS",
+                -- if it should impound police vehicles on resource restart
+                impoundVehicles = true,
+                -- if taking grade assigned vehicle, it should check the state or not to take another one
+                shouldCheckForState = true,
+                -- when to show the manage wheel for the garage
+                manageGrades = {
+                    [1] = true,
+                    [4] = true
+                },
+                -- lol
+                lists = {
+                    cars = {
+                        {model = "ambulance", label = "Ambulanza", price = 5000},
+                    },
+                    levels = {
+                        {grade = 1},
+                    },
+                }
+            }
+        },
+        TakeVehicle = {
+            pos = vec3(-1850.46, -318.52, 49.14),
+        },
+        SpawnVehicle = {
+            pos = vec4(-1880.44, -285.68, 49.28, 60.52),
+        },
+        Deposit = {
+            pos = vec3(-1844.40, -316.13, 49.13),
+            scale = vec3(3.0, 3.0, 1.0),
+            msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
+            type = 1,
+        },
+    },
 }
