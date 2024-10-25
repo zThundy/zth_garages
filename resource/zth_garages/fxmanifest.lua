@@ -29,7 +29,7 @@ shared_scripts {
     "config.impounds.lua",
     "config.language.lua",
     "config.houses.lua",
-
+    
 	"lib/utils.lua",
     "lib/timeouts.lua",
     "lib/exports.lua",

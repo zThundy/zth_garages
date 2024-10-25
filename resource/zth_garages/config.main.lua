@@ -32,16 +32,15 @@ ZTH.Config.CoreExport = function()
 end
 ZTH.Core = ZTH.Config.CoreExport()
 
-ZTH.Config.FindAccountScript = function()
-    if GetResourceState("qb-bossmenu") ~= "missing" then
-        return "qb-bossmenu"
-    elseif GetResourceState("qb-banking") ~= "missing" then
-        return "qb-banking"
-    elseif GetResourceState("esx_society") ~= "missing" then
-        return "esx_society"
-    end
+if GetResourceState("qb-bossmenu") ~= "missing" then
+    ZTH.Config.AccountScript = "qb-bossmenu"
+elseif GetResourceState("qb-management") ~= "missing" then
+    ZTH.Config.AccountScript = "qb-management"
+elseif GetResourceState("qb-banking") ~= "missing" then
+    ZTH.Config.AccountScript = "qb-banking"
+elseif GetResourceState("esx_society") ~= "missing" then
+    ZTH.Config.AccountScript = "esx_society"
 end
-ZTH.Config.AccountScript = ZTH.Config.FindAccountScript()
 
 ZTH.Config.Events = {}
 ZTH.Config.Events.PlayerLoaded = ZTH.Config.Core == "ESX" and "esx:playerLoaded" or "QBCore:Client:OnPlayerLoaded"
