@@ -771,6 +771,7 @@ ZTH.Tunnel.Interface.ManageGarageButton = function(data)
                     ['@garage_id'] = spot.garage_id
                 })
 
+                ZTH.Tunnel.Interface.SetParkedVehicleState({ plate = spot.plate }, 0)
                 ZTH.Tunnel.Interface.TellClientsToRefreshGarage(spot.garage_id)
                 TriggerClientEvent(ZTH.Config.Events.SpawnCarOnSpot, _source, pData, spot)
                 return true

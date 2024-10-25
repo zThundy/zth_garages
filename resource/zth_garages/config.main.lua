@@ -19,6 +19,7 @@ ZTH.Config.FuelResource = 'cdn-fuel' -- supports any that has a GetFuel() and Se
 -- will be using LegacyFuel as default, since qb-base gamemode uses that one.
 if GetResourceState(ZTH.Config.FuelResource) == 'missing' then ZTH.Config.FuelResource = 'LegacyFuel' end
 ZTH.Config.IsAdvancedParkingInstalled = GetResourceState("AdvancedParking") == "started"
+ZTH.Config.IsOrigenHousingInstalled = GetResourceState("origen_housing") == "started"
 
 ZTH.Config.CoreExport = function()
     if ZTH.Config.Core == "ESX" then
@@ -58,4 +59,3 @@ ZTH.Config.Shared = {}
 ZTH.Config.Shared.Jobs = ZTH.Core.Shared.Jobs
 
 ZTH.Config.TimeoutBetweenInteractions = 2000
-

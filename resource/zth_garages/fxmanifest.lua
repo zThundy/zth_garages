@@ -28,6 +28,7 @@ shared_scripts {
     "config.garages.lua",
     "config.impounds.lua",
     "config.language.lua",
+    "config.houses.lua",
 
 	"lib/utils.lua",
     "lib/timeouts.lua",
@@ -37,6 +38,7 @@ shared_scripts {
 client_scripts {
     "client/functions.lua",
     "client/impounds.lua",
+    "client/house.lua",
     
     "client/main.lua",
     "client/utils.lua",
@@ -49,8 +51,8 @@ server_scripts {
     
     "server/functions.lua",
     "server/interface.lua",
-    
     "server/interface.impound.lua",
+    "server/interface.house.lua",
     "server/main.lua",
 }
 

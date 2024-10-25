@@ -1,5 +1,4 @@
 local IDManager = module("zth_garages", "lib/IDManager")
-
 local a='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 function enc(b)return(b:gsub('.',function(c)local d,a='',c:byte()for e=8,1,-1 do d=d..(a%2^e-a%2^(e-1)>0 and'1'or'0')end;return d end)..'0000'):gsub('%d%d%d?%d?%d?%d?',function(c)if#c<6 then return''end;local f=0;for e=1,6 do f=f+(c:sub(e,e)=='1'and 2^(6-e)or 0)end;return a:sub(f+1,f+1)end)..({'','==','='})[#b%3+1]end;
 -- function dec(d)d=string.gsub(d,'[^'..d..'=]','');return (d:gsub('.', function(x)if (x == '=') then return '' end;local r,f='',(d:find(x)-1)for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end;return r;end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)if(#x ~= 8)then;return'';end;local c=0;for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end;return string.char(c)end))end;

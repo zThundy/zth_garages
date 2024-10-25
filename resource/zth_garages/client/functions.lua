@@ -1,3 +1,4 @@
+
 ZTH.Functions = {}
 
 function ZTH.Functions.RegisterZones(self, id)
@@ -508,6 +509,14 @@ function ZTH.Functions.UnloadVehicles(id)
     end
 end
 
+function ZTH.Functions.RefreshGarage(self, id)
+    Debug("Refreshing garage " .. id .. " vehicles")
+    self.Functions.UnloadVehicles(id)
+    self.Functions.RegisterZones(ZTH, id)
+    self.Functions.InitializeGarages(ZTH, id)
+    self.Functions.InitImpounds(ZTH)
+end
+
 function ZTH.Functions.Init()
     ZTH.IsReady = ZTH.Tunnel.Interface.RequestReady()
     while not ZTH.IsReady do Wait(1000) end
@@ -520,12 +529,5 @@ function ZTH.Functions.Init()
     ZTH.Functions.RegisterZones(ZTH)
     ZTH.Functions.InitializeGarages(ZTH)
     ZTH.Functions.InitImpounds(ZTH)
-end
-
-function ZTH.Functions.RefreshGarage(self, id)
-    Debug("Refreshing garage " .. id .. " vehicles")
-    self.Functions.UnloadVehicles(id)
-    self.Functions.RegisterZones(ZTH, id)
-    self.Functions.InitializeGarages(ZTH, id)
-    self.Functions.InitImpounds(ZTH)
+	if ZTH.Config.IsOrigenHousingInstalled then ZTH.Housing.Functions.Init(ZTH) end
 end
