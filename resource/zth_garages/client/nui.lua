@@ -30,6 +30,21 @@ end
 
 RegisterNUICallback("html/close", function(data, cb)
     SetNuiFocus(false, false)
+    ZTH.Camera.FullyKillCameras(ZTH)
+    cb({ message = "ok" })
+end)
+
+RegisterNUICallback("html/changeSpot", function(data, cb)
+    local spotId = data.spotId
+    local garageId = ZTH.Camera.Extradata
+    local garage = ZTH.Config.Garages[garageId].ParkingSpots[spotId]
+
+    if garage == nil then
+        ZTH.Core.Functions.Notify(L("GENERIC_ERROR"), "error")
+        return
+    end
+
+    ZTH.Camera.UpdateCamera(ZTH, garage.pos)
     cb({ message = "ok" })
 end)
 
@@ -67,10 +82,6 @@ end)
 
 ZTH.NUI.RegisterNUICallback("buySpot", function(data, cb)
     ZTH.Functions.BuySpot(ZTH, data)
-    cb({ message = "ok" })
-end)
-
-ZTH.NUI.RegisterNUICallback("changeSpot", function(data, cb)
     cb({ message = "ok" })
 end)
 
