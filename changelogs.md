@@ -23,6 +23,7 @@ First release of `zth_garages`
 - Added default impund depotprice value
 - Fixed bug on opening manage NUI
 - Fixed date conver bug (maybe?)
+- Fixed auto impound of vehicles with a parking spot
 
 # New features
 
@@ -30,3 +31,4 @@ First release of `zth_garages`
 - Added logic to manually revoke parking spots
 - Added logic to manually add a day to the expiration date of a parking spot
 - Added some logic to sell and buy garages
+- Origen housing integration

@@ -24,7 +24,6 @@ ZTH.Tunnel.Interface.GetImpoundVehicleList = function(id)
                     impoundAmount = data.depotprice,
                     isImpounded = data.isImpounded,
                 })
-                break
             end
         -- end
     end
