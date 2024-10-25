@@ -1,31 +1,25 @@
 
 ZTH.Tunnel.Interface.GetImpoundVehicleList = function(id)
-    local Player = ZTH.Core.Functions.GetPlayer(source)
-    if not Player then return end
-    local citizenid = Player.PlayerData.citizenid
-
     local impoundedVehicles = {}
     for _, v in pairs(ZTH.Cache.PlayerVehicles) do
-        -- for impound, _ in pairs(ZTH.Config.Impounds) do
-            if v.citizenid == citizenid and v.garage == id and v.state == 1 then
-                local data = ZTH.Functions.ParseVehicle(v)
+        if v.garage == id and v.state == 1 then
+            local data = ZTH.Functions.ParseVehicle(v)
 
-                table.insert(impoundedVehicles, {
-                    id = data.id,
-                    garage = id,
-                    impound = impound,
-                    name = data.vehicle,
-                    model = data.vehicle,
-                    plate = data.plate,
-                    fuelLevel = data.fuelLevel,
-                    engineLevel = data.engineLevel,
-                    bodyLevel = data.bodyLevel,
-                    mods = data.mods,
-                    impoundAmount = data.depotprice,
-                    isImpounded = data.isImpounded,
-                })
-            end
-        -- end
+            table.insert(impoundedVehicles, {
+                id = data.id,
+                garage = id,
+                impound = impound,
+                name = data.vehicle,
+                model = data.vehicle,
+                plate = data.plate,
+                fuelLevel = data.fuelLevel,
+                engineLevel = data.engineLevel,
+                bodyLevel = data.bodyLevel,
+                mods = data.mods,
+                impoundAmount = data.depotprice,
+                isImpounded = data.isImpounded,
+            })
+        end
     end
     return impoundedVehicles
 end
