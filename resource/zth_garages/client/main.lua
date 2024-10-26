@@ -18,6 +18,12 @@ ZTH.Functions.RegisterEvent = function(name, cb)
 	end)
 end
 
+ZTH.Functions.RegisterEvent(ZTH.Config.Events.UpdateGaragesParkingSpotsConfig, function(data)
+	for key, value in pairs(data) do
+		Debug("Updating garage: " .. key .. " with data: " .. json.encode(value))
+		ZTH.Config.Garages[value.garage_id].ParkingSpots[value.spot_id] = { pos = value.pos }
+	end
+end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.ResourceInit, function() ZTH.IsReady = true end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.PlayerLoaded, function() ZTH.Functions.Init() end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.PlayerSetJob, function(job) ZTH.Functions.Init() end)
@@ -94,6 +100,7 @@ Citizen.CreateThread(function()
 			for id, garage in pairs(ZTH.Config.Garages) do
 				if garage.ParkingSpots then
 					local center = garage.Settings.center
+					center = vector3(center.x, center.y, center.z)
 					local coords = GetEntityCoords(PlayerPedId())
 					local dst = #(coords - center)
 
@@ -108,6 +115,7 @@ Citizen.CreateThread(function()
 		else
 			local garage = ZTH.Config.Garages[ZTH.CloseGarage]
 			local center = garage.Settings.center
+			center = vector3(center.x, center.y, center.z)
 			local coords = GetEntityCoords(PlayerPedId())
 			local dst = #(coords - center)
 

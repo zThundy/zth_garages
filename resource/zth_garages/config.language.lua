@@ -34,6 +34,7 @@ ZTH.Config.Language = {
         ["SUCCESS_VEHICLE_IMPOUND"] = "Veicolo confiscato con successo",
         ["SUCCESS_VEHICLE_TAKEN_FROM_IMPOUND"] = "Hai preso il tuo veicolo dall'impound",
         ["SUCCESS_SELL_GARAGE"] = "Hai venduto con successo il garage",
+        ["COMMANDS_GENERIC_ERROR"] = "C'è stato un errore, riprova di nuovo",
     },
     ["en"] = {
         ["ASSIGNED_TO_YOU"] = "You",
@@ -70,6 +71,7 @@ ZTH.Config.Language = {
         ["SUCCESS_VEHICLE_IMPOUND"] = "Vehicle impounded successfully",
         ["SUCCESS_VEHICLE_TAKEN_FROM_IMPOUND"] = "You have taken your vehicle out of the impound",
         ["SUCCESS_SELL_GARAGE"] = "You have successfully sold the garage",
+        ["COMMANDS_GENERIC_ERROR"] = "There was an error, please try again",
     }
 }
 

@@ -359,6 +359,7 @@ ZTH.Tunnel.Interface.TakeVehicle = function(plate, id)
 end
 
 ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
+    Debug("GetManagementGarageSpots: Getting spots for garage " .. id)
     local spots = {}
     for _, spot in pairs(ZTH.Cache.GarageSpots) do
         spot.spot_id = tonumber(spot.spot_id)
@@ -368,53 +369,55 @@ ZTH.Tunnel.Interface.GetManagementGarageSpots = function(id)
             goto continue
         end
         
-        for _, vehicle in pairs(ZTH.Cache.PlayerVehicles) do
-            vehicle.state = tonumber(vehicle.state)
-            vehicle.parking_spot = tonumber(vehicle.parking_spot)
+        if spot.garage_id == id then
+            for _, vehicle in pairs(ZTH.Cache.PlayerVehicles) do
+                vehicle.state = tonumber(vehicle.state)
+                vehicle.parking_spot = tonumber(vehicle.parking_spot)
 
-            -- if spot.garage_id == id and vehicle.garage == id then
-            if spot.garage_id == id and vehicle.garage == id and vehicle.state == 1 then
-                if vehicle.parking_spot == spot.spot_id then
-                    spots[spot.spot_id] = {
-                        id = spot.spot_id,
-                        state = vehicle.state,
-                        user_id = spot.user_id,
-                        garage_id = spot.garage_id,
-                        price = spot.price,
-                        fromDate = spot.date,
-                        toDate = spot["until"],
-                        name = spot.player_name,
-                        plate = vehicle.plate,
-                        model = vehicle.vehicle,
-                        mods = json.decode(vehicle.mods),
-                        fuel = vehicle.fuel,
-                        engine = vehicle.engine,
-                        body = vehicle.body,
-                        config = config
-                    }
-                    break
+                -- if spot.garage_id == id and vehicle.garage == id then
+                if spot.garage_id == id and vehicle.garage == id and vehicle.state == 1 then
+                    if vehicle.parking_spot == spot.spot_id then
+                        spots[spot.spot_id] = {
+                            id = spot.spot_id,
+                            state = vehicle.state,
+                            user_id = spot.user_id,
+                            garage_id = spot.garage_id,
+                            price = spot.price,
+                            fromDate = spot.date,
+                            toDate = spot["until"],
+                            name = spot.player_name,
+                            plate = vehicle.plate,
+                            model = vehicle.vehicle,
+                            mods = json.decode(vehicle.mods),
+                            fuel = vehicle.fuel,
+                            engine = vehicle.engine,
+                            body = vehicle.body,
+                            config = config
+                        }
+                        break
+                    end
                 end
             end
-        end
 
-        if not spots[spot.spot_id] then
-            spots[spot.spot_id] = {
-                id = spot.spot_id,
-                state = 0,
-                user_id = spot.user_id,
-                garage_id = spot.garage_id,
-                price = spot.price,
-                fromDate = spot.date,
-                toDate = spot["until"],
-                name = spot.player_name,
-                fuel = 100,
-                engine = 1000,
-                body = 1000,
-                plate = "NOT PARKED",
-                model = "NOT PARKED",
-                mods = {},
-                config = config
-            }
+            if not spots[spot.spot_id] then
+                spots[spot.spot_id] = {
+                    id = spot.spot_id,
+                    state = 0,
+                    user_id = spot.user_id,
+                    garage_id = spot.garage_id,
+                    price = spot.price,
+                    fromDate = spot.date,
+                    toDate = spot["until"],
+                    name = spot.player_name,
+                    fuel = 100,
+                    engine = 1000,
+                    body = 1000,
+                    plate = "NOT PARKED",
+                    model = "NOT PARKED",
+                    mods = {},
+                    config = config
+                }
+            end
         end
 
         ::continue::

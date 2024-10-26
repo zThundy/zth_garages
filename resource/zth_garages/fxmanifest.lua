@@ -44,6 +44,7 @@ client_scripts {
     "client/utils.lua",
     "client/camera.lua",
     "client/nui.lua",
+    "client/commands.lua",
 }
 
 server_scripts {
@@ -53,6 +54,7 @@ server_scripts {
     "server/interface.lua",
     "server/interface.impound.lua",
     "server/interface.house.lua",
+    "server/commands.lua",
     "server/main.lua",
 }
 
