@@ -29,6 +29,9 @@ First release of `zth_garages`
 - Fixed issue where garages would refresh even if no change to playerdata happened
 - Fixed some styling
 - Fixed issue on search in impounds
+- Fixed issue when buying new parking spots
+- Fixed issue where timeouts on nui callbacks would cause some unintended waits
+- Rewrite of "INIT" logic in client side, to not fuck up the server
 
 # New features
 
