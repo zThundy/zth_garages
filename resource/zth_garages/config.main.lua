@@ -4,7 +4,7 @@ ZTH.Config = {}
 ---- DO NOT TOUCH -----
 ZTH.IsReady = false
 -----------------------
-ZTH.Config.Debug = true
+ZTH.Config.Debug = false
 
 ZTH.Config.CoreFunction = function()
     if GetResourceState('es_extended') ~= 'missing' then

@@ -183,7 +183,9 @@ function MakeRandomString(length)
 end
 
 function MakeRandomNumber(length)
-    math.randomseed(os.time())
+    increment = increment + 1
+    if SERVER then math.randomseed(os.time() + increment) end
+    if CLIENT then math.randomseed(GetGameTimer() + increment) end
     local character_set = "0123456789"
 
     local string_sub = string.sub

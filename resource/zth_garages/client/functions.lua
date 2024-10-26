@@ -113,7 +113,7 @@ function ZTH.Functions.InitializeGarages(self, _id)
                 if not heading then Debug("Heading not found for vehicle " .. vehicle.plate .. " at " .. id .. " spot " .. vehicle.id) goto continue end
                 local coords = vector4(pos.x, pos.y, pos.z, heading)
                 
-                SpawnVehicle(vehicle.model, function(veh)
+                SpawnVehicle(GetHashKey(vehicle.model), function(veh)
                     Debug("Spawned vehicle " .. vehicle.plate .. " at " .. id .. " spot " .. vehicle.id)
                     SetVehicleOnGroundProperly(veh)
                     FreezeEntityPosition(veh, true)
@@ -481,6 +481,7 @@ function ZTH.Functions.SpawnCarOnSpot(self, parkingData, spotData)
     if not heading then heading = spotConfig.pos.w end
     local coords = vector4(spotConfig.pos.x, spotConfig.pos.y, spotConfig.pos.z, heading)
     local hash = GetHashKey(spotData.model)
+    print("Sta uscendo la " .. spotData.plate .. " dal garage " .. garage_id .. " allo spot " .. spotData.id .. " con modello " .. spotData.model)
     SpawnVehicle(hash, function(veh)
         SetVehicleNumberPlateText(veh, spotData.plate)
         -- fuel --

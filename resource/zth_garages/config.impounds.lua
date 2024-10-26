@@ -38,6 +38,7 @@ ZTH.Config.Impounds = {
                 scale = 1.0,
                 name = "Impound",
                 pos = vec3(408.19, -1641.04, 29.29),
+                shortRange = true,
             },
         },
         ImpoundZone = {
