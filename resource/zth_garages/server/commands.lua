@@ -64,4 +64,6 @@ ZTH.Tunnel.Interface.AddVehicleCoords = function(garage_id, coords)
     local config = json.decode(configFile)
     config[garage_id] = garage.ParkingSpots
     SaveResourceFile(GetCurrentResourceName(), "config.garages.json", json.encode(config, { indent = true }), -1)
+
+    ZTH.Core.Functions.Notify(source, "Vehicle spot added to garage: " .. garage_id, "success")
 end

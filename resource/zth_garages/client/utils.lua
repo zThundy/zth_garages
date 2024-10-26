@@ -63,7 +63,7 @@ function CreateMarker(_type, data)
     local pos = data.pos
     if data.type == 1 then pos = vec3(data.pos.x, data.pos.y, data.pos.z - 1.0) end
     pos = vec3(pos.x, pos.y, pos.z)
-    table.insert(ZTH.Zones, { data = data, action = data.action })
+    ZTH.Zones[data.name] = { data = data, action = data.action }
     TriggerEvent('gridsystem:registerMarker', {
         id = data.name,
         pos = pos,
@@ -187,4 +187,145 @@ function IsPedDriving()
         end
     end
     return type
+end
+
+function PlayClickSound()
+    PlaySoundFrontend(-1, "SELECT", "HUD_LIQUOR_STORE_SOUNDSET", 1)
+end
+
+function PlayCloseSound()
+    PlaySoundFrontend(-1, "CANCEL", "HUD_LIQUOR_STORE_SOUNDSET", 1)
+end
+
+DebugModeSpawnMarkers = function()
+    local drawDistance = 100.0
+
+    for k, v in pairs(ZTH.Config.Garages) do
+        for _type, garage in pairs(v) do
+            if _type == "Settings" then
+                if garage.center then
+                    TriggerEvent('gridsystem:registerMarker', {
+                        pos = vec3(garage.center.x, garage.center.y, garage.center.z + 2.0),
+                        scale = vec3(1.5, 1.5, 1.5),
+                        msg = "Debug Marker",
+                        drawDistance = drawDistance,
+                        control = "E",
+                        type = 2,
+                        color = {
+                            r = 0,
+                            g = 0,
+                            b = 255,
+                        },
+                        name = MakeRandomString(20),
+                    })
+                end
+            end
+            
+            if _type == "Manage" then
+                TriggerEvent('gridsystem:registerMarker', {
+                    pos = vec3(garage.pos.x, garage.pos.y, garage.pos.z + 2.0),
+                    scale = vec3(1.5, 1.5, 1.5),
+                    msg = "Debug Marker",
+                    drawDistance = drawDistance,
+                    control = "E",
+                    type = 2,
+                    color = {
+                        r = 255,
+                        g = 0,
+                        b = 0,
+                    },
+                    name = MakeRandomString(20),
+                })
+            end
+            
+            if _type == "BuySpot" then
+                TriggerEvent('gridsystem:registerMarker', {
+                    pos = vec3(garage.pos.x, garage.pos.y, garage.pos.z + 2.0),
+                    scale = vec3(1.5, 1.5, 1.5),
+                    msg = "Debug Marker",
+                    drawDistance = drawDistance,
+                    control = "E",
+                    type = 2,
+                    color = {
+                        r = 255,
+                        g = 0,
+                        b = 0,
+                    },
+                    name = MakeRandomString(20),
+                })
+            end
+
+            if _type == "ParkingSpots" then
+                for _, spot in pairs(garage) do
+                    TriggerEvent('gridsystem:registerMarker', {
+                        pos = vec3(spot.pos.x, spot.pos.y, spot.pos.z + 2.0),
+                        scale = vec3(1.5, 1.5, 1.5),
+                        msg = "Debug Marker",
+                        drawDistance = drawDistance,
+                        control = "E",
+                        show3D = true,
+                        type = 2,
+                        color = {
+                            r = 0,
+                            g = 255,
+                            b = 0,
+                        },
+                        name = MakeRandomString(20),
+                    })
+                end
+            end
+            
+            if _type == "TakeVehicle" then
+                TriggerEvent('gridsystem:registerMarker', {
+                    pos = vec3(garage.pos.x, garage.pos.y, garage.pos.z + 2.0),
+                    scale = vec3(1.5, 1.5, 1.5),
+                    msg = "Debug Marker",
+                    drawDistance = drawDistance,
+                    control = "E",
+                    type = 2,
+                    color = {
+                        r = 255,
+                        g = 0,
+                        b = 0,
+                    },
+                    name = MakeRandomString(20),
+                })
+            end
+            
+            if _type == "SpawnVehicle" then
+                TriggerEvent('gridsystem:registerMarker', {
+                    pos = vec3(garage.pos.x, garage.pos.y, garage.pos.z + 2.0),
+                    scale = vec3(1.5, 1.5, 1.5),
+                    msg = "Debug Marker",
+                    drawDistance = drawDistance,
+                    control = "E",
+                    type = 2,
+                    color = {
+                        r = 255,
+                        g = 0,
+                        b = 0,
+                    },
+                    name = MakeRandomString(20),
+                })
+            end
+            
+            if _type == "Deposit" then
+                TriggerEvent('gridsystem:registerMarker', {
+                    id = string,
+                    pos = vec3(garage.pos.x, garage.pos.y, garage.pos.z + 2.0),
+                    scale = vec3(1.5, 1.5, 1.5),
+                    msg = "Debug Marker",
+                    drawDistance = drawDistance,
+                    control = "E",
+                    type = 2,
+                    color = {
+                        r = 255,
+                        g = 0,
+                        b = 0,
+                    },
+                    name = MakeRandomString(20),
+                })
+            end
+        end
+    end
 end

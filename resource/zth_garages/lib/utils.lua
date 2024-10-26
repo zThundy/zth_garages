@@ -158,8 +158,11 @@ function table_maxn(t)
     return max
 end
 
+local increment = 0
 function MakeRandomString(length)
-    math.randomseed(os.time())
+    increment = increment + 1
+    if SERVER then math.randomseed(os.time() + increment) end
+    if CLIENT then math.randomseed(GetGameTimer() + increment) end
     local character_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     local string_sub = string.sub
@@ -170,11 +173,9 @@ function MakeRandomString(length)
     local default_length = 10
 
     local random_string = {}
-
     for int = number_one, length or default_length do
         local random_number = math_random(number_one, character_set_amount)
         local character = string_sub(character_set, random_number, random_number)
-
         random_string[#random_string + number_one] = character
     end
 

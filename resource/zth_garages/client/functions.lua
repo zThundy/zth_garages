@@ -89,14 +89,8 @@ function ZTH.Functions.UnregisterAllMarkers(self, id)
         -- check if id is defined and if v.data.name contains id
         if id and not string.find(v.data.name, id) then goto contine end
         Debug("Unregistering marker " .. v.data.name .. ". Passed id is " .. Conditional(id, id, "nil"))
-        self.Zones[k] = nil
         TriggerEvent("gridsystem:unregisterMarker", v.data.name)
         ::contine::
-    end
-
-    -- cleanup table with nil values
-    for i = #self.Zones, 1, -1 do
-        if not self.Zones[i] then table.remove(self.Zones, i) end
     end
 end
 
@@ -233,10 +227,10 @@ function ZTH.Functions.BuySpot(self, data)
         -- todo: add debug serverside with client data???
         return self.Core.Functions.Notify(L("ERROR_UNAVAILABLE_BUY_SPOT"), 'error', 5000)
     end
-    
+
     if self.Tunnel.Interface.BuySpot(data) then
         self.Core.Functions.Notify(L("SUCCESS_BUY_SPOT"), 'success', 5000)
-        self.Functions.Init()
+        self.Functions.RefreshGarage(self, data.parkingId)
         self.NUI.Close()
     else
         self.Core.Functions.Notify(L("ERROR_CANT_BUY_SPOT"), 'error', 5000)
@@ -348,10 +342,8 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
             -- walk out of the vehicle
             TaskLeaveVehicle(ped, vehicle, 0)
             Citizen.Wait(2000)
-            -- self.Functions.Init()
             self.Tunnel.Interface.DepositVehicle(id, spotid, toDepositData)
             self.Tunnel.Interface.TellClientsToRefreshGarage(id)
-            -- self.Core.Functions.DeleteVehicle(vehicle)
             if self.Config.IsAdvancedParkingInstalled then exports["AdvancedParking"]:DeleteVehicle(vehicle, false) end
             if DoesEntityExist(vehicle) then DeleteEntity(vehicle) end
             self.Core.Functions.Notify(L("SUCCESS_VEHICLE_DEPOSITED"), 'success', 5000)
@@ -460,7 +452,6 @@ function ZTH.Functions.EnteredVehicle(vehicle, seat, vehDisplay)
         if ZTH.Config.IsAdvancedParkingInstalled then exports["AdvancedParking"]:DeleteVehicle(vehicle, false) end
         if DoesEntityExist(vehicle) then DeleteEntity(vehicle) end
         ZTH.Tunnel.Interface.TellClientsToRefreshGarage(garage_id)
-        -- ZTH.Functions.Init()
         Citizen.Wait(1500)
         SetEntityVisible(ped, true)
         DoScreenFadeIn(100)
@@ -551,6 +542,7 @@ function ZTH.Functions.Init()
         Wait(1000)
     end
 
+    ZTH.Tunnel.Interface.RequestJSONGarages()
     ZTH.Functions.UnregisterAllMarkers(ZTH)
     ZTH.Functions.RegisterZones(ZTH)
     ZTH.Functions.InitializeGarages(ZTH)

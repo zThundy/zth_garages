@@ -45,7 +45,7 @@ function ZTH.Functions.Init()
     ZTH.Cache = {}
     ZTH.Cache.Garages = {}
 
-    ZTH.Functions.PopulateFromJson(ZTH)
+    ZTH.Functions.PopulateFromJson(ZTH, -1)
     ZTH.Functions.FullUpdateCache(ZTH)
 end
 
@@ -257,36 +257,39 @@ function ZTH.Functions.UpdateSingleCache(self, type)
     end
 end
 
-function ZTH.Functions.PopulateFromJson(self)
-    local jsongarages = LoadResourceFile(GetCurrentResourceName(), "config.garages.json")
-    if not jsongarages then
-        Debug("PopulateFromJson: [^1FATAL^0] No garages found")
-        return
-    end
+function ZTH.Functions.PopulateFromJson(self, source)
+    if not self.Cache.ToSendSpots then
+        self.Cache.ToSendSpots = {}
+        local jsongarages = LoadResourceFile(GetCurrentResourceName(), "config.garages.json")
+        if not jsongarages then
+            Debug("PopulateFromJson: [^1FATAL^0] No garages found")
+            return false
+        end
 
-    local toSendSpots = {}
-    jsongarages = json.decode(jsongarages)
-    for k, garage in pairs(self.Config.Garages) do
-        if jsongarages[tostring(k)] then
-            for key, v in pairs(jsongarages[tostring(k)]) do
-                if garage.ParkingSpots[tonumber(key)] then
-                    Debug("PopulateFromJson: [^1FATAL^0] Parking spot defined in config for garage: " .. k)
-                    goto continue
+        jsongarages = json.decode(jsongarages)
+        for k, garage in pairs(self.Config.Garages) do
+            if jsongarages[tostring(k)] then
+                for key, v in pairs(jsongarages[tostring(k)]) do
+                    if garage.ParkingSpots[tonumber(key)] then
+                        Debug("PopulateFromJson: [^1FATAL^0] Parking spot defined in config for garage: " .. k)
+                        goto continue
+                    end
+
+                    Debug("PopulateFromJson: Adding parking spot to garage: " .. k)
+                    table.insert(garage.ParkingSpots, v)
+                    table.insert(self.Cache.ToSendSpots, {
+                        garage_id = k,
+                        spot_id = tonumber(key),
+                        pos = v.pos
+                    })
+
+                    ::continue::
                 end
-
-                Debug("PopulateFromJson: Adding parking spot to garage: " .. k)
-                table.insert(garage.ParkingSpots, v)
-                table.insert(toSendSpots, {
-                    garage_id = k,
-                    spot_id = tonumber(key),
-                    pos = v.pos
-                })
-
-                ::continue::
             end
         end
     end
 
     -- send to client side
-    TriggerClientEvent(ZTH.Config.Events.UpdateGaragesParkingSpotsConfig, -1, toSendSpots)
+    TriggerClientEvent(ZTH.Config.Events.UpdateGaragesParkingSpotsConfig, source, self.Cache.ToSendSpots)
+    return true
 end

@@ -18,23 +18,26 @@ ZTH.NUI.Close = function()
     SendNUIMessage({ action = "close" })
 end
 
-ZTH.NUI.RegisterNUICallback = function(name, cb)
+ZTH.NUI.RegisterNUICallback = function(name, cb, needsTimeout)
     RegisterNUICallback("html/" .. name, function(data, _cb)
-        if hasTimeout() then return end
-        addTimeout(nil, ZTH.Config.TimeoutBetweenInteractions)
+        if needsTimeout then
+            if hasTimeout() then return end
+            addTimeout(nil, ZTH.Config.TimeoutBetweenInteractions)
+        end
 
         Debug("Received NUI callback: " .. name .. " with data: " .. DumpTable(data))
         cb(data, _cb)
     end)
 end
 
-RegisterNUICallback("html/close", function(data, cb)
+ZTH.NUI.RegisterNUICallback("close", function(data, cb)
+    PlayCloseSound()
     SetNuiFocus(false, false)
     ZTH.Camera.FullyKillCameras(ZTH)
     cb({ message = "ok" })
-end)
+end, false)
 
-RegisterNUICallback("html/changeSpot", function(data, cb)
+ZTH.NUI.RegisterNUICallback("changeSpot", function(data, cb)
     local spotId = data.spotId
     local garageId = ZTH.Camera.Extradata
     local garage = ZTH.Config.Garages[garageId].ParkingSpots[spotId]
@@ -45,23 +48,27 @@ RegisterNUICallback("html/changeSpot", function(data, cb)
     end
 
     ZTH.Camera.UpdateCamera(ZTH, garage.pos)
+    PlayClickSound()
     cb({ message = "ok" })
-end)
+end, false)
 
 ZTH.NUI.RegisterNUICallback("impoundVehicle", function(data, cb)
     ZTH.Functions.ImpoundVehicle(ZTH, data)
+    PlayClickSound()
     cb({ message = "ok" })
-end)
+end, true)
 
 ZTH.NUI.RegisterNUICallback("payFee", function(data, cb)
     ZTH.Functions.TakeImpoundedVehicle(ZTH, data.car)
+    PlayClickSound()
     cb({ message = "ok" })
-end)
+end, true)
 
 ZTH.NUI.RegisterNUICallback("take", function(data, cb)
     ZTH.Functions.TakeVehicle(ZTH, data)
+    PlayClickSound()
     cb({ message = "ok" })
-end)
+end, true)
 
 ZTH.NUI.RegisterNUICallback("money", function(data, cb)
     local errorMessage = L("ERROR_BALANCE_NOT_ENOUGH")
@@ -77,18 +84,21 @@ ZTH.NUI.RegisterNUICallback("money", function(data, cb)
     else
         ZTH.Core.Functions.Notify(errorMessage, "error")
     end
+    PlayClickSound()
     cb({ message = "ok" })
-end)
+end, true)
 
 ZTH.NUI.RegisterNUICallback("buySpot", function(data, cb)
     ZTH.Functions.BuySpot(ZTH, data)
+    PlayClickSound()
     cb({ message = "ok" })
-end)
+end, false)
 
 ZTH.NUI.RegisterNUICallback("saveData", function(data, cb)
     ZTH.Functions.BuyVehicles(ZTH, data)
+    PlayClickSound()
     cb({ message = "ok" })
-end)
+end, true)
 
 ZTH.NUI.RegisterNUICallback("sellParking", function(data, cb)
     if ZTH.Tunnel.Interface.SellParking(data.pData) then
@@ -97,8 +107,9 @@ ZTH.NUI.RegisterNUICallback("sellParking", function(data, cb)
     else
         ZTH.Core.Functions.Notify(L("GENERIC_ERROR"), "error")
     end
+    PlayClickSound()
     cb({ message = "ok" })
-end)
+end, true)
 
 ZTH.NUI.RegisterNUICallback("propertyBuy", function(data, cb)
     if ZTH.Tunnel.Interface.CanAffordGarage(data) then
@@ -107,8 +118,9 @@ ZTH.NUI.RegisterNUICallback("propertyBuy", function(data, cb)
     else
         ZTH.Core.Functions.Notify(L("GENERIC_ERROR"), "error")
     end
+    PlayClickSound()
     cb({ message = "ok" })
-end)
+end, true)
 
 ZTH.NUI.RegisterNUICallback("manageGarageButton", function(data, cb)
     if ZTH.Tunnel.Interface.ManageGarageButton(data) then
@@ -119,5 +131,6 @@ ZTH.NUI.RegisterNUICallback("manageGarageButton", function(data, cb)
             ZTH.Core.Functions.Notify(L("SUCCESS_RENEWED_SPOT"), "success")
         end
     end
+    PlayClickSound()
     cb({ message = "ok" })
-end)
+end, true)

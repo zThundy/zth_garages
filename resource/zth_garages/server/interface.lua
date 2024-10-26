@@ -833,3 +833,9 @@ ZTH.Tunnel.Interface.ManageGarageButton = function(data)
 
     return false
 end
+
+ZTH.Tunnel.Interface.RequestJSONGarages = function()
+    local player = source
+    Debug("RequestJSONGarages: Sending garages to " .. player)
+    return ZTH.Functions.PopulateFromJson(ZTH, player)
+end

@@ -26,7 +26,19 @@ ZTH.Functions.RegisterEvent(ZTH.Config.Events.UpdateGaragesParkingSpotsConfig, f
 end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.ResourceInit, function() ZTH.IsReady = true end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.PlayerLoaded, function() ZTH.Functions.Init() end)
-ZTH.Functions.RegisterEvent(ZTH.Config.Events.PlayerSetJob, function(job) ZTH.Functions.Init() end)
+ZTH.Functions.RegisterEvent(ZTH.Config.Events.PlayerSetJob, function(job)
+	if ZTH.PlayerData.job.name == PlayerData.job then return end
+	if ZTH.PlayerData.job.label == PlayerData.job.label then return end
+	if ZTH.PlayerData.job.grade.name == PlayerData.job.grade then return end
+	if ZTH.PlayerData.job.grade.level == PlayerData.job.grade.level then return end
+	if ZTH.PlayerData.job.onduty == PlayerData.job.onduty then return end
+	if ZTH.PlayerData.job.type == PlayerData.job.type then return end
+	if ZTH.PlayerData.job.payment == PlayerData.job.payment then return end
+	if ZTH.PlayerData.job.isboss == PlayerData.job.isboss then return end
+
+	ZTH.PlayerData = job
+	ZTH.Functions.RefreshJobGarages(ZTH)
+end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.SharedUpdated, function(data) ZTH.Config.Shared = data end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.RefreshGarages, function(id) ZTH.Functions.RefreshGarage(ZTH, id) end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.SpawnCarOnSpot, function(pData, spot) ZTH.Functions.SpawnCarOnSpot(ZTH, pData, spot) end)
@@ -127,4 +139,9 @@ Citizen.CreateThread(function()
 		end
 		Citizen.Wait(1000)
 	end
+end)
+
+Citizen.CreateThread(function()
+	while not ZTH.IsReady do Wait(1000) end
+	if ZTH.Config.Debug then DebugModeSpawnMarkers() end
 end)
