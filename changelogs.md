@@ -26,6 +26,9 @@ First release of `zth_garages`
 - Fixed auto impound of vehicles with a parking spot
 - Fixed bug on Job garages that would prevend deposit and take of vehicles with a shorter plate
 - Fixed bug on Job garages where it would register all markers anyway, even if the job wasn't the right one
+- Fixed issue where garages would refresh even if no change to playerdata happened
+- Fixed some styling
+- Fixed issue on search in impounds
 
 # New features
 
@@ -35,3 +38,8 @@ First release of `zth_garages`
 - Added some logic to sell and buy garages
 - Origen housing integration
 - Added camera to parking spots when buying
+- Job Garages will now also follow the onDuty state. Configurable.
+- You can now configure more than one deposit spots for all Deposit type garages (NOT PARKING SPOTS OBV)
+- If QB then take label from Shared
+- Added search box in vehicle list
+- Added vehicle type to job garages
