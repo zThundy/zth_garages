@@ -1,5 +1,7 @@
 # zth_garages
 
+<a href="https://github.com/zThundy/zth_garages/releases/latest">![Version](https://img.shields.io/badge/latest%20version-0.1.1-green.svg "Current Version of Script")</a>
+
 `zth_garages` is a FiveM script designed to manage garages with a high level of customization and reliability. This script allows players to deposit cars on physical spots or in despawn spots, manage impounds, and handle job-specific garages for company vehicles.
 
 Frontend is made using ReactJS and Materail UI for components, images and styling.
