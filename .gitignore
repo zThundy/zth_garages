@@ -22,3 +22,4 @@ yarn-error.log*
 # customm
 /resource/zth_garages/html
 .vscode/
+log.txt
