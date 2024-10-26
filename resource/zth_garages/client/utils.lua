@@ -82,16 +82,6 @@ function CreateMarker(_type, data)
     })
 end
 
-function UnregisterAllMarkers(id)
-    for _, v in pairs(ZTH.Zones) do
-        -- check if id is defined and if v.data.name contains id
-        if id and not string.find(v.data.name, id) then goto contine end
-        Debug("Unregistering marker " .. v.data.name .. ". Passed id is " .. Conditional(id, id, "nil"))
-        TriggerEvent("gridsystem:unregisterMarker", v.data.name)
-        ::contine::
-    end
-end
-
 function ClearSpawnPoint(coords)
     RemoveVehiclesFromGeneratorsInArea(coords.x + 1.0, coords.y + 1.0, coords.z + 1.0, coords.x - 1.0, coords.y - 1.0, coords.z - 1.0)
     local vehicles = GetVehiclesInArea(coords, 1.0)

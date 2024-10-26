@@ -29,11 +29,17 @@ end
 
 -- calculate camera position from the pos and heading of the vehicle
 function ZTH.Camera.CalculateCameraPosition(self, pos)
-    local offset = vector3(0, 0, 2.0)
-    local distance = 5.0
+    local cameraSettings = self.Config.Garages[self.Camera.Extradata].Settings.Camera
+    if not cameraSettings then
+        self.Config.Garages[self.Camera.Extradata].Settings.Camera = {
+            distance = 5.0,
+            height = 2.0,
+        }
+    end
+    local offset = vector3(0, 0, cameraSettings.height)
     local angle = pos.w * math.pi / 180
-    local x = pos.x + distance * math.sin(angle)
-    local y = pos.y - distance * math.cos(angle)
+    local x = pos.x + cameraSettings.distance * math.sin(angle)
+    local y = pos.y - cameraSettings.distance * math.cos(angle)
     local z = pos.z + offset.z
     return vector3(x, y, z)
 end

@@ -11,12 +11,33 @@ ZTH.Tunnel.Interface = ZTH.Tunnel.getInterface("zth_garages", "zth_garages_t", "
 
 Citizen.CreateThread(ZTH.Functions.Init)
 
-RegisterNetEvent(ZTH.Config.Events.ResourceInit, function() ZTH.IsReady = true end)
-AddEventHandler(ZTH.Config.Events.PlayerLoaded, function() ZTH.Functions.Init() end)
-RegisterNetEvent(ZTH.Config.Events.PlayerSetJob, function(job) ZTH.Functions.Init() end)
-AddEventHandler(ZTH.Config.Events.SharedUpdated, function(data) ZTH.Config.Shared = data end)
-RegisterNetEvent(ZTH.Config.Events.RefreshGarages, function(id) ZTH.Functions.RefreshGarage(ZTH, id) end)
-RegisterNetEvent(ZTH.Config.Events.SpawnCarOnSpot, function(pData, spot) ZTH.Functions.SpawnCarOnSpot(ZTH, pData, spot) end)
+ZTH.Functions.RegisterEvent = function(name, cb)
+	RegisterNetEvent(name, function(...)
+		Debug("[^5NET-EVENTS^0] Received net event: " .. name)
+		cb(...)
+	end)
+end
+
+ZTH.Functions.RegisterEvent(ZTH.Config.Events.ResourceInit, function() ZTH.IsReady = true end)
+ZTH.Functions.RegisterEvent(ZTH.Config.Events.PlayerLoaded, function() ZTH.Functions.Init() end)
+ZTH.Functions.RegisterEvent(ZTH.Config.Events.PlayerSetJob, function(job) ZTH.Functions.Init() end)
+ZTH.Functions.RegisterEvent(ZTH.Config.Events.SharedUpdated, function(data) ZTH.Config.Shared = data end)
+ZTH.Functions.RegisterEvent(ZTH.Config.Events.RefreshGarages, function(id) ZTH.Functions.RefreshGarage(ZTH, id) end)
+ZTH.Functions.RegisterEvent(ZTH.Config.Events.SpawnCarOnSpot, function(pData, spot) ZTH.Functions.SpawnCarOnSpot(ZTH, pData, spot) end)
+ZTH.Functions.RegisterEvent(ZTH.Config.Events.PlayerUpdateData, function() ZTH.Functions.RefreshJobGarages(ZTH) end)
+ZTH.Functions.RegisterEvent(ZTH.Config.Events.SetPlayerData, function(PlayerData)
+	if ZTH.PlayerData.job.name == PlayerData.job then return end
+	if ZTH.PlayerData.job.label == PlayerData.job.label then return end
+	if ZTH.PlayerData.job.grade.name == PlayerData.job.grade then return end
+	if ZTH.PlayerData.job.grade.level == PlayerData.job.grade.level then return end
+	if ZTH.PlayerData.job.onduty == PlayerData.job.onduty then return end
+	if ZTH.PlayerData.job.type == PlayerData.job.type then return end
+	if ZTH.PlayerData.job.payment == PlayerData.job.payment then return end
+	if ZTH.PlayerData.job.isboss == PlayerData.job.isboss then return end
+
+	ZTH.PlayerData = PlayerData
+	ZTH.Functions.RefreshJobGarages(ZTH)
+end)
 
 -- Enter / Leave vehicle thread
 Citizen.CreateThread(function()

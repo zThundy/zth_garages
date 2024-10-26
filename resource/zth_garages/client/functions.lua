@@ -2,15 +2,13 @@
 ZTH.Functions = {}
 
 function ZTH.Functions.RegisterZones(self, id)
-    UnregisterAllMarkers(id)
+    Debug("RegisterZones: Registering all markers...")
     
-    Debug("Registering all markers")
     for i, garages in pairs(self.Config.Garages) do
         if id and i ~= id then goto skip end
 
         if not garages.Settings then Debug("Settings is missing for garage " .. i) goto skip end
         
-        Debug("Registering zone " .. i)
         local Settings = garages.Settings
         if Settings.blip then
             if Settings.center then Settings.blip.pos = Settings.center end
@@ -21,6 +19,7 @@ function ZTH.Functions.RegisterZones(self, id)
         end
         
         if not self.Functions.RegisterZonesForJob(self, i, garages) then
+            Debug("Registering zone " .. i .. "...")
             for _type, garage in pairs(garages) do
                 if _type == "Settings" then goto continue end
                 if _type == "SpawnVehicle" then goto continue end
@@ -46,7 +45,6 @@ function ZTH.Functions.RegisterZonesForJob(self, i, garages)
 
     if Settings.JobSettings then
         found = true
-        Debug("Registering job zone " .. i)
         if Settings.JobSettings.blip then
             if Settings.center then Settings.JobSettings.blip.pos = Settings.center end
             Settings.blip.confId = i
@@ -56,27 +54,50 @@ function ZTH.Functions.RegisterZonesForJob(self, i, garages)
         end
         
         if Settings.JobSettings.job then
-            if self.PlayerData.job.name == Settings.JobSettings.job then
-                for _type, garage in pairs(garages) do
-                    if _type == "Settings" then goto continue end
-                    if _type == "SpawnVehicle" then goto continue end
-                    if _type == "ParkingSpots" then goto continue end
+            if not Settings.JobSettings.onlyShowOnDuty or self.PlayerData.job.onduty then
+                if self.PlayerData.job.name == Settings.JobSettings.job then
+                    Debug("Registering job zone " .. i)
+                    for _type, garage in pairs(garages) do
+                        if _type == "Settings" then goto continue end
+                        if _type == "SpawnVehicle" then goto continue end
+                        if _type == "ParkingSpots" then goto continue end
 
-                    garage.name = _type .. "_" .. i
-                    garage.action = function() self.Functions.MarkerAction(self, _type, i) end
-                    ClearSpawnPoint(garage.pos)
-                    CreateMarker(_type, garage)
+                        garage.name = _type .. "_" .. i
+                        garage.action = function() self.Functions.MarkerAction(self, _type, i) end
+                        ClearSpawnPoint(garage.pos)
+                        CreateMarker(_type, garage)
 
-                    ::continue::
+                        ::continue::
+                    end
+                else
+                    Debug("Player is not in the correct job for garage " .. i .. ", skipping")
                 end
             else
-                Debug("Player is not in the correct job for garage " .. i .. ", skipping")
+                Debug("Player is not on duty for garage " .. i .. ", skipping")
             end
         else
             Debug("No job found for garage " .. i .. ", skipping")
         end
     end
     return found
+end
+
+function ZTH.Functions.UnregisterAllMarkers(self, id)
+    Debug("Unregistering all markers with id " .. Conditional(id, id, "nil") .. "...")
+    for k, v in pairs(self.Zones) do
+        if not v then goto contine end
+        -- check if id is defined and if v.data.name contains id
+        if id and not string.find(v.data.name, id) then goto contine end
+        Debug("Unregistering marker " .. v.data.name .. ". Passed id is " .. Conditional(id, id, "nil"))
+        self.Zones[k] = nil
+        TriggerEvent("gridsystem:unregisterMarker", v.data.name)
+        ::contine::
+    end
+
+    -- cleanup table with nil values
+    for i = #self.Zones, 1, -1 do
+        if not self.Zones[i] then table.remove(self.Zones, i) end
+    end
 end
 
 function ZTH.Functions.InitializeGarages(self, _id)
@@ -201,7 +222,7 @@ function ZTH.Functions.MarkerAction(self, _type, id, spotid)
             self.NUI.Open({ screen = "garage-buy", garageData = managementTable })
         end
 
-        if _type == "Deposit" then
+        if string.find(_type, "Deposit") then
             self.Functions.DepositVehicle(self, id, spotid)
         end
     end
@@ -305,17 +326,6 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
         end
     end
 
-    for _id, _garage in pairs(self.Config.Garages) do
-        if _garage.Settings and _garage.Settings.JobSettings then
-            local _garageSettings = _garage.Settings
-            if string.sub(plate, 1, string.len(_garageSettings.JobSettings.platePrefix)) == _garageSettings.JobSettings.platePrefix then
-                if id ~= _id then
-                    return self.Core.Functions.Notify(L("ERROR_CANT_DEPOSIT_HERE"), 'error', 5000)
-                end
-            end
-        end
-    end
-
     -- means that this is a private parking spot
     if spotid then
         if self.Tunnel.Interface.CanDeposit(id, spotid, plate) then
@@ -353,7 +363,7 @@ function ZTH.Functions.DepositVehicle(self, id, spotid)
 
         if garageSettings.JobSettings then
             if self.PlayerData.job.name ~= garageSettings.JobSettings.job then
-                return self.Core.Functions.Notify(L("ERROR_CANT_DEPOSIT_HERE"), 'error', 5000)
+                return self.Core.Functions.Notify(L("ERROR_CANT_DEPOSIT_HERE_JOB"), 'error', 5000)
             end
             
             -- check if the plate starts with the plate prefix
@@ -507,14 +517,26 @@ end
 
 function ZTH.Functions.UnloadVehicles(id)
     local configSpots = ZTH.Config.Garages[id].ParkingSpots
+    if not configSpots then return end
     for _, spot in pairs(configSpots) do
         ClearSpawnPoint(spot.pos)
+    end
+end
+
+function ZTH.Functions.RefreshJobGarages(self)
+    for id, garage in pairs(self.Config.Garages) do
+        if garage.Settings.JobSettings then
+            if self.PlayerData.job.name == garage.Settings.JobSettings.job then
+                self.Functions.RefreshGarage(self, id)
+            end
+        end
     end
 end
 
 function ZTH.Functions.RefreshGarage(self, id)
     Debug("Refreshing garage " .. id .. " vehicles")
     self.Functions.UnloadVehicles(id)
+    self.Functions.UnregisterAllMarkers(ZTH, id)
     self.Functions.RegisterZones(ZTH, id)
     self.Functions.InitializeGarages(ZTH, id)
     self.Functions.InitImpounds(ZTH)
@@ -529,6 +551,7 @@ function ZTH.Functions.Init()
         Wait(1000)
     end
 
+    ZTH.Functions.UnregisterAllMarkers(ZTH)
     ZTH.Functions.RegisterZones(ZTH)
     ZTH.Functions.InitializeGarages(ZTH)
     ZTH.Functions.InitImpounds(ZTH)

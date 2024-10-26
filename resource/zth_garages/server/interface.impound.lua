@@ -16,6 +16,7 @@ ZTH.Tunnel.Interface.GetImpoundVehicleList = function(id)
                 id = data.id,
                 garage = id,
                 impound = impound,
+                label = data.label,
                 name = data.vehicle,
                 model = data.vehicle,
                 plate = data.plate,

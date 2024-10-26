@@ -255,6 +255,7 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
                 local data = ZTH.Functions.ParseVehicle(v)
                 table.insert(vehicles, {
                     id = data.id,
+                    label = data.label,
                     garage = id,
                     name = data.vehicle,
                     model = data.vehicle,
@@ -279,7 +280,9 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
                         Debug("GetParkedVehicleList: Found plate " .. v.plate .. " for " .. v.citizenid)
                         table.insert(vehicles, {
                             id = data.id,
+                            label = data.label,
                             garage = id,
+                            assignedTo = L("ASSIGNED_TO_YOU"),
                             name = data.vehicle,
                             model = data.vehicle,
                             plate = data.plate,
@@ -293,7 +296,9 @@ ZTH.Tunnel.Interface.GetParkedVehicleList = function(id)
                     elseif string.match(v.license, settings.job .. ":%d") and v.license == Player.PlayerData.job.name .. ":" .. Player.PlayerData.job.grade.level then
                         table.insert(vehicles, {
                             id = data.id,
+                            label = data.label,
                             garage = id,
+                            assignedTo = L("ASSIGNED_TO_GRADE"),
                             name = data.vehicle,
                             model = data.vehicle,
                             plate = data.plate,

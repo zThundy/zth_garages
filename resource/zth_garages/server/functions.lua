@@ -214,6 +214,14 @@ function ZTH.Functions.ParseVehicle(data)
     if not mods.model then mods.model = data.vehicle end
     if not mods.plate then mods.plate = data.plate end
 
+    data.label = data.vehicle
+    if ZTH.Core.Shared then
+        local vehicle = ZTH.Core.Shared.Vehicles[data.label]
+        if vehicle then
+            data.label = vehicle.name
+        end
+    end
+
     data.model = data.vehicle
     data.vehicle = string.upper(data.vehicle)
 

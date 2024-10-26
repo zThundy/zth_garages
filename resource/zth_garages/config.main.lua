@@ -48,6 +48,8 @@ ZTH.Config.Events.PlayerLoadedServer = ZTH.Config.Core == "ESX" and "esx:playerL
 ZTH.Config.Events.PlayerLogoutServer = ZTH.Config.Core == "ESX" and "esx:playerDropped" or "QBCore:Server:OnPlayerUnload"
 ZTH.Config.Events.PlayerSetJob = ZTH.Config.Core == "ESX" and "esx:setJob" or "QBCore:Client:OnJobUpdate"
 ZTH.Config.Events.PlayerSetJobServer = ZTH.Config.Core == "ESX" and "esx:setJob" or "QBCore:Server:OnJobUpdate"
+ZTH.Config.Events.PlayerUpdateData = ZTH.Config.Core == "ESX" and "esx:updatePlayer" or "QBCore:Player:UpdatePlayerData"
+ZTH.Config.Events.SetPlayerData = ZTH.Config.Core == "ESX" and "esx:setPlayerData" or "QBCore:Player:SetPlayerData" 
 ZTH.Config.Events.SetVehicleOwner = 'vehiclekeys:client:SetOwner'
 ZTH.Config.Events.SharedUpdated = "QBCore:Client:SharedUpdate"
 ZTH.Config.Events.ResourceInit = "zth_garages:client:Init"
