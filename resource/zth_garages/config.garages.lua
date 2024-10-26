@@ -44,8 +44,26 @@ ZTH.Config.Markers = {
         control = "E",
         show3D = false,
         type = 20,
+        color = { r = 255, g = 0, b = 0 },
+    },
+    Deposit_Heli = {
+        scale = vec3(3.0, 3.0, 3.0),
+        msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
+        drawDistance = 40.0,
+        control = "E",
+        show3D = false,
+        type = 20,
         color = { r = 255, g =0, b = 0 },
-    }
+    },
+    Deposit_Heli_2 = {
+        scale = vec3(3.0, 3.0, 3.0),
+        msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
+        drawDistance = 40.0,
+        control = "E",
+        show3D = false,
+        type = 20,
+        color = { r = 255, g =0, b = 0 },
+    },
 }
 
 ZTH.Config.Garages = {
@@ -80,6 +98,10 @@ ZTH.Config.Garages = {
                 scale = 1.0,
                 name = "Garage Privato",
                 shortRange = false,
+            },
+            Camera = {
+                distance = 5.0,
+                height = 2.0,
             }
         },
         Manage = {
@@ -226,12 +248,6 @@ ZTH.Config.Garages = {
             pos = vec3(212.5, -797.84, 30.86),
             heading = 158.56,
         },
-        -- Deposit = {
-        --     pos = vec3(212.3, -798.61, 30.88),
-        --     scale = vec3(3.0, 3.0, 1.0),
-        --     msg = "Press ~INPUT_CONTEXT~ to deposit the vehicle",
-        --     type = 1,
-        -- },
     },
     ["garage_police"] = {
         Settings = {
@@ -240,9 +256,9 @@ ZTH.Config.Garages = {
             managementPrice = 0,
             sellPrice = 0,
             JobSettings = {
-                -- lol
+                -- the job that can use this garage
                 job = "police",
-                -- lol
+                -- the plate prefix for the vehicles
                 platePrefix = "LSPD",
                 -- if it should impound police vehicles on resource restart
                 impoundVehicles = false,
@@ -252,7 +268,9 @@ ZTH.Config.Garages = {
                 manageGrades = {
                     [4] = true
                 },
-                -- lol
+                -- if it should only show vehicles when on duty
+                onlyShowOnDuty = true,
+                -- the list of vehicles and grades that will be available when buying new vehicles
                 lists = {
                     cars = {
                         {model = "police", label = "Police Cruiser", price = 5000},
@@ -267,11 +285,6 @@ ZTH.Config.Garages = {
                         {model = "sheriff2", label = "Sheriff Granger", price = 787140},
                         {model = "riot", label = "Riot", price = 564550},
                         {model = "riot2", label = "Riot 2", price = 854410},
-                    },
-                    levels = {
-                        {grade = 1},
-                        {grade = 2},
-                        {grade = 3},
                     },
                 }
             }
@@ -290,6 +303,51 @@ ZTH.Config.Garages = {
             type = 1,
         },
     },
+    ["garage_police_heli"] = {
+        Settings = {
+            parkingType = {
+                ["heli"] = true,
+            },
+            pricePerDay = 0,
+            displayName = "Garage Police Heli",
+            managementPrice = 0,
+            sellPrice = 0,
+            JobSettings = {
+                -- the job that can use this garage
+                job = "police",
+                -- the plate prefix for the vehicles
+                platePrefix = "LSPD",
+                -- if it should impound police vehicles on resource restart
+                impoundVehicles = false,
+                -- if taking grade assigned vehicle, it should check the state or not to take another one
+                shouldCheckForState = true,
+                -- when to show the manage wheel for the garage
+                manageGrades = {
+                    [4] = true
+                },
+                -- if it should only show vehicles when on duty
+                onlyShowOnDuty = true,
+                -- the list of vehicles and grades that will be available when buying new vehicles
+                lists = {
+                    cars = {
+                        {model = "polmav2", label = "Police Helicopter", price = 5000},
+                    },
+                }
+            }
+        },
+        TakeVehicle = {
+            pos = vec4(462.42, -981.82, 43.69, 93.08),
+        },
+        SpawnVehicle = {
+            pos = vec4(449.53, -981.20, 44.27, 91.08),
+        },
+        Deposit_Heli = {
+            pos = vec4(449.53, -981.20, 44.27, 91.08),
+        },
+        Deposit_Heli_2 = {
+            pos = vec4(481.58, -982.25, 41.27, 78.76),
+        }
+    },
     ["garage_ambulance"] = {
         Settings = {
             pricePerDay = 0,
@@ -297,20 +355,15 @@ ZTH.Config.Garages = {
             managementPrice = 0,
             sellPrice = 0,
             JobSettings = {
-                -- lol
                 job = "ambulance",
-                -- lol
                 platePrefix = "EMS",
-                -- if it should impound police vehicles on resource restart
                 impoundVehicles = true,
-                -- if taking grade assigned vehicle, it should check the state or not to take another one
                 shouldCheckForState = true,
-                -- when to show the manage wheel for the garage
+                onlyShowOnDuty = false,
                 manageGrades = {
                     [1] = true,
                     [4] = true
                 },
-                -- lol
                 lists = {
                     cars = {
                         {model = "ambulance", label = "Ambulanza", price = 5000},
