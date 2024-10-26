@@ -32,6 +32,7 @@ First release of `zth_garages`
 
 # New features
 
+- You can add parking spots to garages using the /add command and providing the garage_id `/add garage_1`
 - Added buttons on manage screen
 - Added logic to manually revoke parking spots
 - Added logic to manually add a day to the expiration date of a parking spot
@@ -43,3 +44,5 @@ First release of `zth_garages`
 - If QB then take label from Shared
 - Added search box in vehicle list
 - Added vehicle type to job garages
+
+## 0.1.2
