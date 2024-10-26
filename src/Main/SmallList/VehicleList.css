@@ -6,8 +6,34 @@
   border-radius: 1rem;
   margin-top: 1rem;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 5rem);
+  /* overflow: auto; */
+  align-content: flex-start;
+}
+
+.VehicleList_searchBoxContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: fit-content;
+  position: relative;
+}
+
+.VehicleList_searchBox .MuiInputBase-root {
+  border-radius: 1rem 1rem 0 0 !important;
+}
+
+.VehicleList_vehicleRows {
   overflow: auto;
+  width: 100%;
+  height: calc(100% - 3.55rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  border-radius: 1rem;
+  flex-direction: row;
   align-content: flex-start;
 }
 
@@ -224,12 +250,12 @@
 }
 
 
-.VehicleList_container::-webkit-scrollbar-track {
-  border-radius: 0 1rem 1rem 0;
+.VehicleList_vehicleRows::-webkit-scrollbar-track {
+  border-radius: 0 0 1rem 0;
   background: rgba(200, 200, 200, 0.5);
 }
 
-.VehicleList_container::-webkit-scrollbar-thumb {
-  border-radius: 0 1rem 1rem 0;
+.VehicleList_vehicleRows::-webkit-scrollbar-thumb {
+  border-radius: 0 0 1rem 0;
   background: var(--mui-palette-primary-main);
 }

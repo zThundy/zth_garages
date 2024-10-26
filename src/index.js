@@ -32,7 +32,7 @@ const RootComponent = () => {
   const [parkingData, setParkingData] = useState({});
   const [showManage, setShowManage] = useState(false);
   const [vehicles, setVehicles] = useState([]);
-  const [screen, setScreen] = useState('garage-manage');
+  const [screen, setScreen] = useState('list');
   const [title, setTitle] = useState(T("UNKNOWN"));
   const [manageData, setManageData] = useState({});
   const [impoundData, setImpoundData] = useState({});
@@ -193,10 +193,11 @@ const RootComponent = () => {
       setRender(true);
       setShowManage(true);
       const testCarData = [];
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 3; i++) {
         testCarData.push({
           id: i,
           name: `Car ${Math.floor(Math.random() * 10000)}`,
+          label: `Car ${Math.floor(Math.random() * 10000)}`,
           // make a plate number for each car with a random number
           plate: `AB${Math.floor(Math.random() * 10000)}CD`,
           // random number between 0 and 100 for fuel, engine, and body levels
@@ -204,6 +205,7 @@ const RootComponent = () => {
           engineLevel: Math.floor(Math.random() * 100),
           bodyLevel: Math.floor(Math.random() * 100),
           isImpounded: Math.random() > 0.5,
+          assignedTo: Math.random() > 0.5 ? "You" : "Grade",
           impoundAmount: Math.floor(Math.random() * 10000000000),
         })
       }

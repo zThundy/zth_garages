@@ -36,6 +36,7 @@
         "ACTIONS": "Azioni",
         "REVOKE_SPOT": "Revoca",
         "RENEW_SPOT": "Rinnova (1 giorno)",
+        "ASSIGNED_TO": "Assegnato a",
         "AMOUNT": "Quantità",
         "TOTAL_EARN": "Guadagno totale",
         "ID": "ID Parcheggio",
@@ -53,6 +54,7 @@
         "IMPOUND_VEHICLE_NO_DESCRIPTION": "Nessuna descrizione fornita",
         "IMPOUND_PAYAMOUNT": "Paga $%s per dissequestrare il veicolo",
         "PAY_IMPOUND_FEE": "Paga la tassa di sequestro",
+        "SEARCH_VEHICLE": "Cerca veicolo",
 
         "TITLE_BUY_PARKING": "Acquista parcheggio",
         "TITLE_BUY_SPOT": "Acquista posto auto",
@@ -98,6 +100,7 @@
         "ACTIONS": "Actions",
         "REVOKE_SPOT": "Revoke",
         "RENEW_SPOT": "Renew (1 day)",
+        "ASSIGNED_TO": "Assigned to",
         "AMOUNT": "Amount",
         "TOTAL_EARN": "Total earn",
         "ID": "Parking ID",
@@ -115,6 +118,7 @@
         "IMPOUND_VEHICLE_NO_DESCRIPTION": "No description provided",
         "IMPOUND_PAYAMOUNT": "Pay $%s to unimpound the vehicle",
         "PAY_IMPOUND_FEE": "Pay impound fee",
+        "SEARCH_VEHICLE": "Search vehicle",
 
         "TITLE_BUY_PARKING": "Buy parking",
         "TITLE_BUY_SPOT": "Buy spot",
