@@ -1,0 +1,64 @@
+# github workflow that checks if the package.json file is up to date
+
+name: Check Packages
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  check-packages:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+    
+    - name: Cache node modules
+      id: cache-npm
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-node-modules
+      with:
+        # npm cache files are stored in `~/.npm` on Linux/macOS
+        path: ~
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
+    - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      name: List the state of node modules
+      continue-on-error: true
+      run: npm list
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Check for outdated packages and output
+      run: |
+        npm outdated --long
+        npm outdated --long > outdated.txt
+
+    - name: Check for vulnerabilities
+      run: |
+        npm audit
+        npm audit > audit.txt
+
+    # create issue with the audit and outdated information
+    - name: Create issue
+      uses: peter-evans/create-issue-from-file@v2
+      with:
+        title: 'Check for outdated packages and vulnerabilities'
+        content-filepath: outdated.txt
+        labels: outdated-packages
