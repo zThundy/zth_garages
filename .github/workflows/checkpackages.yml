@@ -1,11 +1,10 @@
 # github workflow that checks if the package.json file is up to date
-
 name: Check Packages
 
 on:
   push:
     branches:
-      - master
+      - main
 
 permissions:
   contents: read
