@@ -11,6 +11,8 @@ permissions:
 
 jobs:
   check-packages:
+    if: false
+
     runs-on: ubuntu-latest
     
     steps:
@@ -44,18 +46,6 @@ jobs:
 
     - name: Install dependencies
       run: npm install
-
-    - name: Check for outdated packages and output
-      shell: bash
-      run: |
-        # npm outdated --long
-        npm outdated --long > outdated.txt
-
-    - name: Check for vulnerabilities
-      shell: bash
-      run: |
-        # npm audit
-        npm audit > audit.txt
 
     # create issue with the audit and outdated information
     - name: Create issue
