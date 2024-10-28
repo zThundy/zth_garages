@@ -46,13 +46,15 @@ jobs:
       run: npm install
 
     - name: Check for outdated packages and output
+      shell: bash
       run: |
-        npm outdated --long
+        # npm outdated --long
         npm outdated --long > outdated.txt
 
     - name: Check for vulnerabilities
+      shell: bash
       run: |
-        npm audit
+        # npm audit
         npm audit > audit.txt
 
     # create issue with the audit and outdated information
@@ -62,3 +64,10 @@ jobs:
         title: 'Check for outdated packages and vulnerabilities'
         content-filepath: outdated.txt
         labels: outdated-packages
+
+    - name: Create issue
+      uses: peter-evans/create-issue-from-file@v2
+      with:
+        title: 'Check for vulnerabilities'
+        content-filepath: audit.txt
+        labels: vulnerabilities
