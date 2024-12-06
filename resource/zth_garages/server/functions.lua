@@ -247,13 +247,16 @@ function ZTH.Functions.ParseVehicle(data)
 end
 
 function ZTH.Functions.UpdateSingleCache(self, type)
-    Debug("UpdateSingleCache - " .. type)
+    Debug("UpdateSingleCache executing type - " .. type)
     if type == "garages" then
         ZTH.Cache.Garages = self.MySQL.ExecQuery("UpdateSingleCache - Get all garages", MySQL.Sync.fetchAll, "SELECT * FROM `garages`")
+        Debug("UpdateSingleCache - Garages: " .. #ZTH.Cache.Garages)
     elseif type == "garage_spots" then
         ZTH.Cache.GarageSpots = self.MySQL.ExecQuery("UpdateSingleCache - Get all garage spots", MySQL.Sync.fetchAll, "SELECT * FROM `garages_spots`")
+        Debug("UpdateSingleCache - Garage spots: " .. #ZTH.Cache.GarageSpots)
     elseif type == "player_vehicles" then
         ZTH.Cache.PlayerVehicles = self.MySQL.ExecQuery("UpdateSingleCache - Get all player vehicles", MySQL.Sync.fetchAll, "SELECT * FROM `player_vehicles`")
+        Debug("UpdateSingleCache - Player vehicles: " .. #ZTH.Cache.PlayerVehicles)
     end
 end
 

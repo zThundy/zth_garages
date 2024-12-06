@@ -1,10 +1,16 @@
+---- DO NOT TOUCH -----
 ZTH = {}
 ZTH.Config = {}
-
----- DO NOT TOUCH -----
+ZTH.Config.Shared = {}
+ZTH.Config.Events = {}
 ZTH.IsReady = false
 -----------------------
-ZTH.Config.Debug = false
+
+ZTH.Config.Debug = {
+    enabled = true,
+    enableMarkers = false,
+    prefix = "^1[ZTH_GARAGES] ^0"
+}
 
 ZTH.Config.CoreFunction = function()
     if GetResourceState('es_extended') ~= 'missing' then
@@ -42,7 +48,6 @@ elseif GetResourceState("esx_society") ~= "missing" then
     ZTH.Config.AccountScript = "esx_society"
 end
 
-ZTH.Config.Events = {}
 ZTH.Config.Events.PlayerLoaded = ZTH.Config.Core == "ESX" and "esx:playerLoaded" or "QBCore:Client:OnPlayerLoaded"
 ZTH.Config.Events.PlayerLoadedServer = ZTH.Config.Core == "ESX" and "esx:playerLoaded" or "QBCore:Server:PlayerLoaded"
 ZTH.Config.Events.PlayerLogoutServer = ZTH.Config.Core == "ESX" and "esx:playerDropped" or "QBCore:Server:OnPlayerUnload"
@@ -57,7 +62,6 @@ ZTH.Config.Events.RefreshGarages = "zth_garages:client:refreshGarage"
 ZTH.Config.Events.SpawnCarOnSpot = "zth_garages:client:spawnCarOnSpot"
 ZTH.Config.Events.UpdateGaragesParkingSpotsConfig = "zth_garages:client:UpdateGaragesParkingSpotsConfig"
 
-ZTH.Config.Shared = {}
 ZTH.Config.Shared.Jobs = ZTH.Core.Shared.Jobs
 
 ZTH.Config.TimeoutBetweenInteractions = 2000

@@ -22,6 +22,7 @@ ZTH.Tunnel.Interface.OwnsCar = function(plate)
         plate = string.gsub(plate, "%s+", "")
         v.plate = string.gsub(v.plate, "%s+", "")
 
+        Debug("OwnsCar: Comparing " .. plate .. " with " .. v.plate)
         if string.match(v.plate, plate) then
             if v.citizenid == citizenid then
                 return true

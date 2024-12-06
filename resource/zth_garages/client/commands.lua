@@ -57,3 +57,22 @@ ZTH.Commands.RegisterCommand("add", {
         self.Core.Functions.Notify(L("COMMANDS_GENERIC_ERROR"), "error", 5000)
     end
 end)
+
+ZTH.Commands.RegisterCommand("plate", {
+    goToServer = true,
+    returnFromServer = false,
+    requiredArgs = {
+        "plate",
+    }
+}, function(self, source, args, response)
+    local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+    local plate = args["plate"]
+
+    -- set plate number if 
+
+    if plate then
+        SetVehicleNumberPlateText(vehicle, plate)
+    else
+        self.Core.Functions.Notify(L("COMMANDS_GENERIC_ERROR"), "error", 5000)
+    end
+end)

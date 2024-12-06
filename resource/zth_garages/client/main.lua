@@ -143,5 +143,5 @@ end)
 
 Citizen.CreateThread(function()
 	while not ZTH.IsReady do Wait(1000) end
-	if ZTH.Config.Debug then DebugModeSpawnMarkers() end
+	if ZTH.Config.Debug.enableMarkers then DebugModeSpawnMarkers() end
 end)

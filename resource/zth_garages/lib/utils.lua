@@ -5,8 +5,8 @@ SERVER = IsDuplicityVersion()
 CLIENT = not SERVER
 
 function Debug(msg)
-    if ZTH.Config.Debug then
-        print("^1[ZTH_GARAGES] ^0" .. msg)
+    if ZTH.Config.Debug and ZTH.Config.Debug.enabled then
+        print(ZTH.Config.Debug.prefix .. " ^0" .. msg)
 
         if SERVER then
             -- check if log.txt exists, if not create it
