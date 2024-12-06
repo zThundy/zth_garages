@@ -257,6 +257,9 @@ function ZTH.Functions.UpdateSingleCache(self, type)
     elseif type == "player_vehicles" then
         ZTH.Cache.PlayerVehicles = self.MySQL.ExecQuery("UpdateSingleCache - Get all player vehicles", MySQL.Sync.fetchAll, "SELECT * FROM `player_vehicles`")
         Debug("UpdateSingleCache - Player vehicles: " .. #ZTH.Cache.PlayerVehicles)
+    elseif type == "players" then
+        ZTH.Cache.Players = self.MySQL.ExecQuery("UpdateSingleCache - Get all players", MySQL.Sync.fetchAll, "SELECT * FROM `players`")
+        Debug("UpdateSingleCache - Players: " .. #ZTH.Cache.Players)
     end
 end
 

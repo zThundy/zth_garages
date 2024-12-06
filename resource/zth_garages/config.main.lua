@@ -8,7 +8,7 @@ ZTH.IsReady = false
 
 ZTH.Config.Debug = {
     enabled = true,
-    enableMarkers = false,
+    enableMarkers = true,
     prefix = "^1[ZTH_GARAGES] ^0"
 }
 
@@ -40,8 +40,6 @@ ZTH.Core = ZTH.Config.CoreExport()
 
 if GetResourceState("qb-bossmenu") ~= "missing" then
     ZTH.Config.AccountScript = "qb-bossmenu"
-elseif GetResourceState("qb-management") ~= "missing" then
-    ZTH.Config.AccountScript = "qb-management"
 elseif GetResourceState("qb-banking") ~= "missing" then
     ZTH.Config.AccountScript = "qb-banking"
 elseif GetResourceState("esx_society") ~= "missing" then

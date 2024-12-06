@@ -634,6 +634,7 @@ end
 ZTH.Tunnel.Interface.GetGarageUsers = function(id)
     local garage = ZTH.Config.Garages[id]
     if garage.Settings.JobSettings then
+        ZTH.Functions.UpdateSingleCache(ZTH, "players")
         local jobPlayers = {}
         for _, v in pairs(ZTH.Cache.Players) do
             if type(v.job) == "string" then v.job = json.decode(v.job) end
@@ -663,6 +664,7 @@ ZTH.Tunnel.Interface.BuyVehicles = function(toBuy, totalAmount)
     
     if not foundJob then return false end
     local account = GetAccountMoney(foundJob)
+    if not account then account = 0 end
 
     Debug("BuyVehicles: Account: " .. account .. " Total: " .. totalAmount)
     if account >= totalAmount then

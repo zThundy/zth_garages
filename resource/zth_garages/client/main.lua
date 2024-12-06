@@ -27,34 +27,26 @@ end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.ResourceInit, function() ZTH.IsReady = true end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.PlayerLoaded, function() ZTH.Functions.Init() end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.PlayerSetJob, function(job)
-	if ZTH.PlayerData.job.name == PlayerData.job then return end
-	if ZTH.PlayerData.job.label == PlayerData.job.label then return end
-	if ZTH.PlayerData.job.grade.name == PlayerData.job.grade then return end
-	if ZTH.PlayerData.job.grade.level == PlayerData.job.grade.level then return end
-	if ZTH.PlayerData.job.onduty == PlayerData.job.onduty then return end
-	if ZTH.PlayerData.job.type == PlayerData.job.type then return end
-	if ZTH.PlayerData.job.payment == PlayerData.job.payment then return end
-	if ZTH.PlayerData.job.isboss == PlayerData.job.isboss then return end
-
-	ZTH.PlayerData = job
-	ZTH.Functions.RefreshJobGarages(ZTH)
+	if ZTH.PlayerData.job.name == job.name and ZTH.PlayerData.job.grade.level == job.grade.level then
+		return Debug("Job is the same, skipping garage refresh. " .. json.encode(job))
+	end
+	
+	local oldJob = ZTH.PlayerData.job
+	ZTH.PlayerData.job = job
+	ZTH.Functions.RefreshJobGarages(ZTH, oldJob)
 end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.SharedUpdated, function(data) ZTH.Config.Shared = data end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.RefreshGarages, function(id) ZTH.Functions.RefreshGarage(ZTH, id) end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.SpawnCarOnSpot, function(pData, spot) ZTH.Functions.SpawnCarOnSpot(ZTH, pData, spot) end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.PlayerUpdateData, function() ZTH.Functions.RefreshJobGarages(ZTH) end)
 ZTH.Functions.RegisterEvent(ZTH.Config.Events.SetPlayerData, function(PlayerData)
-	if ZTH.PlayerData.job.name == PlayerData.job then return end
-	if ZTH.PlayerData.job.label == PlayerData.job.label then return end
-	if ZTH.PlayerData.job.grade.name == PlayerData.job.grade then return end
-	if ZTH.PlayerData.job.grade.level == PlayerData.job.grade.level then return end
-	if ZTH.PlayerData.job.onduty == PlayerData.job.onduty then return end
-	if ZTH.PlayerData.job.type == PlayerData.job.type then return end
-	if ZTH.PlayerData.job.payment == PlayerData.job.payment then return end
-	if ZTH.PlayerData.job.isboss == PlayerData.job.isboss then return end
+	if ZTH.PlayerData.job.name == PlayerData.job.name and ZTH.PlayerData.job.grade.level == PlayerData.job.grade.level then
+		return Debug("Job is the same, skipping garage refresh. " .. json.encode(PlayerData.job))
+	end
 
+	local oldJob = ZTH.PlayerData.job
 	ZTH.PlayerData = PlayerData
-	ZTH.Functions.RefreshJobGarages(ZTH)
+	ZTH.Functions.RefreshJobGarages(ZTH, oldJob)
 end)
 
 -- Enter / Leave vehicle thread

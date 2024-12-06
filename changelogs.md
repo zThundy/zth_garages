@@ -49,3 +49,18 @@ First release of `zth_garages`
 - Added vehicle type to job garages
 
 ## 0.1.2
+
+# Changelogs
+
+- Fixed some issues with debug functions
+- Fixed issue where the script would error if there was no spawnpoint configured for a garage
+- Fixed issue where garages would not update when switching job
+- Removed a useless check on account balance logic
+
+# New features
+
+- Changed some configurations
+- Added some debugging features
+- Added commands logic to register commands in the script
+
+## 0.1.3

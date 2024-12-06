@@ -38,7 +38,7 @@ function VehicleList({ vehicles }) {
                 <div className={"VehicleList_leftAlign"}>
                   <span className={"VehicleList_carName"}>{car.label}</span>
                   <span className={"VehicleList_plate"}>{T("PLATE")}: <i>{car.plate}</i></span>
-                  {car.assignedTo !== null ? <span className={"VehicleList_plate"}>{T("ASSIGNED_TO")}: <i>{car.assignedTo}</i></span> : null}
+                  {car.assignedTo ? <span className={"VehicleList_plate"}>{T("ASSIGNED_TO")}: <i>{car.assignedTo}</i></span> : null}
                   {car.isImpounded ? <span className={"VehicleList_impoundText"}>{T("IMPOUND_PAYAMOUNT", pad(car.impoundAmount))}</span> : null}
                 </div>
                 <div className={"VehicleList_rightAlign"}>

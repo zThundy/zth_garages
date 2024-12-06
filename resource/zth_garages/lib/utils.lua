@@ -253,8 +253,6 @@ if SERVER then
     function GetAccountMoney(account)
         if ZTH.Config.AccountScript == "qb-bossmenu" then
             return exports[ZTH.Config.AccountScript]:GetAccount(account)
-        elseif ZTH.Config.AccountScript == "qb-management" then
-            return exports[ZTH.Config.AccountScript]:GetAccount(account)
         elseif ZTH.Config.AccountScript == "qb-banking" then
             return exports[ZTH.Config.AccountScript]:GetAccountBalance(account)
         elseif ZTH.Config.AccountScript == "esx_society" then
@@ -265,8 +263,6 @@ if SERVER then
     function AddAccountMoney(account, amount)
         if ZTH.Config.AccountScript == "qb-bossmenu" then
             return exports[ZTH.Config.AccountScript]:AddAccountMoney(account, amount)
-        elseif ZTH.Config.AccountScript == "qb-management" then
-            return exports[ZTH.Config.AccountScript]:AddAccountMoney(account, amount)
         elseif ZTH.Config.AccountScript == "qb-banking" then
             return exports[ZTH.Config.AccountScript]:AddAccountMoney(account, amount)
         elseif ZTH.Config.AccountScript == "esx_society" then
@@ -276,8 +272,6 @@ if SERVER then
 
     function RemoveAccountMoney(account, amount)
         if ZTH.Config.AccountScript == "qb-bossmenu" then
-            return exports[ZTH.Config.AccountScript]:RemoveMoney(account, amount)
-        elseif ZTH.Config.AccountScript == "qb-management" then
             return exports[ZTH.Config.AccountScript]:RemoveMoney(account, amount)
         elseif ZTH.Config.AccountScript == "qb-banking" then
             return exports[ZTH.Config.AccountScript]:RemoveMoney(account, amount)

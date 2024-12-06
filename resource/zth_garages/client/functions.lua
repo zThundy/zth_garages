@@ -401,6 +401,9 @@ function ZTH.Functions.TakeVehicle(self, _data)
     local data = _data.car
     local ped = PlayerPedId()
     local spawnCoords = self.Config.Garages[data.garage].SpawnVehicle
+    if not spawnCoords then
+        return self.Core.Functions.Notify(L("ERROR_CANT_TAKE_VEHICLE_FROM_HERE"), 'error', 5000)
+    end
     if not spawnCoords.heading then spawnCoords.heading = spawnCoords.pos.w end
     if not spawnCoords.heading then Debug("Heading not found for vehicle " .. data.plate .. " at " .. data.garage) return end
     local coords = vector4(spawnCoords.pos.x, spawnCoords.pos.y, spawnCoords.pos.z, spawnCoords.heading)
@@ -515,10 +518,14 @@ function ZTH.Functions.UnloadVehicles(id)
     end
 end
 
-function ZTH.Functions.RefreshJobGarages(self)
+function ZTH.Functions.RefreshJobGarages(self, oldJob)
     for id, garage in pairs(self.Config.Garages) do
         if garage.Settings.JobSettings then
             if self.PlayerData.job.name == garage.Settings.JobSettings.job then
+                self.Functions.RefreshGarage(self, id)
+            end
+
+            if oldJob and oldJob.name == garage.Settings.JobSettings.job then
                 self.Functions.RefreshGarage(self, id)
             end
         end
